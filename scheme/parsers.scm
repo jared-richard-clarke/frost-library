@@ -1,7 +1,5 @@
 (import (rnrs))
 
-;; (parser list) -> '(a list) 
-
 ;; (item list) -> '(a list)
 
 (define (item xs)
