@@ -1,37 +1,60 @@
 (import (rnrs))
 
-;; (item list) -> '(a list)
+;; === base ===
 
-(define (item xs)
-  (if (null? xs)
-      (zero)
-      (list (car xs) (cdr xs))))
+(define (item lst)
+  (if (null? lst)
+      (list)
+      (list (car lst) (cdr lst))))
 
-;; (return a) -> m a
+;; === monad ===
+
+(define (zero) (lambda xs (list)))
 
 (define (return x)
-  (lambda (xs)
-    (list x xs)))
-
-;; (bind (m a) (a -> (m b))) -> (m b)
-
-(define (bind m f)
   (lambda (input)
-    (let ([lst (m input)])
-      ((f (car lst)) (cadr lst)))))
+    (list x input)))
 
-;; (zero list) -> '()
+(define (bind p f)
+  (lambda (input)
+    (let ([lst (p input)])
+      (if (null? lst)
+          (list)
+          ((f (car lst)) (cdr lst))))))
 
-(define (zero . xs) '())
+;; === functor ===
 
-;; (satisfy (char -> bool)) -> parser
+(define (map-f f p)
+  (bind p (lambda (x) (return (f x)))))
 
-(define (satisfy pred)
-  (bind item
-        (lambda (x)
-          (if (pred x)
-              (return x)
-              (zero)))))
+;; === applicative ===
+
+(define (apply-p pf px)
+  (bind pf (lambda (f)
+             (bind px (lambda (x)
+                        (return (f x)))))))
+
+;; === alternatives ===
+
+(define (or-else p q)
+  (lambda (input)
+    (let ([lst (p input)])
+      (if (null? lst)
+          (q input)
+          lst))))
+
+(define (and-then p q)
+  (bind p (lambda (pv)
+            (bind q (lambda (qv)
+                      (return (list pv qv)))))))
+
+;; === derived ===
+
+(define (satisfy predicate)
+  (bind item (lambda (x)
+               (if (predicate x)
+                   (return x)
+                   (zero)))))
 
 (define (parse-char x)
   (satisfy (lambda (y) (char=? x y))))
