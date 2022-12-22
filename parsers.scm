@@ -33,13 +33,6 @@
   (bind pf (lambda (f)
              (map-f f px))))
 
-;; apply-p defined only by bind
-;;
-;; (define (apply-p pf px)
-;;   (bind pf (lambda (f)
-;;              (bind px (lambda (x)
-;;                         (return (f x)))))))
-
 ;; === alternatives ===
 
 (define (or-else p q)
@@ -62,10 +55,10 @@
                    (return x)
                    (zero)))))
 
-(define (parse-char x)
-  (satisfy (lambda (y) (char=? x y))))
+(define (parse-char x) (satisfy (lambda (y) (char=? x y))))
 
-(define (choice parsers)
-  (fold-left or-else (car parsers) (cdr parsers)))
+(define parse-digit (satisfy char-numeric?))
 
-(define digit (choice (map parse-char (string->list "0123456789"))))
+(define parse-alpha (satisfy char-alphabetic?))
+
+(define parse-space (satisfy char-whitespace?))
