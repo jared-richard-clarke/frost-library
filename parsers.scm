@@ -20,7 +20,7 @@
     (let ([lst (p input)])
       (if (null? lst)
           (list)
-          ((f (car lst)) (cdr lst))))))
+          ((f (car lst)) (cadr lst))))))
 
 ;; === functor ===
 
@@ -48,7 +48,7 @@
             (bind q (lambda (qv)
                       (return (list pv qv)))))))
 
-;; === derived ===
+;; === derived primitives ===
 
 (define (satisfy predicate)
   (bind item (lambda (x)
@@ -58,3 +58,4 @@
 
 (define (parse-char x)
   (satisfy (lambda (y) (char=? x y))))
+
