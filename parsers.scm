@@ -31,8 +31,14 @@
 
 (define (apply-p pf px)
   (bind pf (lambda (f)
-             (bind px (lambda (x)
-                        (return (f x)))))))
+             (map-f f px))))
+
+;; apply-p defined only by bind
+;;
+;; (define (apply-p pf px)
+;;   (bind pf (lambda (f)
+;;              (bind px (lambda (x)
+;;                         (return (f x)))))))
 
 ;; === alternatives ===
 
