@@ -59,3 +59,7 @@
 (define (parse-char x)
   (satisfy (lambda (y) (char=? x y))))
 
+(define (choice parsers)
+  (fold-left or-else (car parsers) (cdr parsers)))
+
+(define digit (choice (map parse-char (string->list "0123456789"))))
