@@ -39,7 +39,7 @@
   (lambda (pf px)
     (bind pf (lambda (f) (map-f f px)))))
 
-;; apply-p defined only by bind
+;; apply-p defined solely by bind
 ;;
 ;; (define apply-p
 ;;   (lambda (pf px)
