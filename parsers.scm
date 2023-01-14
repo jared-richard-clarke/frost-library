@@ -1,5 +1,7 @@
 (import (rnrs))
 
+;; === UNDER HEAVY CONSTRUCTION ===
+
 ;; Unlike Haskell or OCaml, which are statically typed, this Scheme implementation
 ;; doesn't wrap its functions in a Parser type. Functions return parsing functions.
 ;;
@@ -57,6 +59,11 @@
 ;;                (bind px (lambda (x)
 ;;                          (return (f x))))))))
 
+(define lift-2
+  (lambda (f)
+    (lambda (px py)
+      (apply-p (apply-p (return f) px) py))))
+
 ;; === alternatives ===
 
 (define or-else
@@ -72,6 +79,10 @@
     (bind p (lambda (pv)
               (bind q (lambda (qv)
                         (return (list pv qv))))))))
+
+(define choice
+  (lambda parsers
+    (fold-left or-else (car parsers) (cdr parsers))))
 
 ;; === derived primitives ===
 
