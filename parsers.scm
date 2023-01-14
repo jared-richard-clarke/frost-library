@@ -1,18 +1,46 @@
 (import (rnrs))
 
+;; Unlike Haskell or OCaml, which are statically typed, this Scheme implementation
+;; doesn't wrap its functions in a Parser type. Functions return parsing functions.
+;;
+;; Parser functions input a list of chars and output either an empty list on failure
+;; or a list containing a result and the remaining list of chars.
+;;
+;; (parse-s (string->list "sam")) -> '(#\s (#\a #\m))
+
 ;; === base ===
 
 (define item
   (lambda (lst)
     (if (null? lst)
-        (list)
+        '()
         (list (car lst) (cdr lst)))))
 
-;; === monad ===
+;; === monad zero ===
 
 (define zero
   (lambda ()
-    (lambda xs (list))))
+    (lambda input '())))
+
+;; === monad plus ===
+
+(define plus
+  (lambda (p q)
+    (lambda (input)
+      (append (p input) (q input)))))
+
+;; Deterministic choice operation.
+;; A monadic approach to "or-else".
+
+(define choice
+  (lambda (p q)
+    (lambda (input)
+      (let ([lst ((plus p q) input)])
+        (if (null? lst)
+            '()
+            (list (car lst) (cadr lst)))))))
+
+;; === monad ====
 
 (define return
   (lambda (x)
@@ -24,7 +52,7 @@
     (lambda (input)
       (let ([lst (p input)])
         (if (null? lst)
-            (list)
+            '()
             ((f (car lst)) (cadr lst)))))))
 
 ;; === functor ===
