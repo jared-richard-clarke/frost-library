@@ -6,7 +6,7 @@
 ;; doesn't wrap its functions in a "Parser" type. Functions return parser functions.
 ;;
 ;; Parser functions input a list of chars and output either an empty list on failure
-;; or a list containing a result and the remaining list of chars.
+;; or a list containing a value and the remaining list of chars.
 ;;
 ;; (parse-s (string->list "sam")) -> '(#\s (#\a #\m))
 
