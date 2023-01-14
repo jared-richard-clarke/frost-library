@@ -22,24 +22,6 @@
   (lambda ()
     (lambda input '())))
 
-;; === monad plus ===
-
-(define plus
-  (lambda (p q)
-    (lambda (input)
-      (append (p input) (q input)))))
-
-;; Deterministic choice operation.
-;; A monadic approach to "or-else".
-
-(define choice
-  (lambda (p q)
-    (lambda (input)
-      (let ([lst ((plus p q) input)])
-        (if (null? lst)
-            '()
-            (list (car lst) (cadr lst)))))))
-
 ;; === monad ====
 
 (define return
