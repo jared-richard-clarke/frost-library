@@ -86,6 +86,10 @@
   (lambda parsers
     (fold-left or-else (car parsers) (cdr parsers))))
 
+(define any
+  (lambda (char-list)
+    (apply choice (map parse-char char-list))))
+
 ;; === derived primitives ===
 
 (define satisfy
