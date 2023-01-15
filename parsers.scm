@@ -11,7 +11,7 @@
 ;; (function (list char)) -> (list value (list char)) |
 ;; (function (list char)) -> (list)
 ;;
-;; (parse-s (string->list "sam"))     -> '(#\s (#\a #\m))
+;; (parse-s (string->list "sam")) -----> '(#\s (#\a #\m))
 ;;
 ;; (parse-digit (string->list "sam")) -> '()
 
