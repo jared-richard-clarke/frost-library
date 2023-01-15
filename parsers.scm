@@ -20,14 +20,14 @@
 (define item
   (lambda (lst)
     (if (null? lst)
-        '()
+        (list)
         (list (car lst) (cdr lst)))))
 
 ;; === monad zero ===
 
 (define zero
   (lambda ()
-    (lambda input '())))
+    (lambda input (list))))
 
 ;; === monad ====
 
@@ -43,7 +43,7 @@
     (lambda (input)
       (let ([lst (p input)])
         (if (null? lst)
-            '()
+            (list)
             ((f (car lst)) (cadr lst)))))))
 
 ;; === functor ===
