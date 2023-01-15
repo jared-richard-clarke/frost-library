@@ -8,7 +8,12 @@
 ;; Parser functions input a list of chars and output either an empty list on failure
 ;; or a list containing a value and the remaining list of chars.
 ;;
-;; (parse-s (string->list "sam")) -> '(#\s (#\a #\m))
+;; (function (list char)) -> (list value (list char)) |
+;; (function (list char)) -> (list)
+;;
+;; (parse-s (string->list "sam"))     -> '(#\s (#\a #\m))
+;;
+;; (parse-digit (string->list "sam")) -> '()
 
 ;; === base ===
 
