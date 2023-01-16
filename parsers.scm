@@ -48,9 +48,13 @@
 
 ;; === functor ===
 
+;; Also known as "lift" or "lift-1"
 (define map-f
   (lambda (f p)
     (bind p (lambda (x) (return (f x))))))
+;;                                ^
+;;                                |
+;;                               Causes arity mismatch for cons. "lift-2" is supposed to fix this.
 
 ;; === applicative ===
 
