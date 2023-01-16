@@ -63,7 +63,7 @@
 ;;   (lambda (pf px)
 ;;     (bind pf (lambda (f)
 ;;                (bind px (lambda (x)
-;;                          (return (f x))))))))
+;;                           (return (f x))))))))
 
 ;; === alternatives ===
 
