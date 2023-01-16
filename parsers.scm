@@ -98,9 +98,9 @@
   (lambda parsers
     (fold-left or-else (car parsers) (cdr parsers))))
 
-(define any
-  (lambda (char-list)
-    (apply choice (map parse-char char-list))))
+(define any-of
+  (lambda (chars)
+    (apply choice (map parse-char chars))))
 
 ;; === derived primitives ===
 
