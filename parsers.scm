@@ -31,13 +31,12 @@
 
 ;; === monad ====
 
-;; "return" is a left and right unit for "bind".
+;; Also known as "unit".
 (define return
   (lambda (x)
     (lambda (input)
       (list x input))))
 
-;; "bind" is associative.
 (define bind
   (lambda (p f)
     (lambda (input)
