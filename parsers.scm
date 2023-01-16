@@ -5,11 +5,11 @@
 ;; Unlike Haskell or OCaml, which are statically typed, this Scheme implementation
 ;; doesn't wrap its functions in a "Parser" type. Functions return parser functions.
 ;;
-;; Parser functions input a list of chars and output either an empty list on failure
-;; or a list containing a value and the remaining list of chars.
+;; Parser functions input a list of chars and output either an empty list when it fails
+;; or a list containing a value and the remaining list of chars when it succeeds.
 ;;
-;; (function (list char)) -> (list value (list char)) |
-;; (function (list char)) -> (list)
+;; success: (function (list char)) -> (list value (list char))
+;; failure: (function (list char)) -> (list)
 ;;
 ;; (parse-s (string->list "sam")) -----> '(#\s (#\a #\m))
 ;;
