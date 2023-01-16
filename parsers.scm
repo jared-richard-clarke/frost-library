@@ -70,18 +70,6 @@
 ;;                (bind px (lambda (x)
 ;;                          (return (f x))))))))
 
-(define lift-2
-  (lambda (f)
-    (lambda (px py)
-      (apply-p (map-f f px) py))))
-
-;; map-f = (compose apply-p return)
-;;
-;; (define lift-2
-;;   (lambda (f)
-;;     (lambda (px py)
-;;       (apply-p (apply-p (return f) px) py))))
-
 ;; === alternatives ===
 
 (define or-else
@@ -99,12 +87,12 @@
                         (return (list pv qv))))))))
 
 (define choice
-  (lambda parsers
+  (lambda (parsers)
     (fold-left or-else (car parsers) (cdr parsers))))
 
 (define any-of
   (lambda (chars)
-    (apply choice (map parse-char chars))))
+    (choice (map parse-char chars))))
 
 ;; === derived primitives ===
 
