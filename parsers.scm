@@ -12,7 +12,6 @@
 ;; failure: (function (list char)) -> (list)
 ;;
 ;; (parse-s (string->list "sam")) -----> '(#\s (#\a #\m))
-;;
 ;; (parse-digit (string->list "sam")) -> '()
 
 ;; === base ===
