@@ -69,7 +69,14 @@
 (define lift-2
   (lambda (f)
     (lambda (px py)
-      (apply-p (apply-p (return f) px) py))))
+      (apply-p (map-f f px) py))))
+
+;; map-f = (compose apply-p return)
+;;
+;; (define lift-2
+;;   (lambda (f)
+;;     (lambda (px py)
+;;       (apply-p (apply-p (return f) px) py))))
 
 ;; === alternatives ===
 
