@@ -17,10 +17,10 @@
 ;; === base ===
 
 (define item
-  (lambda (lst)
-    (if (null? lst)
+  (lambda (x)
+    (if (null? x)
         (list)
-        (list (car lst) (cdr lst)))))
+        (list (car x) (cdr x)))))
 
 ;; === monad zero ===
 
@@ -37,19 +37,19 @@
       (list x input))))
 
 (define bind
-  (lambda (p f)
+  (lambda (px f)
     (lambda (input)
-      (let ([lst (p input)])
-        (if (null? lst)
+      (let ([x (px input)])
+        (if (null? x)
             (list)
-            ((f (car lst)) (cadr lst)))))))
+            ((f (car x)) (cadr x)))))))
 
 ;; === functor ===
 
 ;; Also known as "lift" or "lift-1"
 (define map-f
-  (lambda (f p)
-    (bind p (lambda (x) (return (f x))))))
+  (lambda (f px)
+    (bind px (lambda (x) (return (f x))))))
 
 ;; === applicative ===
 
@@ -68,23 +68,23 @@
 ;; === alternatives ===
 
 (define or-else
-  (lambda (p q)
+  (lambda (px py)
     (lambda (input)
-      (let ([lst (p input)])
-        (if (null? lst)
-            (q input)
-            lst)))))
+      (let ([x (px input)])
+        (if (null? x)
+            (py input)
+            x)))))
 
 (define and-then
-  (lambda (p q)
-    (bind p (lambda (pv)
-              (bind q (lambda (qv)
-                        (return (list pv qv))))))))
+  (lambda (px py)
+    (bind px (lambda (x)
+               (bind py (lambda (y)
+                          (return (list x y))))))))
 
 (define choice
   (lambda (parsers)
-    (fold-left or-else (car parsers) (cdr parsers))))
-
+    (foldl or-else (car parsers) (cdr parsers))))
+;;   ^ fold-left
 (define any-of
   (lambda (chars)
     (choice (map parse-char chars))))
