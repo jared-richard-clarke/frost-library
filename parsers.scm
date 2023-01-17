@@ -83,8 +83,8 @@
 
 (define choice
   (lambda (parsers)
-    (foldl or-else (car parsers) (cdr parsers))))
-;;   ^ fold-left
+    (fold-left or-else (car parsers) (cdr parsers))))
+
 (define any-of
   (lambda (chars)
     (choice (map parse-char chars))))
