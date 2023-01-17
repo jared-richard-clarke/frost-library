@@ -19,7 +19,7 @@
 (define item
   (lambda (x)
     (if (null? x)
-        (list)
+        '()
         (list (car x) (cdr x)))))
 
 ;; === monad ====
@@ -36,14 +36,14 @@
     (lambda (input)
       (let ([x (px input)])
         (if (null? x)
-            (list)
+            '()
             ((f (car x)) (cadr x)))))))
 
 ;; === monad zero ===
 
 (define zero
   (lambda ()
-    (lambda input (list))))
+    (lambda input '())))
 
 ;; === monad plus ===
 
@@ -59,7 +59,7 @@
     (lambda (input)
       (let ([x ((plus px py) input)])
         (if (null? x)
-            (list)
+            '()
             (list (car x)))))))
 
 (define and-then
@@ -70,7 +70,7 @@
 
 (define option
   (lambda (px)
-    (plus px (return (list)))))
+    (plus px (return '()))))
 
 (define any-of
   (lambda parsers
