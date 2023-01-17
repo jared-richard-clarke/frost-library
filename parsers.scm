@@ -22,12 +22,6 @@
         (list)
         (list (car x) (cdr x)))))
 
-;; === monad zero ===
-
-(define zero
-  (lambda ()
-    (lambda input (list))))
-
 ;; === monad ====
 
 ;; Also known as "unit".
@@ -36,6 +30,7 @@
     (lambda (input)
       (list x input))))
 
+;; Also known as ">>="
 (define bind
   (lambda (px f)
     (lambda (input)
@@ -44,36 +39,28 @@
             (list)
             ((f (car x)) (cadr x)))))))
 
-;; === functor ===
+;; === monad zero ===
 
-;; Also known as "lift" or "lift-1"
-(define map-f
-  (lambda (f px)
-    (bind px (lambda (x) (return (f x))))))
+(define zero
+  (lambda ()
+    (lambda input (list))))
 
-;; === applicative ===
+;; === monad plus ===
 
-(define apply-p
-  (lambda (pf px)
-    (bind pf (lambda (f) (map-f f px)))))
-
-;; apply-p defined solely by bind
-;;
-;; (define apply-p
-;;   (lambda (pf px)
-;;     (bind pf (lambda (f)
-;;                (bind px (lambda (x)
-;;                           (return (f x))))))))
-
-;; === alternatives ===
-
-(define or-else
+(define plus
   (lambda (px py)
     (lambda (input)
-      (let ([x (px input)])
+      (append (px input) (py input)))))
+
+;; === choices ===
+
+(define choice
+  (lambda (px py)
+    (lambda (input)
+      (let ([x ((plus px py) input)])
         (if (null? x)
-            (py input)
-            x)))))
+            (list)
+            (list (car x)))))))
 
 (define and-then
   (lambda (px py)
@@ -81,13 +68,25 @@
                (bind py (lambda (y)
                           (return (list x y))))))))
 
-(define choice
-  (lambda (parsers)
-    (fold-left or-else (car parsers) (cdr parsers))))
+(define option
+  (lambda (px)
+    (plus px (return (list)))))
 
 (define any-of
-  (lambda (chars)
-    (choice (map parse-char chars))))
+  (lambda parsers
+    (fold-left plus (car parsers) (cdr parsers))))
+
+;; === sequences ===
+
+(define many
+  (lambda (px)
+    (option (many-1 px))))
+
+(define many-1
+  (lambda (px)
+    (bind px (lambda (x)
+               (bind (many px) (lambda (xs)
+                                 (return (cons x xs))))))))
 
 ;; === derived primitives ===
 
