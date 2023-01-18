@@ -2,6 +2,10 @@
 
 ;; === UNDER HEAVY CONSTRUCTION ===
 
+;; A parser combinator library is a functional approach to building recursive descent parsers.
+;; Basic functions implement parsers, whereas higher-order functions (combinators) implement
+;; grammar constructions such as choice, sequencing, and repetition.
+;;
 ;; Unlike Haskell or OCaml, which are statically typed, this Scheme implementation
 ;; doesn't wrap its functions in a "Parser" type. Functions return parser functions.
 ;;
