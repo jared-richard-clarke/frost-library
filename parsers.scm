@@ -74,7 +74,7 @@
 
 (define any-of
   (lambda parsers
-    (fold-left choice (car parsers) (cdr parsers))))
+    (fold-left plus (car parsers) (cdr parsers))))
 
 ;; === sequences ===
 
