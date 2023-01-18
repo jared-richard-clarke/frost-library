@@ -45,9 +45,19 @@
 
 ;; === monad zero ===
 
+;; Always returns an empty list regardless of input.
 (define zero
   (lambda ()
     (lambda input '())))
+
+;; === satisfy ===
+
+(define satisfy
+  (lambda (predicate)
+    (bind item (lambda (x)
+                 (if (predicate x)
+                     (return x)
+                     (zero))))))
 
 ;; === choices ===
 
@@ -64,7 +74,7 @@
     (or-else px (return '()))))
 
 (define any-of
-  (lambda parsers
+  (lambda (parsers)
     (fold-left or-else (car parsers) (cdr parsers))))
 
 ;; === sequences ===
@@ -75,15 +85,9 @@
                (bind py (lambda (y)
                           (return (cons x y))))))))
 
-;; === derived primitives ===
+;; === parsers ===
 
-(define satisfy
-  (lambda (predicate)
-    (bind item (lambda (x)
-                 (if (predicate x)
-                     (return x)
-                     (zero))))))
-
+;; Creates parsers for specific characters.
 (define parse-char
   (lambda (x)
     (satisfy (lambda (y) (char=? x y)))))
@@ -97,8 +101,15 @@
 (define parse-space 
   (satisfy char-whitespace?))
 
-(define parse-string
+;; Parses any combination of letters for any length.
+(define parse-word
   (or-else (bind parse-letter (lambda (x)
-                                (bind parse-string (lambda (xs)
-                                                     (return (cons x xs))))))
+                                (bind parse-word (lambda (xs)
+                                                   (return (cons x xs))))))
            (return '())))
+
+;; Creates parsers for specific strings.
+(define parse-string
+  (lambda (text)
+    (let ([parsers (map parse-char (string->list text))])
+      (fold-right and-then (return '()) parsers))))
