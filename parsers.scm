@@ -34,7 +34,7 @@
     (lambda (input)
       (list x input))))
 
-;; Also known as ">>="
+;; Integrates the sequencing of parsers with the processing of their results.
 (define bind
   (lambda (px f)
     (lambda (input)
