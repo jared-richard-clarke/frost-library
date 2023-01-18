@@ -17,6 +17,7 @@
 ;;
 ;; (parse-s (string->list "sam")) -----> '(#\s (#\a #\m))
 ;; (parse-digit (string->list "sam")) -> '()
+
 ;; === base ===
 
 (define item
@@ -40,7 +41,7 @@
       (let ([x (px input)])
         (if (null? x)
             '()
-            ((f (car x)) (cdr x)))))))
+            ((f (car x)) (cadr x)))))))
 
 ;; === monad zero ===
 
@@ -48,31 +49,23 @@
   (lambda ()
     (lambda input '())))
 
-;; === monad plus ===
-
-(define plus
-  (lambda (px py)
-    (lambda (input)
-      (append (px input) (py input)))))
-
 ;; === choices ===
 
-;; === buggy ===
-(define choice
+(define or-else
   (lambda (px py)
     (lambda (input)
-      (let ([x ((plus px py) input)])
+      (let ([x (px input)])
         (if (null? x)
-            '()
-            (list (car x)))))))
+            (py input)
+            x)))))
 
 (define optional
   (lambda (px)
-    (plus px (return '()))))
+    (or-else px (return '()))))
 
 (define any-of
   (lambda parsers
-    (fold-left plus (car parsers) (cdr parsers))))
+    (fold-left or-else (car parsers) (cdr parsers))))
 
 ;; === sequences ===
 
@@ -98,18 +91,14 @@
 (define parse-digit 
   (satisfy char-numeric?))
 
-(define parse-alpha 
+(define parse-letter
   (satisfy char-alphabetic?))
-
-(define parse-alphanum
-  (plus parse-alpha parse-digit))
 
 (define parse-space 
   (satisfy char-whitespace?))
 
-;; === buggy ===
-(define parse-word
-  (plus (bind parse-alpha (lambda (x)
-                            (bind parse-word (lambda (xs)
-                                               (return (cons x xs))))))
-        (return '())))
+(define parse-string
+  (or-else (bind parse-letter (lambda (x)
+                                (bind parse-string (lambda (xs)
+                                                     (return (cons x xs))))))
+           (return '())))
