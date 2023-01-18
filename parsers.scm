@@ -17,7 +17,6 @@
 ;;
 ;; (parse-s (string->list "sam")) -----> '(#\s (#\a #\m))
 ;; (parse-digit (string->list "sam")) -> '()
-
 ;; === base ===
 
 (define item
@@ -41,7 +40,7 @@
       (let ([x (px input)])
         (if (null? x)
             '()
-            ((f (car x)) (cadr x)))))))
+            ((f (car x)) (cdr x)))))))
 
 ;; === monad zero ===
 
@@ -58,6 +57,7 @@
 
 ;; === choices ===
 
+;; === buggy ===
 (define choice
   (lambda (px py)
     (lambda (input)
@@ -65,12 +65,6 @@
         (if (null? x)
             '()
             (list (car x)))))))
-
-(define and-then
-  (lambda (px py)
-    (bind px (lambda (x)
-               (bind py (lambda (y)
-                          (return (cons x y))))))))
 
 (define optional
   (lambda (px)
@@ -82,15 +76,11 @@
 
 ;; === sequences ===
 
-(define many
-  (lambda (px)
-    (optional (many-1 px))))
-
-(define many-1
-  (lambda (px)
+(define and-then
+  (lambda (px py)
     (bind px (lambda (x)
-               (bind (many px) (lambda (xs)
-                                 (return (cons x xs))))))))
+               (bind py (lambda (y)
+                          (return (cons x y))))))))
 
 ;; === derived primitives ===
 
@@ -111,5 +101,15 @@
 (define parse-alpha 
   (satisfy char-alphabetic?))
 
+(define parse-alphanum
+  (plus parse-alpha parse-digit))
+
 (define parse-space 
   (satisfy char-whitespace?))
+
+;; === buggy ===
+(define parse-word
+  (plus (bind parse-alpha (lambda (x)
+                            (bind parse-word (lambda (xs)
+                                               (return (cons x xs))))))
+        (return '())))
