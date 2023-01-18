@@ -98,6 +98,7 @@
   (satisfy char-whitespace?))
 
 ;; Parses any combination of letters for any length.
+;; (Issue: returns a two-part list instead of an empty list on failure.)
 (define parse-word
   (or-else (bind parse-letter (lambda (x)
                                 (bind parse-word (lambda (xs)
