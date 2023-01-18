@@ -24,7 +24,7 @@
 
 ;; === monad ====
 
-;; Also known as "unit".
+;; Also known as "unit" or "result".
 (define return
   (lambda (x)
     (lambda (input)
