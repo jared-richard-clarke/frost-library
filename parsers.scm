@@ -66,21 +66,21 @@
   (lambda (px py)
     (bind px (lambda (x)
                (bind py (lambda (y)
-                          (return (list x y))))))))
+                          (return (cons x y))))))))
 
-(define option
+(define optional
   (lambda (px)
     (plus px (return '()))))
 
 (define any-of
   (lambda parsers
-    (fold-left plus (car parsers) (cdr parsers))))
+    (fold-left choice (car parsers) (cdr parsers))))
 
 ;; === sequences ===
 
 (define many
   (lambda (px)
-    (option (many-1 px))))
+    (optional (many-1 px))))
 
 (define many-1
   (lambda (px)
