@@ -69,11 +69,7 @@
             (py input)
             x)))))
 
-(define optional
-  (lambda (px)
-    (or-else px (return '()))))
-
-(define any-of
+(define choice
   (lambda (parsers)
     (fold-left or-else (car parsers) (cdr parsers))))
 
