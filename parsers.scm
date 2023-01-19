@@ -98,6 +98,19 @@
   (lambda (parsers)
     (fold-right and-then (return '()) parsers)))
 
+(define many
+  (lambda (px)
+    (or-else (bind px (lambda (x)
+                        (bind (many px) (lambda (xs)
+                                          (return (cons x xs))))))
+             (return '()))))
+
+(define many-1
+  (lambda (px)
+    (bind px (lambda (x)
+               (bind (many px) (lambda (xs)
+                                 (return (cons x xs))))))))
+
 ;; === parsers ===
 
 (define parse-char
