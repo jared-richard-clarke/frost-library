@@ -6,49 +6,62 @@
 ;; Basic functions implement parsers, whereas higher-order functions (combinators) implement
 ;; grammar constructions such as choice, sequencing, and repetition.
 ;;
-;; Unlike Haskell or OCaml, which are statically typed, this Scheme implementation
-;; doesn't wrap its functions in a "Parser" type. Functions return parser functions.
-;;
-;; Parser functions input a list of chars and output either an empty list when they fail
-;; or a list containing a value and the remaining list of chars when they succeed.
-;;
-;; success: (function (list char)) -> (list value (list char))
-;; failure: (function (list char)) -> (list)
-;;
-;; (parse-s (string->list "sam")) -----> '(#\s (#\a #\m))
-;; (parse-digit (string->list "sam")) -> '()
+;; (parser (list char)) -> (list) | (list any (list char))
+
+;; === utils ===
+
+(define empty? null?)
 
 ;; === base ===
 
 (define item
   (lambda (x)
-    (if (null? x)
-        '()
+    (if (empty? x)
+        x
         (list (car x) (cdr x)))))
 
 ;; === monad ====
 
-;; Also known as "unit" or "result".
+;; Also named "unit".
 (define return
   (lambda (x)
     (lambda (input)
       (list x input))))
 
+;; Also named ">>=".
 ;; Integrates the sequencing of parsers with the processing of their results.
 (define bind
   (lambda (px f)
     (lambda (input)
       (let ([x (px input)])
-        (if (null? x)
-            '()
+        (if (empty? x)
+            x
             ((f (car x)) (cadr x)))))))
 
-;; === monad zero ===
-
-;; Always returns an empty list regardless of input.
+;; Also named "empty".
 (define zero
   (lambda ()
     (lambda input '())))
+
+;; === functor ===
+
+(define map-f
+  (lambda (f px)
+    (bind px (lambda (x)
+               (return (f x))))))
+
+;; === applicative ===
+
+(define apply-p
+  (lambda (px py)
+    (bind px (lambda (x)
+               (map-f x py)))))
+
+;; (define apply-p
+;;   (lambda (px py)
+;;     (bind px (lambda (x)
+;;                (bind py (lambda (y)
+;;                           (return (x y))))))))
 
 ;; === satisfy ===
 
@@ -65,7 +78,7 @@
   (lambda (px py)
     (lambda (input)
       (let ([x (px input)])
-        (if (null? x)
+        (if (empty? x)
             (py input)
             x)))))
 
@@ -81,9 +94,12 @@
                (bind py (lambda (y)
                           (return (cons x y))))))))
 
+(define sequence
+  (lambda (parsers)
+    (fold-right and-then (return '()) parsers)))
+
 ;; === parsers ===
 
-;; Creates parsers for specific characters.
 (define parse-char
   (lambda (x)
     (satisfy (lambda (y) (char=? x y)))))
@@ -96,17 +112,3 @@
 
 (define parse-space 
   (satisfy char-whitespace?))
-
-;; Parses any combination of letters for any length.
-;; (Issue: returns a two-part list instead of an empty list on failure.)
-(define parse-word
-  (or-else (bind parse-letter (lambda (x)
-                                (bind parse-word (lambda (xs)
-                                                   (return (cons x xs))))))
-           (return '())))
-
-;; Creates parsers for specific strings.
-(define parse-string
-  (lambda (text)
-    (let ([parsers (map parse-char (string->list text))])
-      (fold-right and-then (return '()) parsers))))
