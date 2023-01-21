@@ -59,10 +59,10 @@
         (return (f x)))))
 
 ;; (define apply-p
-;;   (lambda (px py)
-;;     (bind px (lambda (x)
-;;                (bind py (lambda (y)
-;;                           (return (x y))))))))
+;;   (lambda (pf px)
+;;     (bind pf (lambda (f)
+;;                (bind px (lambda (x)
+;;                           (return (f x))))))))
 
 ;; === satisfy ===
 
