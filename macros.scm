@@ -1,5 +1,6 @@
-;; Highly-experimental macro for the Haskell "do" syntax
+(import (rnrs))
 
+;; Highly-experimental macro for the Haskell "do" syntax
 (define-syntax do
   (lambda (stx)
     (syntax-case stx (<-)
