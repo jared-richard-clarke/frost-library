@@ -55,14 +55,13 @@
 (define apply-p
   (lambda (pf px)
     (do (f <- pf)
-        (x <- px)
-        (return (f x)))))
+        (map-f f px))))
 
 ;; (define apply-p
 ;;   (lambda (pf px)
-;;     (bind pf (lambda (f)
-;;                (bind px (lambda (x)
-;;                           (return (f x))))))))
+;;     (do (f <- pf)
+;;         (x <- px)
+;;         (return (f x)))))
 
 ;; === satisfy ===
 
@@ -95,3 +94,9 @@
                  (xs <- (many px))
                  (return (cons x xs)))
              (return '()))))
+
+(define many-1
+  (lambda (px)
+    (do (x  <- px)
+        (xs <- (many px))
+        (return (cons x xs)))))
