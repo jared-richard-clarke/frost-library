@@ -53,15 +53,15 @@
 ;; === applicative ===
 
 (define apply-p
-  (lambda (px py)
-    (bind px (lambda (x)
-               (map-f x py)))))
+  (lambda (pf px)
+    (bind pf (lambda (f)
+               (map-f f px)))))
 
 ;; (define apply-p
-;;   (lambda (px py)
-;;     (bind px (lambda (x)
-;;                (bind py (lambda (y)
-;;                           (return (x y))))))))
+;;   (lambda (pf px)
+;;     (bind pf (lambda (f)
+;;                (bind px (lambda (x)
+;;                           (return (f x))))))))
 
 ;; === satisfy ===
 
