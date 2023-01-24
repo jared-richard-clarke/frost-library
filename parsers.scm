@@ -1,4 +1,5 @@
-(import (scheme))
+(import (rnrs)
+        (utils))
 
 ;; === UNDER HEAVY CONSTRUCTION ===
 
@@ -8,15 +9,11 @@
 ;;
 ;; (parser (list char)) -> (list) | (list any (list char))
 
-;; === utils ===
-
-(define empty? null?)
+;; === base ===
 
 (define parse
   (lambda (parser text)
     (parser (string->list text))))
-
-;; === base ===
 
 (define item
   (lambda (x)
