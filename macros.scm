@@ -10,7 +10,13 @@
        (syntax (bind px (lambda (x) 
                           (do expression ...))))])))
 
+;; === utils ===
+
 (define empty? null?)
+
+(define parse
+  (lambda (parser text)
+    (parser (string->list text))))
 
 ;; === base ===
 
@@ -150,15 +156,15 @@
 
 ;; === parsers ===
 
-(define parse-char
+(define character
   (lambda (x)
     (satisfy (lambda (y) (char=? x y)))))
 
-(define parse-digit 
+(define digit 
   (satisfy char-numeric?))
 
-(define parse-letter
+(define letter
   (satisfy char-alphabetic?))
 
-(define parse-space 
+(define space 
   (satisfy char-whitespace?))
