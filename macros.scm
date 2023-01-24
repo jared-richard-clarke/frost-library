@@ -4,11 +4,11 @@
 (define-syntax do
   (lambda (stx)
     (syntax-case stx (<-)
-      [(_ expr)
-       (syntax expr)]
-      [(_ (x <- px) expr ...)
+      [(_ expression)
+       (syntax expression)]
+      [(_ (x <- px) expression ...)
        (syntax (bind px (lambda (x) 
-                          (do expr ...))))])))
+                          (do expression ...))))])))
 
 (define empty? null?)
 
@@ -82,11 +82,58 @@
             (py input)
             x)))))
 
+(define choice
+  (lambda (parsers)
+    (fold-left or-else (car parsers) (cdr parsers))))
+
+;; Applies parser px. If px fails, returns the value y.
+(define option
+  (lambda (px y)
+    (or-else px (return y))))
+
+;; Fails if parser px fails. Otherwise discards result and continues parsing.
+(define optional
+  (lambda (px)
+    (or-else (do (x <- px)
+                 (return '()))
+             (return '()))))
+
+;; Also named ".>>", parses two values and discards the right.
+(define left
+  (lambda (px py)
+    (map-f (lambda (xy)
+             (let ([x (car xy)]
+                   [y (cdr xy)])
+               x))
+           (and-then px py))))
+
+;; Also named ">>.", parses two values and discards the left.
+(define right
+  (lambda (px py)
+    (map-f (lambda (xy)
+             (let ([x (car xy)]
+                   [y (cdr xy)])
+               y))
+           (and-then px py))))
+
+
+;; Parses three values, and, if successful, discards the left and the right values.
+(define between
+  (lambda (px py pz)
+    (left (right px py) pz)))
+
+;; === sequences ===
+
 (define and-then
   (lambda (px py)
     (do (x <- px)
         (y <- py)
         (return (cons x y)))))
+
+
+(define sequence
+  (lambda (parsers)
+    (fold-right and-then (return '()) parsers)))
 
 (define many
   (lambda (px)
@@ -100,3 +147,18 @@
     (do (x  <- px)
         (xs <- (many px))
         (return (cons x xs)))))
+
+;; === parsers ===
+
+(define parse-char
+  (lambda (x)
+    (satisfy (lambda (y) (char=? x y)))))
+
+(define parse-digit 
+  (satisfy char-numeric?))
+
+(define parse-letter
+  (satisfy char-alphabetic?))
+
+(define parse-space 
+  (satisfy char-whitespace?))
