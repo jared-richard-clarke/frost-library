@@ -2,7 +2,7 @@
          (export empty?
                  compose
                  assert-test)
-         (import (scheme))
+         (import (rnrs))
          
          (define empty? null?)
 
