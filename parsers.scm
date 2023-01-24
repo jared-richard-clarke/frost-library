@@ -1,4 +1,4 @@
-(import (rnrs))
+(import (scheme))
 
 ;; === UNDER HEAVY CONSTRUCTION ===
 
