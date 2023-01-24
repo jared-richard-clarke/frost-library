@@ -1,4 +1,5 @@
-(import (rnrs))
+(import (rnrs)
+        (utils))
 
 ;; The Haskell "do" syntax
 (define-syntax do
@@ -10,15 +11,11 @@
        (syntax (bind px (lambda (x) 
                           (do expression ...))))])))
 
-;; === utils ===
-
-(define empty? null?)
+;; === base ===
 
 (define parse
   (lambda (parser text)
     (parser (string->list text))))
-
-;; === base ===
 
 (define item
   (lambda (x)
