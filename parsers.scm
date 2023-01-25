@@ -9,6 +9,16 @@
 ;;
 ;; (parser (list char)) -> (list) | (list any (list char))
 
+;; The Haskell "do" syntax. Used to make Monads more readable.
+(define-syntax do
+  (lambda (stx)
+    (syntax-case stx (<-)
+      [(_ expression)
+       (syntax expression)]
+      [(_ (x <- px) expression ...)
+       (syntax (bind px (lambda (x) 
+                          (do expression ...))))])))
+
 ;; === base ===
 
 (define parse
@@ -48,36 +58,49 @@
 
 (define map-f
   (lambda (f px)
-    (bind px (lambda (x)
-               (return (f x))))))
+    (do (x <- px)
+        (return (f x)))))
+
+;; (define map-f
+;;   (lambda (f px)
+;;     (bind px (lambda (x)
+;;                (return (f x))))))
 
 ;; === applicative ===
 
 (define apply-p
   (lambda (pf px)
-    (bind pf (lambda (f)
-               (map-f f px)))))
+    (do (f <- pf)
+        (map-f f px))))
+
+;; (define apply-p
+;;   (lambda (pf px)
+;;     (do (f <- pf)
+;;         (x <- px)
+;;         (return (f x)))))
 
 ;; Side Note: sequences of applicatives are used to lift multi-parameter
 ;; functions into a monadic context. However, this process works only
 ;; with curried functions because each argument is applied in its own monad.
-;; In a language like Scheme, it's simpler and more efficient to chain a series
-;; of monads and then call the combining function at the end.
-
-;; (define apply-p
-;;   (lambda (pf px)
-;;     (bind pf (lambda (f)
-;;                (bind px (lambda (x)
-;;                           (return (f x))))))))
+;; In a language like Scheme, it's simpler and more efficient chain a series
+;; of monads then call the combining function at the end.
 
 ;; === satisfy ===
 
 (define satisfy
   (lambda (predicate)
-    (bind item (lambda (x)
-                 (if (predicate x)
-                     (return x)
-                     (zero))))))
+    (do (x <- item)
+        (if (predicate x)
+            (return x)
+            (zero)))))
+
+
+;; (define satisfy
+;;   (lambda (predicate)
+;;     (bind item (lambda (x)
+;;                  (if (predicate x)
+;;                      (return x)
+;;                      (zero))))))
 
 ;; === choices ===
 
@@ -101,9 +124,15 @@
 ;; Fails if parser px fails. Otherwise discards result and continues parsing.
 (define optional
   (lambda (px)
-    (or-else (bind px (lambda (x)
-                        (return '())))
+    (or-else (do (x <- px)
+                 (return '()))
              (return '()))))
+
+;; (define optional
+;;   (lambda (px)
+;;     (or-else (bind px (lambda (x)
+;;                         (return '())))
+;;              (return '()))))
 
 ;; Also named ".>>", parses two values and discards the right.
 (define left
@@ -132,9 +161,15 @@
 
 (define and-then
   (lambda (px py)
-    (bind px (lambda (x)
-               (bind py (lambda (y)
-                          (return (cons x y))))))))
+    (do (x <- px)
+        (y <- py)
+        (return (cons x y)))))
+
+;; (define and-then
+;;   (lambda (px py)
+;;     (bind px (lambda (x)
+;;                (bind py (lambda (y)
+;;                           (return (cons x y))))))))
 
 (define sequence
   (lambda (parsers)
@@ -147,9 +182,15 @@
 
 (define many-1
   (lambda (px)
-    (bind px (lambda (x)
-               (bind (many px) (lambda (xs)
-                                 (return (cons x xs))))))))
+    (do (x  <- px)
+        (xs <- (many px))
+        (return (cons x xs)))))
+
+;; (define many-1
+;;   (lambda (px)
+;;     (bind px (lambda (x)
+;;                (bind (many px) (lambda (xs)
+;;                                 (return (cons x xs))))))))
 
 ;; === parsers ===
 
@@ -160,12 +201,8 @@
 (define digit 
   (satisfy char-numeric?))
 
-(define digits (many-1 digit))
-
 (define letter
   (satisfy char-alphabetic?))
-
-(define letters (many-1 letter))
 
 (define space 
   (satisfy char-whitespace?))
