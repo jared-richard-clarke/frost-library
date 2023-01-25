@@ -5,7 +5,7 @@
 
 ;; Applicative parsers are functions that process characters.
 ;; Parser combinators are higher-order functions that process
-;; grammar constructions such as choice, sequencing, and repetition.
+;; grammar constructions — choice, sequencing, repetition, etc.
 ;;
 ;; (parser (list char)) -> (list) | (list any (list char))
 
