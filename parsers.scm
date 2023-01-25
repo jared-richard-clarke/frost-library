@@ -58,6 +58,10 @@
     (bind pf (lambda (f)
                (map-f f px)))))
 
+;; Side Note: sequences of applicatives are used to lift multi-parameter
+;; functions into a monadic context. However, this process works only
+;; with curried functions.
+
 ;; (define apply-p
 ;;   (lambda (pf px)
 ;;     (bind pf (lambda (f)
