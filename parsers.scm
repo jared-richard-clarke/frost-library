@@ -3,13 +3,13 @@
 
 ;; === UNDER HEAVY CONSTRUCTION ===
 
-;; A parser combinator library is a functional approach to building recursive descent parsers.
-;; Basic functions implement parsers, whereas higher-order functions (combinators) implement
+;; Applicative parsers are functions that process characters.
+;; Parser combinators are higher-order functions that process
 ;; grammar constructions such as choice, sequencing, and repetition.
 ;;
 ;; (parser (list char)) -> (list) | (list any (list char))
 
-;; The Haskell "do" syntax. Used to make Monads more readable.
+;; The Haskell "do" syntax. Makes Monads more readable.
 (define-syntax do
   (lambda (stx)
     (syntax-case stx (<-)
