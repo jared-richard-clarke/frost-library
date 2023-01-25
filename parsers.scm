@@ -201,8 +201,12 @@
 (define digit 
   (satisfy char-numeric?))
 
+(define digits (many-1 digit))
+
 (define letter
   (satisfy char-alphabetic?))
+
+(define letters (many-1 letter))
 
 (define space 
   (satisfy char-whitespace?))
