@@ -61,8 +61,8 @@
 ;; Side Note: sequences of applicatives are used to lift multi-parameter
 ;; functions into a monadic context. However, this process works only
 ;; with curried functions because each argument is applied in its own monad.
-;; In a language like Scheme, it's simpler and more efficient chain a series
-;; of monads then call the combining function at the end.
+;; In a language like Scheme, it's simpler and more efficient to chain a series
+;; of monads and then call the combining function at the end.
 
 ;; (define apply-p
 ;;   (lambda (pf px)
@@ -142,9 +142,7 @@
 
 (define many
   (lambda (px)
-    (or-else (bind px (lambda (x)
-                        (bind (many px) (lambda (xs)
-                                          (return (cons x xs))))))
+    (or-else (many-1 px)
              (return '()))))
 
 (define many-1
@@ -162,8 +160,14 @@
 (define digit 
   (satisfy char-numeric?))
 
+(define digits (many-1 digit))
+
 (define letter
   (satisfy char-alphabetic?))
 
+(define letters (many-1 letter))
+
 (define space 
   (satisfy char-whitespace?))
+
+(define spaces (many space))
