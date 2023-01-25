@@ -60,7 +60,9 @@
 
 ;; Side Note: sequences of applicatives are used to lift multi-parameter
 ;; functions into a monadic context. However, this process works only
-;; with curried functions.
+;; with curried functions because each argument is applied in its own monad.
+;; In a language like Scheme, it's simpler and more efficient chain a series
+;; of monads then call the combining function at the end.
 
 ;; (define apply-p
 ;;   (lambda (pf px)
