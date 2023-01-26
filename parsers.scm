@@ -35,14 +35,18 @@
 
 ;; === monad ====
 
-;; Also named "unit". Also called "pure" within the context of Applicative functors.
+;; Also named "unit". Also called "pure" within the 
+;; context of Applicative functors.
+
 (define return
   (lambda (x)
     (lambda (input)
       (list x input))))
 
 ;; Also named ">>=".
-;; In this context, integrates the sequencing of parsers with the processing of their results.
+;; In this context, integrates the sequencing of parsers 
+;; with the processing of their results.
+
 (define bind
   (lambda (px f)
     (lambda (input)
@@ -52,6 +56,7 @@
             ((f (car x)) (cadr x)))))))
 
 ;; Also named "empty".
+
 (define zero (return '()))
 
 ;; === functor ===
@@ -117,11 +122,13 @@
     (fold-left or-else (car parsers) (cdr parsers))))
 
 ;; Applies parser px. If px fails, returns the value y.
+
 (define option
   (lambda (px y)
     (or-else px (return y))))
 
 ;; Fails if parser px fails. Otherwise discards result and continues parsing.
+
 (define optional
   (lambda (px)
     (or-else (do (x <- px) zero)
@@ -133,6 +140,7 @@
 ;;              fail)))
 
 ;; Also named ".>>", parses two values and discards the right.
+
 (define left
   (lambda (px py)
     (map-f (lambda (xy)
@@ -142,6 +150,7 @@
            (and-then px py))))
 
 ;; Also named ">>.", parses two values and discards the left.
+
 (define right
   (lambda (px py)
     (map-f (lambda (xy)
@@ -151,6 +160,7 @@
            (and-then px py))))
 
 ;; Parses three values, and, if successful, discards the left and the right values.
+
 (define between
   (lambda (px py pz)
     (left (right px py) pz)))
