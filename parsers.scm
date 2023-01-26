@@ -124,14 +124,12 @@
 ;; Fails if parser px fails. Otherwise discards result and continues parsing.
 (define optional
   (lambda (px)
-    (or-else (do (x <- px)
-                 zero)
+    (or-else (do (x <- px) zero)
              fail)))
 
 ;; (define optional
 ;;   (lambda (px)
-;;     (or-else (bind px (lambda (x)
-;;                         zero))
+;;     (or-else (bind px (lambda (x) zero))
 ;;              fail)))
 
 ;; Also named ".>>", parses two values and discards the right.
