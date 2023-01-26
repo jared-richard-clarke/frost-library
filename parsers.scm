@@ -31,6 +31,8 @@
         x
         (list (car x) (cdr x)))))
 
+(define fail (lambda input '()))
+
 ;; === monad ====
 
 ;; Also named "unit". Also called "pure" within the context of Applicative functors.
@@ -49,10 +51,8 @@
             x
             ((f (car x)) (cadr x)))))))
 
-;; Also named "empty". TODO: Distinguish between a monadic zero value and failure.
-(define zero
-  (lambda ()
-    (lambda input '())))
+;; Also named "empty".
+(define zero (return '()))
 
 ;; === functor ===
 
@@ -92,7 +92,7 @@
     (do (x <- item)
         (if (predicate x)
             (return x)
-            (zero)))))
+            fail))))
 
 
 ;; (define satisfy
@@ -100,7 +100,7 @@
 ;;     (bind item (lambda (x)
 ;;                  (if (predicate x)
 ;;                      (return x)
-;;                      (zero))))))
+;;                      fail)))))
 
 ;; === choices ===
 
@@ -125,14 +125,14 @@
 (define optional
   (lambda (px)
     (or-else (do (x <- px)
-                 (return '()))
-             (return '()))))
+                 zero)
+             fail)))
 
 ;; (define optional
 ;;   (lambda (px)
 ;;     (or-else (bind px (lambda (x)
-;;                         (return '())))
-;;              (return '()))))
+;;                         zero))
+;;              fail)))
 
 ;; Also named ".>>", parses two values and discards the right.
 (define left
@@ -173,12 +173,12 @@
 
 (define sequence
   (lambda (parsers)
-    (fold-right and-then (return '()) parsers)))
+    (fold-right and-then zero parsers)))
 
 (define many
   (lambda (px)
     (or-else (many-1 px)
-             (return '()))))
+             zero)))
 
 (define many-1
   (lambda (px)
