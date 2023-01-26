@@ -4,12 +4,13 @@
 ;; === UNDER HEAVY CONSTRUCTION ===
 
 ;; Applicative parsers are functions that process characters.
-;; Parser combinators are higher-order functions that process
-;; grammar constructions — choice, sequencing, repetition, etc.
+;; Parser combinators are higher-order functions, composed of applicative parsers,
+;; that process grammar constructions — choice, sequencing, repetition, etc.
 ;;
 ;; (parser (list char)) -> (list) | (list any (list char))
 
 ;; The Haskell "do" syntax (simplified). Makes monads readable.
+
 (define-syntax do
   (lambda (stx)
     (syntax-case stx (<-)
