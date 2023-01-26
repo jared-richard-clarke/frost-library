@@ -49,7 +49,7 @@
             x
             ((f (car x)) (cadr x)))))))
 
-;; Also named "empty". TODO: Distinguish between a monadic zero value and failure?
+;; Also named "empty". TODO: Distinguish between a monadic zero value and failure.
 (define zero
   (lambda ()
     (lambda input '())))
