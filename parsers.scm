@@ -42,7 +42,7 @@
       (list x input))))
 
 ;; Also named ">>=".
-;; Integrates the sequencing of parsers with the processing of their results.
+;; In this context, integrates the sequencing of parsers with the processing of their results.
 (define bind
   (lambda (px f)
     (lambda (input)
