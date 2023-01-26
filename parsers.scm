@@ -33,7 +33,7 @@
 
 ;; === monad ====
 
-;; Also named "unit".
+;; Also named "unit". Also called "pure" within the context of Applicative functors.
 (define return
   (lambda (x)
     (lambda (input)
