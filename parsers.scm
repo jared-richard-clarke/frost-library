@@ -9,8 +9,6 @@
 ;;
 ;; (parser (list char)) -> (list) | (list any (list char))
 
-;; The Haskell "do" syntax (simplified). Makes monads readable.
-
 (define-syntax do
   (lambda (stx)
     (syntax-case stx (<-)
@@ -32,8 +30,6 @@
         x
         (list (car x) (cdr x)))))
 
-(define fail (lambda input '()))
-
 ;; === monad ====
 
 ;; Also named "unit". Also called "pure" within the 
@@ -47,7 +43,6 @@
 ;; Also named ">>=".
 ;; In this context, integrates the sequencing of parsers 
 ;; with the processing of their results.
-
 (define bind
   (lambda (px f)
     (lambda (input)
@@ -57,8 +52,7 @@
             ((f (car x)) (cadr x)))))))
 
 ;; Also named "empty".
-
-(define zero (return '()))
+(define zero (lambda xs '()))
 
 ;; === functor ===
 
@@ -98,7 +92,7 @@
     (do (x <- item)
         (if (predicate x)
             (return x)
-            fail))))
+            zero))))
 
 
 ;; (define satisfy
@@ -123,17 +117,16 @@
     (fold-left or-else (car parsers) (cdr parsers))))
 
 ;; Applies parser px. If px fails, returns the value y.
-
 (define option
   (lambda (px y)
     (or-else px (return y))))
 
 ;; Fails if parser px fails. Otherwise discards result and continues parsing.
-
 (define optional
   (lambda (px)
-    (or-else (do (x <- px) zero)
-             fail)))
+    (or-else (do (x <- px)
+                 (return '()))
+             zero)))
 
 ;; (define optional
 ;;   (lambda (px)
@@ -141,7 +134,6 @@
 ;;              fail)))
 
 ;; Also named ".>>", parses two values and discards the right.
-
 (define left
   (lambda (px py)
     (map-f (lambda (xy)
@@ -151,7 +143,6 @@
            (and-then px py))))
 
 ;; Also named ">>.", parses two values and discards the left.
-
 (define right
   (lambda (px py)
     (map-f (lambda (xy)
@@ -161,7 +152,6 @@
            (and-then px py))))
 
 ;; Parses three values, and, if successful, discards the left and the right values.
-
 (define between
   (lambda (px py pz)
     (left (right px py) pz)))
@@ -182,12 +172,12 @@
 
 (define sequence
   (lambda (parsers)
-    (fold-right and-then zero parsers)))
+    (fold-right and-then (return '()) parsers)))
 
 (define many
   (lambda (px)
     (or-else (many-1 px)
-             zero)))
+             (return '()))))
 
 (define many-1
   (lambda (px)
