@@ -16,11 +16,13 @@
          (define-syntax assert-test
            (lambda (stx)
              (syntax-case stx ()
-               [(_ compare expression value)
-                (syntax (let ([computed-expr expression]) ;; <- prevents redundant computation
-                          (unless (compare computed-expr value)
-                            (printf "Test: ~a\nExpect: ~a, Got: ~a\n"
-                                    (quote expression) ;; <---- returns expression prior to evaluation
-                                    value
-                                    computed-expr))))])))
+               [(_ compare x y)
+                (syntax (let ([computed-x x]
+                              [computed-y y])
+                          (unless (compare computed-x computed-y)
+                            (printf "Test failed:\nrhs: ~a -> ~a, lhs: ~a -> ~a\n"
+                                    (quote x)
+                                    x
+                                    (quote y)
+                                    y))))])))
          )
