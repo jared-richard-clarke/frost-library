@@ -9,6 +9,7 @@
 ;;
 ;; (parser (list char)) -> (list) | (list any (list char))
 
+;; The Haskell "do" syntax (simplified). Makes monads readable.
 (define-syntax do
   (lambda (stx)
     (syntax-case stx (<-)
