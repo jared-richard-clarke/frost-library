@@ -18,7 +18,6 @@
 ;; p >>= (\a -> (f a >>= g)) = (p >>= (\a -> f a)) >>= g <-- "bind" is associative.
 
 ;; return a >>= f = f a
-;;              ^---^ Must be a monad-producing function.
 (define test-a-lhs
   (bind (return '()) return))
 
@@ -35,7 +34,6 @@
 (assert-test equal? (test-b-lhs abc) (test-b-rhs abc))
 
 ;; p >>= (\a -> (f a >>= g)) = (p >>= (\a -> f a)) >>= g
-;;               ^-------^-------------------^---------^ Must be monad-producing functions.
 (define test-c-lhs
   (bind item (lambda (a)
                (bind (return a) return))))
@@ -62,3 +60,32 @@
 (define test-e-rhs (or-else (or-else (character #\a) (character #\b)) (character #\c)))
 
 (assert-test equal? (test-e-lhs abc) (test-e-rhs abc))
+
+;;                zero >>= f = zero
+;;          p >>= const zero = zero
+;;           (p <|> q) >>= f = (p >>= f) <|> (q >>= f)
+;; p >>= (\a -> f a <|> g a) = (p >>= f) <|> (p >>= g)
+
+;; zero >>= f = zero
+(define test-f-lhs (bind zero return))
+(define test-f-rhs zero)
+
+(assert-test equal? (test-f-lhs abc) (test-f-rhs abc))
+
+;; p >>= const zero = zero
+(define test-g-lhs (bind (character #\a) (lambda (x) zero)))
+(define test-g-rhs zero)
+
+(assert-test equal? (test-g-lhs abc) (test-g-rhs abc))
+
+;; (p <|> q) >>= f = (p >>= f) <|> (q >>= f)
+(define test-h-lhs (bind (or-else (character #\a) (character #\b)) return))
+(define test-h-rhs (or-else (bind (character #\a) return) (bind (character #\b) return)))
+
+(assert-test equal? (test-h-lhs abc) (test-h-rhs abc))
+
+;; p >>= (\a -> f a <|> g a) = (p >>= f) <|> (p >>= g)
+(define test-i-lhs (bind (character #\a) (lambda (a) (or-else (return a) (return a)))))
+(define test-i-rhs (or-else (bind (character #\a) return) (bind (character #\a) return)))
+
+(assert-test equal? (test-i-lhs abc) (test-i-rhs abc))
