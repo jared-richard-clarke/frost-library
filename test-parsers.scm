@@ -18,16 +18,12 @@
 ;; p >>= (\a -> (f a >>= g)) = (p >>= (\a -> f a)) >>= g <-- "bind" is associative.
 
 ;; return a >>= f = f a
-(define test-a-lhs
-  (bind (return '()) return))
-
-(define test-a-rhs
-  (return '()))
+(define test-a-lhs (bind (return '()) return))
+(define test-a-rhs (return '()))
 
 (assert-test equal? (test-a-lhs abc) (test-a-rhs abc))
 
 ;; p >>= return = p
-;;       ^ Must be a monad-producing function.
 (define test-b-lhs (bind item return))
 (define test-b-rhs item)
 
