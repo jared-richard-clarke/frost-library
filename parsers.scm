@@ -129,42 +129,19 @@
                  (return '()))
              zero)))
 
-;; (define optional
-;;   (lambda (px)
-;;     (or-else (bind px (lambda (x) zero))
-;;              fail)))
-
 ;; Also named ".>>", parses two values and discards the right.
-
 (define left
   (lambda (px py)
     (do (x <- px)
         (y <- py)
         (return x))))
 
-;; (define left
-;;   (lambda (px py)
-;;     (map-f (lambda (xy)
-;;              (let ([x (car xy)]
-;;                    [y (cdr xy)])
-;;                x))
-;;            (and-then px py))))
-
 ;; Also named ">>.", parses two values and discards the left.
-
 (define right
   (lambda (px py)
     (do (x <- px)
         (y <- py)
         (return y))))
-
-;; (define right
-;;   (lambda (px py)
-;;     (map-f (lambda (xy)
-;;              (let ([x (car xy)]
-;;                    [y (cdr xy)])
-;;                y))
-;;            (and-then px py))))
 
 ;; Parses three values, and, if successful, discards the left and the right values.
 (define between
@@ -173,10 +150,6 @@
         (y <- py)
         (z <- pz)
         (return y))))
-
-;; (define between
-;;   (lambda (px py pz)
-;;     (left (right px py) pz)))
 
 ;; === sequences ===
 
