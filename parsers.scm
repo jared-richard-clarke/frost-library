@@ -207,3 +207,11 @@
 (define letters (many-1 letter))
 
 (define spaces (many space))
+
+(define any-of
+  (lambda (characters)
+    (choice (map character characters))))
+
+(define text
+  (lambda (str)
+    (sequence (map character (string->list str)))))
