@@ -62,11 +62,6 @@
     (do (x <- px)
         (return (f x)))))
 
-;; (define map-f
-;;   (lambda (f px)
-;;     (bind px (lambda (x)
-;;                (return (f x))))))
-
 ;; === applicative ===
 
 (define apply-p
@@ -121,13 +116,6 @@
 (define option
   (lambda (px y)
     (or-else px (return y))))
-
-;; Fails if parser px fails. Otherwise discards result and continues parsing.
-(define optional
-  (lambda (px)
-    (or-else (do (x <- px)
-                 (return '()))
-             zero)))
 
 ;; Also named ".>>", parses two values and discards the right.
 (define left
@@ -185,6 +173,19 @@
 ;;     (bind px (lambda (x)
 ;;                (bind (many px) (lambda (xs)
 ;;                                 (return (cons x xs))))))))
+
+(define sep-by
+  (lambda (px sep)
+    (or-else (sep-by-1 px sep)
+             (return '()))))
+
+(define sep-by-1
+  (lambda (px sep)
+    (do (x  <- px)
+        (xs <- (many (do (s <- sep)
+                         (y <- px)
+                         (return y))))
+        (return (cons x xs)))))
 
 ;; === parsers ===
 
