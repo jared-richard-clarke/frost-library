@@ -17,8 +17,8 @@
 
 ;; === Monad Laws ===
 ;;
-;;            return a >>= f = f a <------------------------ Right identity
-;;              p >>= return = p <-------------------------- Left identity
+;;            return a >>= f = f a <------------------------ Left identity
+;;              p >>= return = p <-------------------------- Right identity
 ;; p >>= (\a -> (f a >>= g)) = (p >>= (\a -> f a)) >>= g <-- Associativity
 
 ;; return a >>= f = f a
@@ -47,7 +47,7 @@
 ;;
 ;;        zero <|> px = px <------------------ Identity
 ;;        px <|> zero = px <-
-;; px <|> (py <|> pz) = (px <|> py) <|> pz <-- Associative
+;; px <|> (py <|> pz) = (px <|> py) <|> pz <-- Associativity
 
 ;; zero <|> px = px <|> zero
 (define test-d-lhs (or-else zero (character #\a)))
