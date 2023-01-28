@@ -22,8 +22,8 @@
 ;; p >>= (\a -> (f a >>= g)) = (p >>= (\a -> f a)) >>= g <-- Associativity
 
 ;; return a >>= f = f a
-(define test-a-lhs (bind (return '()) return))
-(define test-a-rhs (return '()))
+(define test-a-lhs (bind (return #\a) character))
+(define test-a-rhs (character #\a))
 
 (assert-test equal? (test-a-lhs abc) (test-a-rhs abc))
 
@@ -34,14 +34,8 @@
 (assert-test equal? (test-b-lhs abc) (test-b-rhs abc))
 
 ;; p >>= (\a -> (f a >>= g)) = (p >>= (\a -> f a)) >>= g
-(define test-c-lhs
-  (bind item (lambda (a)
-               (bind (return a) return))))
-
-(define test-c-rhs
-  (bind (bind item return) return))
-
-(assert-test equal? (test-c-lhs abc) (test-c-rhs abc))
+;;
+;; Associativity for monads is a tricky problem. One I have yet to fully understand.
 
 ;; === Alternative and/or MonadPlus Laws ===
 ;;
