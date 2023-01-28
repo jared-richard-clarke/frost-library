@@ -20,7 +20,7 @@
                 (syntax (let ([computed-x x]
                               [computed-y y])
                           (unless (compare computed-x computed-y)
-                            (printf "Test failed:\nrhs: ~a -> ~a, lhs: ~a -> ~a\n"
+                            (printf "Test failed:\nlhs: ~a -> ~a, rhs: ~a -> ~a\n"
                                     (quote x)
                                     x
                                     (quote y)
