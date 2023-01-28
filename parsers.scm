@@ -214,4 +214,4 @@
 
 (define text
   (lambda (str)
-    (sequence (map character (string->list str)))))
+    (map-f list->string (sequence (map character (string->list str))))))
