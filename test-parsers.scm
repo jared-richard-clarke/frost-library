@@ -85,3 +85,25 @@
 (define test-i-rhs (or-else (bind (character #\a) return) (bind (character #\a) return)))
 
 (assert-test equal? (test-i-lhs abc) (test-i-rhs abc))
+
+;; === Functor Laws ===
+;;
+;; fmap id = id
+;; fmap (g . f) = fmap g . fmap f
+
+;; fmap id = id
+(define test-j-lhs (map-f (lambda (x) x) (character #\a)))
+(define test-j-rhs (lambda (x) x))
+
+(assert-test equal? (test-j-lhs abc) (test-j-rhs ((character #\a) abc)))
+
+;; fmap (g . f) = fmap g . fmap f
+(define test-k-lhs (map-f (compose string-length string) (character #\a)))
+(define test-k-rhs
+  (let* ([curry-map (lambda (f)
+                      (lambda (px) (map-f f px)))]
+         [fg (curry-map string-length)]
+         [ff (curry-map string)])
+    ((compose fg ff) (character #\a))))
+
+(assert-test equal? (test-k-lhs abc) (test-k-rhs abc))
