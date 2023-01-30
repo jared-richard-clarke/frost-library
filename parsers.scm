@@ -3,9 +3,11 @@
 
 ;; === UNDER HEAVY CONSTRUCTION ===
 
-;; Applicative parsers are functions that process characters.
-;; Parser combinators are higher-order functions, composed of applicative parsers,
-;; that process grammar constructions — choice, sequencing, repetition, etc.
+;; "In functional programming, a popular approach to building recursive descent parsers
+;;  is to model parsers as functions, and to define higher-order functions (or combinators) 
+;;  that implement grammar constructions such as sequencing, choice, and repetition."
+;;
+;;  -- Monadic Parser Combinators, by Graham Hutton and Erik Meijer
 ;;
 ;; (parser (list char)) -> (list) | (list any (list char))
 
