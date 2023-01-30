@@ -10,14 +10,16 @@
 ;; (parser (list char)) -> (list) | (list any (list char))
 
 ;; The Haskell "do" syntax (simplified). Makes monads readable.
-(define-syntax do
+;; Rename "monad-do" because "do" is probably one of the least
+;; descriptive words in the English language.
+(define-syntax monad-do
   (lambda (stx)
     (syntax-case stx (<-)
       [(_ expression)
        (syntax expression)]
       [(_ (x <- px) expression ...)
        (syntax (bind px (lambda (x) 
-                          (do expression ...))))])))
+                          (monad-do expression ...))))])))
 
 ;; === base ===
 
@@ -59,21 +61,21 @@
 
 (define map-f
   (lambda (f px)
-    (do (x <- px)
-        (return (f x)))))
+    (monad-do (x <- px)
+              (return (f x)))))
 
 ;; === applicative ===
 
 (define apply-p
   (lambda (pf px)
-    (do (f <- pf)
-        (map-f f px))))
+    (monad-do (f <- pf)
+              (map-f f px))))
 
 ;; (define apply-p
 ;;   (lambda (pf px)
-;;     (do (f <- pf)
-;;         (x <- px)
-;;         (return (f x)))))
+;;     (monad-do (f <- pf)
+;;               (x <- px)
+;;               (return (f x)))))
 
 ;; Side Note: sequences of applicatives are used to lift multi-parameter
 ;; functions into a monadic context. However, this process works only
@@ -85,10 +87,10 @@
 
 (define satisfy
   (lambda (predicate)
-    (do (x <- item)
-        (if (predicate x)
-            (return x)
-            zero))))
+    (monad-do (x <- item)
+              (if (predicate x)
+                  (return x)
+                  zero))))
 
 
 ;; (define satisfy
@@ -120,32 +122,32 @@
 ;; Also named ".>>", parses two values and discards the right.
 (define left
   (lambda (px py)
-    (do (x <- px)
-        (y <- py)
-        (return x))))
+    (monad-do (x <- px)
+              (y <- py)
+              (return x))))
 
 ;; Also named ">>.", parses two values and discards the left.
 (define right
   (lambda (px py)
-    (do (x <- px)
-        (y <- py)
-        (return y))))
+    (monad-do (x <- px)
+              (y <- py)
+              (return y))))
 
 ;; Parses three values, and, if successful, discards the left and the right values.
 (define between
   (lambda (px py pz)
-    (do (x <- px)
-        (y <- py)
-        (z <- pz)
-        (return y))))
+    (monad-do (x <- px)
+              (y <- py)
+              (z <- pz)
+              (return y))))
 
 ;; === sequences ===
 
 (define and-then
   (lambda (px py)
-    (do (x <- px)
-        (y <- py)
-        (return (cons x y)))))
+    (monad-do (x <- px)
+              (y <- py)
+              (return (cons x y)))))
 
 ;; (define and-then
 ;;   (lambda (px py)
@@ -164,9 +166,9 @@
 
 (define many-1
   (lambda (px)
-    (do (x  <- px)
-        (xs <- (many px))
-        (return (cons x xs)))))
+    (monad-do (x  <- px)
+              (xs <- (many px))
+              (return (cons x xs)))))
 
 ;; (define many-1
 ;;   (lambda (px)
@@ -181,10 +183,10 @@
 
 (define sep-by-1
   (lambda (px sep)
-    (do (x  <- px)
-        (xs <- (many (do (s <- sep)
-                         (y <- px)
-                         (return y))))
+    (monad-do (x  <- px)
+              (xs <- (many (monad-do (s <- sep)
+                                     (y <- px)
+                                     (return y))))
         (return (cons x xs)))))
 
 ;; === parsers ===
