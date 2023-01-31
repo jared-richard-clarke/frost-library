@@ -48,6 +48,7 @@
             x
             ((f (car x)) (cadr x)))))))
 
+;; Also named "empty"
 (define zero (lambda input '()))
 
 ;; === functor ===
