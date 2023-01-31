@@ -1,8 +1,6 @@
 (import (rnrs)
         (utils))
 
-;; === UNDER HEAVY CONSTRUCTION ===
-
 ;; "In functional programming, a popular approach to building recursive descent parsers
 ;;  is to model parsers as functions, and to define higher-order functions (or combinators) 
 ;;  that implement grammar constructions such as sequencing, choice, and repetition."
@@ -29,12 +27,6 @@
   (lambda (parser text)
     (parser (string->list text))))
 
-(define item
-  (lambda (x)
-    (if (empty? x)
-        x
-        (list (car x) (cdr x)))))
-
 ;; === monad ====
 
 ;; Also named "unit". Also called "pure" within the 
@@ -55,9 +47,6 @@
         (if (empty? x)
             x
             ((f (car x)) (cadr x)))))))
-
-;; Also named "empty".
-(define zero (lambda xs '()))
 
 ;; === functor ===
 
@@ -88,19 +77,15 @@
 ;; === satisfy ===
 
 (define satisfy
-  (lambda (predicate)
-    (monad-do (x <- item)
-              (if (predicate x)
-                  (return x)
-                  zero))))
-
-
-;; (define satisfy
-;;   (lambda (predicate)
-;;     (bind item (lambda (x)
-;;                  (if (predicate x)
-;;                      (return x)
-;;                      fail)))))
+  (lambda (test)
+    (lambda (input)
+      (if (empty? input)
+          '()
+          (let ([x  (car input)]
+                [xs (cdr input)])
+            (if (not (test x))
+                '()
+                (list x xs)))))))
 
 ;; === choices ===
 
