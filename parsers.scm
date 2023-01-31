@@ -48,6 +48,8 @@
             x
             ((f (car x)) (cadr x)))))))
 
+(define zero (lambda input '()))
+
 ;; === functor ===
 
 (define map-f
