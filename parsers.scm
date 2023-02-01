@@ -200,6 +200,18 @@
 
 (define spaces (many space))
 
+(define trim-left
+  (lambda (px)
+    (right spaces px)))
+
+(define trim-right
+  (lambda (px)
+    (left px spaces)))
+
+(define trim
+  (lambda (px)
+    (between spaces px spaces)))
+
 (define any-of
   (lambda (characters)
     (choice (map character characters))))
