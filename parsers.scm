@@ -177,7 +177,7 @@
               (xs <- (many (monad-do (s <- sep)
                                      (y <- px)
                                      (return y))))
-        (return (cons x xs)))))
+              (return (cons x xs)))))
 
 ;; === parsers ===
 
