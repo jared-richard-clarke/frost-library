@@ -17,8 +17,8 @@
     (syntax-case stx (<-)
       [(_ expression)
        (syntax expression)]
-      [(_ (x <- px) expression ...)
-       (syntax (bind px (lambda (x) 
+      [(_ (x <- mx) expression ...)
+       (syntax (bind mx (lambda (x) 
                           (monad-do expression ...))))])))
 
 ;; === base ===
