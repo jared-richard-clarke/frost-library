@@ -1,12 +1,6 @@
 (import (rnrs)
         (utils))
 
-;; "In functional programming, a popular approach to building recursive descent parsers
-;;  is to model parsers as functions, and to define higher-order functions (or combinators) 
-;;  that implement grammar constructions such as sequencing, choice, and repetition."
-;;
-;;  -- Monadic Parser Combinators, by Graham Hutton and Erik Meijer
-;;
 ;; (parser (list char)) -> (list) | (list any (list char))
 
 ;; The Haskell "do" syntax (simplified). Makes monads readable.
