@@ -31,7 +31,6 @@
 
 ;; Also named "unit". Also called "pure" within the 
 ;; context of Applicative functors.
-
 (define return
   (lambda (x)
     (lambda (input)
@@ -102,7 +101,11 @@
 
 (define choice
   (lambda (parsers)
-    (fold-left or-else (car parsers) (cdr parsers))))
+    (fold-right or-else zero parsers)))
+
+;; (define choice
+;;   (lambda (parsers)
+;;    (fold-left or-else (car parsers) (cdr parsers))))
 
 ;; Applies parser px. If px fails, returns the value y.
 (define option
