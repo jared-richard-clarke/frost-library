@@ -9,4 +9,10 @@ It's the monads that confuse me. I'm going to change that.
 >  combinator (`<|>`) and a function `satisfy` for construction elementary parsers
 >  for terminal symbols."
 >
-> — *Parsec: Direct Style Monadic Parser Combinators For The Real World* by Daan Leijen and Erik Meijer
+> — *Parsec: Direct Style Monadic Parser Combinators For The Real World*, by Daan Leijen and Erik Meijer
+
+> "In functional programming, a popular approach to building recursive descent parsers
+>  is to model parsers as functions, and to define higher-order functions (or combinators) 
+>  that implement grammar constructions such as sequencing, choice, and repetition."
+>
+>  — *Monadic Parser Combinators*, by Graham Hutton and Erik Meijer
