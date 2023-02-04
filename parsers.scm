@@ -54,8 +54,7 @@
          ;; === monad ====
 
          ;; The Haskell "do" syntax (simplified). Makes monads readable.
-         ;; Rename "monad-do" because "do" is probably one of the least
-         ;; descriptive words in the English language.
+         ;; Rename "monad-do" because "do" is not descriptive.
          (define-syntax monad-do
            (lambda (stx)
              (syntax-case stx (<-)
