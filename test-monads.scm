@@ -69,10 +69,10 @@
 ;; fmap (g . f) = fmap g . fmap f
 (define test-g-lhs (map-f (compose string-length string) (character #\a)))
 (define test-g-rhs
-  (let* ([curry-map (lambda (f)
-                      (lambda (px) (map-f f px)))]
-         [fg (curry-map string-length)]
-         [ff (curry-map string)])
-    ((compose fg ff) (character #\a))))
+  (let ([curry-map (lambda (f)
+                     (lambda (px) (map-f f px)))])
+    (let ([fg (curry-map string-length)]
+          [ff (curry-map string)])
+      ((compose fg ff) (character #\a)))))
 
 (assert-test equal? (test-g-lhs abc) (test-g-rhs abc))
