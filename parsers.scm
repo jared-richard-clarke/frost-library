@@ -93,26 +93,6 @@
              (monad-do (x <- px)
                        (return (f x)))))
 
-         ;; === applicative ===
-
-         (define apply-p
-           (lambda (pf px)
-             (monad-do (f <- pf)
-                       (map-f f px))))
-
-         ;; (define apply-p
-         ;;   (lambda (pf px)
-         ;;     (monad-do (f <- pf)
-         ;;               (x <- px)
-         ;;               (return (f x)))))
-
-         ;; Side Note: sequences of applicatives are used to lift multi-parameter
-         ;; functions into a monadic context. However, this process works only
-         ;; with curried functions because each argument is applied in its own monad.
-         ;; In a language like Scheme, it's simpler and more efficient to chain a series
-         ;; of monads together and then call the combining function at the end rather
-         ;; than lift a function into a monadic context piecemeal.
-
          ;; === satisfy ===
 
          (define satisfy
