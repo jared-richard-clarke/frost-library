@@ -48,6 +48,8 @@
          (define parse
            (lambda (parser text)
              (parser (string->list text))))
+         
+         ;; === monad ====
 
          ;; The Haskell "do" syntax (simplified). Makes monads readable.
          ;; Rename "monad-do" because "do" is probably one of the least
@@ -60,8 +62,6 @@
                [(_ (x <- mx) expression ...)
                 (syntax (bind mx (lambda (x) 
                                    (monad-do expression ...))))])))
-
-         ;; === monad ====
 
          ;; Also named "unit". Also called "pure" within the 
          ;; context of Applicative functors.
