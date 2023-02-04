@@ -17,25 +17,29 @@
 
 ;; === Monad Laws ===
 ;;
-;;            return a >>= f = f a <------------------------ Left identity
-;;              p >>= return = p <-------------------------- Right identity
-;; p >>= (\a -> (f a >>= g)) = (p >>= (\a -> f a)) >>= g <-- Associativity
+;;            return a >>= f = f a <---------------------- Left identity
+;;              p >>= return = p <------------------------ Right identity
+;;           (p >>= f) >>= g = p >>= (\a -> f a >>= g) <-- Associativity
 
-;; return a >>= f = f a
+;; return a >>= f = f a <- Left identity
 (define test-a-lhs (bind (return #\a) character))
 (define test-a-rhs (character #\a))
 
 (assert-test equal? (test-a-lhs abc) (test-a-rhs abc))
 
-;; p >>= return = p
-(define test-b-lhs (bind item return))
-(define test-b-rhs item)
+;; p >>= return = p <- Right identity
+(define test-b-lhs (bind (character #\a) return))
+(define test-b-rhs (character #\a))
 
 (assert-test equal? (test-b-lhs abc) (test-b-rhs abc))
 
-;; p >>= (\a -> (f a >>= g)) = (p >>= (\a -> f a)) >>= g
-;;
-;; Associativity for monads is a tricky problem. One I have yet to fully understand.
+;; (p >>= f) >>= g = p >>= (\a -> f a >>= g) <- Associativity
+(define test-c-lhs
+  (bind (bind (character #\a) (lambda (x) (character #\b))) (lambda (y) (return y))))
+(define test-c-rhs
+  (bind (character #\a) (lambda (x) (bind (character #\b) (lambda (y) (return y))))))
+
+(assert-test equal? (test-c-lhs abc) (test-c-rhs abc))
 
 ;; === Alternative and/or MonadPlus Laws ===
 ;;
@@ -43,13 +47,13 @@
 ;;        px <|> zero = px <-
 ;; px <|> (py <|> pz) = (px <|> py) <|> pz <-- Associativity
 
-;; zero <|> px = px <|> zero
+;; zero <|> px = px <|> zero <- Identity
 (define test-d-lhs (or-else zero (character #\a)))
 (define test-d-rhs (or-else (character #\a) zero))
 
 (assert-test equal? (test-d-lhs abc) (test-d-rhs abc))
 
-;; px <|> (py <|> pz) = (px <|> py) <|> pz
+;; px <|> (py <|> pz) = (px <|> py) <|> pz <- Associativity
 (define test-e-lhs (or-else (character #\a) (or-else (character #\b) (character #\c))))
 (define test-e-rhs (or-else (or-else (character #\a) (character #\b)) (character #\c)))
 
@@ -60,13 +64,13 @@
 ;; fmap id = id <-------------------- Identity
 ;; fmap (g . f) = fmap g . fmap f <-- Composition
 
-;; fmap id = id
+;; fmap id = id <- Identity
 (define test-f-lhs (map-f (lambda (x) x) (character #\a)))
 (define test-f-rhs (lambda (x) x))
 
 (assert-test equal? (test-f-lhs abc) (test-f-rhs ((character #\a) abc)))
 
-;; fmap (g . f) = fmap g . fmap f
+;; fmap (g . f) = fmap g . fmap f <- Composition
 (define test-g-lhs (map-f (compose string-length string) (character #\a)))
 (define test-g-rhs
   (let ([curry-map (lambda (f)
