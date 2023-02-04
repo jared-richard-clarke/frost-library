@@ -229,6 +229,6 @@
   (lambda (characters)
     (choice (map character characters))))
 
-(define text
+(define word
   (lambda (str)
     (map-f list->string (sequence (map character (string->list str))))))
