@@ -188,6 +188,12 @@
 (define letter
   (satisfy char-alphabetic?))
 
+(define upper-case
+  (satisfy char-upper-case?))
+
+(define lower-case
+  (satisfy char-lower-case?))
+
 (define space 
   (satisfy char-whitespace?))
 
