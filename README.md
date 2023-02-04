@@ -18,3 +18,26 @@ It's the monads that confuse me. I'm going to change that.
 >  that implement grammar constructions such as sequencing, choice, and repetition."
 >
 >  — *Monadic Parser Combinators*, by Graham Hutton and Erik Meijer
+
+## Side Note: `apply` or `<*>`
+
+Sequences of `apply` are used to lift multi-parameter functions into a monadic context.
+However, this process works best with curried functions because each argument
+is applied in its own monadic context. In a strictly-evaluated language like Scheme,
+it's simpler to chain a series of `bind`s together and then call the semantic function
+at the end of a combinator rather than lift a function into a monadic context piecemeal.
+
+```scheme
+(define apply-p
+  (lambda (pf px)
+    (monad-do (f <- pf)
+              (map-f f px))))
+              
+;; === or ====
+
+(define apply-p
+  (lambda (pf px)
+    (monad-do (f <- pf)
+              (x <- px)
+              (return (f x)))))
+```
