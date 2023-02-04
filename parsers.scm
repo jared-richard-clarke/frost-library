@@ -90,9 +90,9 @@
   (lambda (px py)
     (lambda (input)
       (let ([x (px input)])
-        (if (empty? x)
-            (py input)
-            x)))))
+        (if (not (empty? x))
+            x
+            (py input))))))
 
 (define choice
   (lambda (parsers)
