@@ -194,6 +194,9 @@
 (define lower-case
   (satisfy char-lower-case?))
 
+(define alpha-num
+  (or-else letter digit))
+
 (define space 
   (satisfy char-whitespace?))
 
