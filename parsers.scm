@@ -2,8 +2,8 @@
 
 (library (parser-combinators)
          ;; === building blocks ===
-         (export monad-do
-                 parse
+         (export parse
+                 monad-do
                  return
                  bind
                  zero
