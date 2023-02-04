@@ -68,7 +68,8 @@
 ;; functions into a monadic context. However, this process works only
 ;; with curried functions because each argument is applied in its own monad.
 ;; In a language like Scheme, it's simpler and more efficient to chain a series
-;; of monads together and then call the combining function at the end.
+;; of monads together and then call the combining function at the end rather
+;; than lifting a function into a monadic context piecemeal.
 
 ;; === satisfy ===
 
