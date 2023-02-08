@@ -235,7 +235,7 @@
            (satisfy (lambda (x)
                       (let ([category    (char-general-category x)]
                             [categories '(ps pe pi pf pd pc po)])
-                      (symbol-in? category categories))))
+                      (symbol-in? category categories)))))
 
         ;; Finds all punctuation as defined by ASCII. Subsumed by Unicode.
         (define punctuation-ascii
