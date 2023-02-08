@@ -1,10 +1,26 @@
 (library (utils)
          (export empty?
+                 char-in?
+                 symbol-in?
                  compose
                  assert-test)
          (import (rnrs))
          
          (define empty? null?)
+
+         (define inside
+           (lambda (fn)
+             (lambda (x xs)
+               (let loop ([x x] [xs xs])
+                 (if (empty? xs)
+                     #f
+                     (if (fn x (car xs))
+                         #t
+                         (loop x (cdr xs))))))))
+
+         (define char-in?   (inside char=?))
+         
+         (define symbol-in? (inside eq?))
 
          (define (compose . functions)
            (lambda (arg)
