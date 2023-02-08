@@ -32,6 +32,8 @@
                  lower-case
                  alpha-num
                  space
+                 punctuation
+                 punctuation-ascii
                  digits
                  letters
                  spaces
