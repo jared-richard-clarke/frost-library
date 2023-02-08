@@ -232,15 +232,15 @@
          
          ;; Finds all punctuation as defined by Unicode.
          (define punctuation
-           (lambda (x)
-             (let ([category    (char-general-category x)]
-                   [categories '(ps pe pi pf pd pc po)])
-               (symbol-in? category categories))))
+           (satisfy (lambda (x)
+                      (let ([category    (char-general-category x)]
+                            [categories '(ps pe pi pf pd pc po)])
+                      (symbol-in? category categories))))
 
         ;; Finds all punctuation as defined by ASCII. Subsumed by Unicode.
         (define punctuation-ascii
-          (let ([ascii (string->list "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")])
-            (lambda (x) (char-in? x ascii))))
+          (satisfy (let ([ascii (string->list "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")])
+                     (lambda (x) (char-in? x ascii)))))
 
          (define digits (many-1 digit))
 
