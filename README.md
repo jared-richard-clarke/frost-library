@@ -5,7 +5,7 @@ It's the monads that confuse me. I'm going to change that.
 
 ## About
 
-> "Monadic combinator parsers consist of a monad `Parser` a (typically of the form
+> "Monadic combinator parsers consist of a monad `Parser a` (typically of the form
 >  `String -> Result a` for some functor `Result`) with a unit `return` and bind
 >  (`>>=`) operation, and a number of parser specific operations, usually a choice
 >  combinator (`<|>`) and a function `satisfy` for constructing elementary parsers
@@ -31,7 +31,7 @@ at the end of a combinator rather than lift a function into a monadic context pi
 (define apply-p
   (lambda (pf px)
     (monad-do (f <- pf)
-              (map-f f px))))
+              (fmap f px))))
               
 ;; === or ====
 
