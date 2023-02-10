@@ -7,7 +7,7 @@
                  return
                  bind
                  zero
-                 map-f
+                 fmap
                  satisfy
          ;; === choices ===
                  or-else
@@ -89,7 +89,7 @@
 
          ;; === functor ===
 
-         (define map-f
+         (define fmap
            (lambda (f px)
              (monad-do (x <- px)
                        (return (f x)))))
@@ -267,6 +267,6 @@
 
          (define text
            (lambda (str)
-             (map-f list->string (sequence (map character (string->list str))))))
+             (fmap list->string (sequence (map character (string->list str))))))
          
          )
