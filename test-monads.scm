@@ -71,10 +71,10 @@
 (assert-test equal? (test-f-lhs abc) (test-f-rhs ((character #\a) abc)))
 
 ;; fmap (g . f) = fmap g . fmap f <- Composition
-(define test-g-lhs (map-f (compose string-length string) (character #\a)))
+(define test-g-lhs (fmap (compose string-length string) (character #\a)))
 (define test-g-rhs
   (let ([curry-map (lambda (f)
-                     (lambda (px) (map-f f px)))])
+                     (lambda (px) (fmap f px)))])
     (let ([fg (curry-map string-length)]
           [ff (curry-map string)])
       ((compose fg ff) (character #\a)))))
