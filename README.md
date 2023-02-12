@@ -23,7 +23,7 @@ functional programming, and monads.
 
 1. Implement proper error messaging. Parsers currently produce an empty list, `'()`, when failing.
 2. Restrict lookahead for `(or-else px py)`. If `px` fails after consuming input, `py` should fail
-   without consuming any input.
+   without consuming any input. Unrestricted lookahead can create space leaks.
 3. Parameterize input. Allow for inputs other than strings.
 
 ## Side Note: `apply` or `<*>`
