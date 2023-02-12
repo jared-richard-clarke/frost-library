@@ -19,6 +19,11 @@ It's the monads that confuse me. I'm going to change that.
 >
 >  — *Monadic Parser Combinators*, by Graham Hutton and Erik Meijer
 
+## Future Improvements
+
+1. Implement proper error handling.
+2. Prevent `or-else` (`<|>`) from producing unbound look-ahead.
+
 ## Side Note: `apply` or `<*>`
 
 Sequences of `apply` are used to lift multi-parameter functions into a monadic context.
