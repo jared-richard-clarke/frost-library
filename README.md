@@ -1,7 +1,7 @@
 # Parser Combinators
 
-Parser combinators are extremely interesting but also very complicated. 
-It's the monads that confuse me. I'm going to change that.
+I'm building this parser combinator library to better understand parsing, Scheme, Haskell,
+functional programming, and monads.
 
 ## About
 
@@ -21,8 +21,9 @@ It's the monads that confuse me. I'm going to change that.
 
 ## Future Improvements
 
-1. Implement proper error handling. Parsers currently produce an empty list, `'()`, when failing.
-2. Restrict lookahead for `(or-else px py)`. If `px` fails after consuming input, `py` should fail also.
+1. Implement proper error messaging. Parsers currently produce an empty list, `'()`, when failing.
+2. Restrict lookahead for `(or-else px py)`. If `px` fails after consuming input, `py` should fail
+   without consuming any input.
 
 ## Side Note: `apply` or `<*>`
 
