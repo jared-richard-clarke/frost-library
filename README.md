@@ -22,8 +22,7 @@ It's the monads that confuse me. I'm going to change that.
 ## Future Improvements
 
 1. Implement proper error handling. Parsers currently produce an empty list, `'()`, when failing.
-2. Prevent `or-else` (`<|>`) from producing unbound look-ahead. If parser one fails after consuming
-   input, parser two should fail as well.
+2. Restrict lookahead for `(or-else px py)`. If `px` fails after consuming input, `py` should fail also.
 
 ## Side Note: `apply` or `<*>`
 
