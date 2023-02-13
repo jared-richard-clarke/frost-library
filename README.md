@@ -25,6 +25,18 @@ functional programming, and monads.
 2. Restrict lookahead, **LL(1)**, for `(or-else px py)`. If `px` fails after consuming input, `py` should fail
    without consuming any input. Some grammars, however, require arbitrary lookahead. Lookahead should
    be allowed if required explicitly.
+
+> Naive implementations of backtracking parser combinators suffer from a space leak.
+> The problem originates in the definition of the `choice` combinator. It either
+> always tries its second alternative (because it tries to find all possible parses),
+> or whenever the first alternative fails (because it requires arbitrary lookahead).
+> As a result, the parser `p <|> q` holds on to its input until `p` returns, since it
+> needs the original input to run parser `q` when `p` has failed. The space leak leads
+> quickly to either a stack/heap overflow or reduction in speed on larger inputs.
+>
+> — *Parsec: Direct Style Monadic Parser Combinators For The Real World*
+>   by Daan Leijen and Erik Meijer
+
 3. Parameterize input. Allow for inputs other than strings.
 
 ## Side Note: `apply` or `<*>`
