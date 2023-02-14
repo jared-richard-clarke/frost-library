@@ -6,20 +6,15 @@
 
   (define-enumeration Consumer-Enum (CONSUMED EMPTY OK ERROR) make-consumer)
 
-  ;; Consumer
-  (define CO-EM (make-consumer CONSUMED EMPTY))
-  (define CO    (make-consumer CONSUMED))
-  (define EM    (make-consumer EMPTY))
+  (define CONSUMED-OK    (make-consumer CONSUMED OK))
+  (define CONSUMED-ERROR (make-consumer CONSUMED ERROR))
 
-  ;; Reply
-  (define OK-ER (make-consumer OK ERROR))
-  (define OK    (make-consumer OK))
-  (define ER    (make-consumer ERROR))
+  (define EMPTY-OK    (make-consumer EMPTY OK))
+  (define EMPTY-ERROR (make-consumer EMPTY ERROR))
 
 
   (define-record-type Parser-Consumer
-    (fields (mutable consumer) ;; Consumed | Empty
-            (mutable reply)    ;; Ok | Error
+    (fields (mutable consumer) ;; Consumed Ok | Consumed Error | Empty Ok | Empty Error
             (mutable output)   ;; Any
             (mutable input)))  ;; (list char)
   )
