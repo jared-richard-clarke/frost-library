@@ -2,10 +2,10 @@
 
 (library (data)
   (export Parser-Consumer
-	        CONSUMED-OK
-	        CONSUMED-ERROR
-	        EMPTY-OK
-	        EMPTY-ERROR)
+	  CONSUMED-OK
+	  CONSUMED-ERROR
+	  EMPTY-OK
+	  EMPTY-ERROR)
   (import (rnrs))
 
   (define-enumeration Consumer-Enum (CONSUMED EMPTY OK ERROR) make-consumer)
