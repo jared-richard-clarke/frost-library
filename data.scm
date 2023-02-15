@@ -18,7 +18,7 @@
 
   (define-record-type Position
     (fields (mutable line)
-	          (mutable column)))
+	    (mutable column)))
 
   (define-record-type Parser-Consumer
     (fields (mutable consumer) ;; Consumed Ok | Consumed Error | Empty Ok | Empty Error
