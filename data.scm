@@ -17,7 +17,7 @@
 
   (define-record-type context
     (fields consumed  ;; Consumed | Empty
-	    reply     ;; Ok | Error | Unknown
+	    reply     ;; Ok | Error
 	    output    ;; Any
 	    input))   ;; (list char)
 )
