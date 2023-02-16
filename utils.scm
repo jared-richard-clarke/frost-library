@@ -1,5 +1,6 @@
 (library (utils)
          (export empty?
+                 inc
                  char-in?
                  symbol-in?
                  compose
@@ -7,8 +8,10 @@
          (import (rnrs))
          
          (define empty? null?)
+         
+         (define inc add1)
 
-         (define inside
+         (define inside-list
            (lambda (fn)
              (lambda (x xs)
                (let loop ([x x] [xs xs])
@@ -18,9 +21,9 @@
                          #t
                          (loop x (cdr xs))))))))
 
-         (define char-in?   (inside char=?))
+         (define char-in?   (inside-list char=?))
          
-         (define symbol-in? (inside eq?))
+         (define symbol-in? (inside-list eq?))
 
          (define (compose . functions)
            (lambda (arg)
