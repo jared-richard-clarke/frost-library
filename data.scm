@@ -13,7 +13,7 @@
   (define EMPTY 'Empty)
   (define OK 'Ok)
   (define ERROR 'Error)
-  (define UNKNOWN 'UNKNOWN)
+  (define UNKNOWN 'Unknown)
 
   (define-record-type position (fields line column))
 
