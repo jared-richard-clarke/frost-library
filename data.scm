@@ -5,15 +5,13 @@
 	  CONSUMED
 	  EMPTY
 	  OK
-	  ERROR
-	  UNKNOWN)
+	  ERROR)
   (import (rnrs))
 	 
   (define CONSUMED 'Consumed)
   (define EMPTY 'Empty)
   (define OK 'Ok)
   (define ERROR 'Error)
-  (define UNKNOWN 'Unknown)
 
   (define-record-type position (fields line column))
 
