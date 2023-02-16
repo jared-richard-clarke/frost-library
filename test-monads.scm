@@ -1,5 +1,6 @@
 (import (rnrs)
-        (parser-combinators)
+        (combinators)
+        (parsers)
         (utils))
 
 ;; === Unit Tests: Monads, Alternatives, Functors ===
