@@ -8,6 +8,9 @@
                  lower-case
                  alpha-num
                  space
+                 new-line
+                 crlf
+                 tab
                  punctuation
                  punctuation-ascii
                  digits
@@ -43,6 +46,15 @@
 
            (define space 
              (satisfy char-whitespace?))
+         
+           (define new-line
+             (character #\newline))
+         
+           (define crlf
+             (right (character #\return) new-line))
+         
+           (define tab
+             (character #\tab))
          
            ;; Finds all punctuation as defined by Unicode.
            (define punctuation
