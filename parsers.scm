@@ -66,7 +66,7 @@
 
            (define trim-left
              (lambda (px)
-               (right spaces px)))
+               (right (skip-many space) px)))
 
            (define trim-right
              (lambda (px)
