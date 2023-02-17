@@ -22,6 +22,7 @@
                  sequence
                  many
                  many-1
+                 skip-many
                  sep-by
                  sep-by-1)
          (import (rnrs)
@@ -136,11 +137,11 @@
            (lambda (px y)
              (or-else px (return y))))
 
-         ;; Applies parser px. If px succeeds, ignore its result and return y.
+         ;; Applies parser px. If px succeeds, ignore its result and returns an empty list.
          (define ignore
-           (lambda (px y)
+           (lambda (px)
              (monad-do (x <- px)
-                       (return y))))
+                       (return '()))))
 
 
          ;; Also named ".>>", parses two values and discards the right.
@@ -207,6 +208,10 @@
          ;;     (bind px (lambda (x)
          ;;                (bind (many px) (lambda (xs)
          ;;                                 (return (cons x xs))))))))
+         
+         (define skip-many
+           (lambda (px)
+             (ignore (many px))))
 
          (define sep-by
            (lambda (px sep)
