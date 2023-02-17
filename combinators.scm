@@ -69,7 +69,7 @@
                    (if (eq? consumed EMPTY)
                        (if (eq? reply OK)
                            ((f output) input)
-                           (make-context EMPTY ERROR output input))
+                           ctx-x)
                        (if (eq? reply OK)
                            (let ([ctx-y ((f output) input)])
                              (let ([consumed (context-consumed ctx-y)]
@@ -213,6 +213,15 @@
          (define skip-many
            (lambda (px)
              (ignore (many px))))
+         
+          ;; (define skip-many
+          ;;   (lambda (px)
+          ;;     (define scan
+          ;;       (lambda ()
+          ;;         (or-else (monad-do (x <- px)
+          ;;                            (scan))
+          ;;                  (return '()))))
+          ;;     (scan)))
 
          (define sep-by
            (lambda (px sep)
