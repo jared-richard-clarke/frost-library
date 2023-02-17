@@ -61,20 +61,19 @@
 
            (define letters (many-1 letter))
 
-           (define spaces (many space))
+           (define spaces (skip-many space))
 
            (define trim-left
              (lambda (px)
-               (right (skip-many space) px)))
+               (right spaces px)))
 
            (define trim-right
              (lambda (px)
-               (left px (skip-many space))))
+               (left px spaces)))
 
            (define trim
              (lambda (px)
-               (let ([skip (skip-many space)])
-                 (between skip px skip))))
+               (between spaces px spaces)))
 
            (define any-of
              (lambda (characters)
