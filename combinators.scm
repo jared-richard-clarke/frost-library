@@ -9,7 +9,7 @@
                  zero
                  fmap
                  satisfy
-                 ;; === choices ===
+         ;; === choices ===
                  or-else
                  choice
                  option
@@ -17,7 +17,7 @@
                  left
                  right
                  between
-                 ;; === sequences ===
+         ;; === sequences ===
                  and-then
                  sequence
                  many
