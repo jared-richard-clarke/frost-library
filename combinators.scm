@@ -137,7 +137,7 @@
            (lambda (px y)
              (or-else px (return y))))
 
-         ;; Applies parser px. If px succeeds, ignore its result and returns an empty list.
+         ;; Applies parser px. If px succeeds, ignores its result and returns an empty list.
          (define ignore
            (lambda (px)
              (monad-do (x <- px)
