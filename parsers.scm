@@ -22,7 +22,6 @@
                  (combinators)
                  (utils))
 
-         (define character
            (define character
              (lambda (x)
                (satisfy (lambda (y) (char=? x y)))))
