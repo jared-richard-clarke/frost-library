@@ -63,8 +63,10 @@
              (lambda (input)
                (let ([x (px input)])
                  (if (empty? x)
-                     x
-                     ((f (car x)) (cadr x)))))))
+                      x
+                     (let ([out (car x)]
+                           [in  (cadr x)])
+                       ((f out) in)))))))
 
          ;; Also named "empty"
          (define zero (lambda input '()))
