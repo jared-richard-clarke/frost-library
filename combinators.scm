@@ -9,7 +9,7 @@
                  zero
                  fmap
                  satisfy
-         ;; === choices ===
+                 ;; === choices ===
                  or-else
                  choice
                  option
@@ -17,7 +17,7 @@
                  left
                  right
                  between
-         ;; === sequences ===
+                 ;; === sequences ===
                  and-then
                  sequence
                  many
@@ -52,24 +52,24 @@
          ;; context of Applicative functors.
          (define return
            (lambda (x)
-             (lambda (input)
-               (list x input))))
+             (lambda (text)
+               (list x text))))
 
          ;; Also named ">>=".
          ;; In this context, integrates the sequencing of parsers 
          ;; with the processing of their results.
          (define bind
            (lambda (px f)
-             (lambda (input)
-               (let ([x (px input)])
+             (lambda (text)
+               (let ([x (px text)])
                  (if (empty? x)
-                      x
+                     x
                      (let ([out (car x)]
                            [in  (cadr x)])
                        ((f out) in)))))))
 
          ;; Also named "empty"
-         (define zero (lambda input '()))
+         (define zero (lambda text '()))
 
          ;; === functor ===
 
@@ -82,11 +82,11 @@
 
          (define satisfy
            (lambda (test)
-             (lambda (input)
-               (if (empty? input)
+             (lambda (text)
+               (if (empty? text)
                    '()
-                   (let ([x  (car input)]
-                         [xs (cdr input)])
+                   (let ([x  (car text)]
+                         [xs (cdr text)])
                      (if (not (test x))
                          '()
                          (list x xs)))))))
@@ -95,11 +95,11 @@
 
          (define or-else
            (lambda (px py)
-             (lambda (input)
-               (let ([x (px input)])
+             (lambda (text)
+               (let ([x (px text)])
                  (if (not (empty? x))
                      x
-                     (py input))))))
+                     (py text))))))
 
          (define choice
            (lambda (parsers)
@@ -189,5 +189,66 @@
                                               (y <- px)
                                               (return y))))
                        (return (cons x xs)))))
+
+         (define character
+           (lambda (x)
+             (satisfy (lambda (y) (char=? x y)))))
+
+         (define digit 
+           (satisfy char-numeric?))
+
+         (define letter
+           (satisfy char-alphabetic?))
+
+         (define upper-case
+           (satisfy char-upper-case?))
+
+         (define lower-case
+           (satisfy char-lower-case?))
+
+         (define alpha-num
+           (or-else letter digit))
+
+         (define space 
+           (satisfy char-whitespace?))
+         
+         ;; Finds all punctuation as defined by Unicode.
+         (define punctuation
+           (satisfy (lambda (x)
+                      (let ([category    (char-general-category x)]
+                            [categories '(ps pe pi pf pd pc po)])
+                        (symbol-in? category categories)))))
+
+         ;; Finds all punctuation as defined by ASCII. Subsumed by Unicode.
+         (define punctuation-ascii
+           (satisfy (let ([ascii (string->list "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")])
+                      (lambda (x) 
+                        (char-in? x ascii)))))
+
+         (define digits (many-1 digit))
+
+         (define letters (many-1 letter))
+
+         (define spaces (many space))
+
+         (define trim-left
+           (lambda (px)
+             (right spaces px)))
+
+         (define trim-right
+           (lambda (px)
+             (left px spaces)))
+
+         (define trim
+           (lambda (px)
+             (between spaces px spaces)))
+
+         (define any-of
+           (lambda (characters)
+             (choice (map character characters))))
+
+         (define text
+           (lambda (str)
+             (fmap list->string (sequence (map character (string->list str))))))
          
          )
