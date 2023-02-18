@@ -19,7 +19,7 @@
                  trim-left
                  trim-right
                  trim
-                 any-of
+                 one-of
                  text)
          (import (rnrs)
                  (combinators)
@@ -87,7 +87,7 @@
              (lambda (px)
                (between spaces px spaces)))
 
-           (define any-of
+           (define one-of
              (lambda (characters)
                (choice (map character characters))))
 
