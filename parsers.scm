@@ -4,21 +4,21 @@
          (export character
                  any-character
                  digit
+                 digits
                  letter
+                 letters
                  upper-case
                  lower-case
                  alpha-num
                  one-of
                  none-of
                  space
+                 spaces
                  new-line
                  crlf
                  tab
                  punctuation
                  punctuation-ascii
-                 digits
-                 letters
-                 spaces
                  trim-left
                  trim-right
                  trim
@@ -37,9 +37,13 @@
 
          (define digit 
            (satisfy char-numeric?))
+         
+         (define digits (many-1 digit))
 
          (define letter
            (satisfy char-alphabetic?))
+         
+         (define letters (many-1 letter))
 
          (define upper-case
            (satisfy char-upper-case?))
@@ -63,6 +67,8 @@
          (define space 
            (satisfy char-whitespace?))
          
+         (define spaces (skip-many space))
+         
          (define new-line
            (character #\newline))
          
@@ -84,12 +90,6 @@
            (satisfy (let ([ascii (string->list "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")])
                       (lambda (x) 
                         (char-in? x ascii)))))
-
-         (define digits (many-1 digit))
-
-         (define letters (many-1 letter))
-
-         (define spaces (skip-many space))
 
          (define trim-left
            (lambda (px)
