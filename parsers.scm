@@ -68,7 +68,7 @@
          (define space 
            (satisfy char-whitespace?))
          
-         (define spaces (many space))
+         (define spaces (many-1 space))
          
          (define skip-spaces (ignore spaces #\space))
          
