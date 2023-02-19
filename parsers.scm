@@ -2,11 +2,14 @@
 
 (library (parsers)
          (export character
+                 any-character
                  digit
                  letter
                  upper-case
                  lower-case
                  alpha-num
+                 one-of
+                 none-of
                  space
                  new-line
                  crlf
@@ -19,7 +22,6 @@
                  trim-left
                  trim-right
                  trim
-                 one-of
                  text
                  lexeme)
          (import (rnrs)
@@ -29,6 +31,9 @@
          (define character
            (lambda (x)
              (satisfy (lambda (y) (char=? x y)))))
+
+         (define any-character
+           (satisfy (lambda (x) #t)))
 
          (define digit 
            (satisfy char-numeric?))
@@ -44,6 +49,16 @@
 
          (define alpha-num
            (or-else letter digit))
+
+         (define one-of
+           (lambda (txt)
+             (let ([xs (string->list txt)])
+               (satisfy (lambda (x) (char-in? x xs))))))
+
+         (define none-of
+           (lambda (txt)
+             (let ([xs (string->list txt)])
+               (satisfy (lambda (x) (not (char-in? x xs)))))))
 
          (define space 
            (satisfy char-whitespace?))
@@ -88,13 +103,10 @@
            (lambda (px)
              (between spaces px spaces)))
 
-         (define one-of
-           (lambda (characters)
-             (choice (map character characters))))
-
          (define text
-           (lambda (str)
-             (fmap list->string (sequence (map character (string->list str))))))
+           (lambda (txt)
+             (let ([characters (string->list txt)])
+               (fmap list->string (sequence (map character characters))))))
 
          (define lexeme
            (lambda (px)
