@@ -14,6 +14,7 @@
                  none-of
                  space
                  spaces
+                 skip-spaces
                  new-line
                  crlf
                  tab
@@ -67,16 +68,16 @@
          (define space 
            (satisfy char-whitespace?))
          
-         (define spaces (skip-many space))
+         (define spaces (many space))
          
-         (define new-line
-           (character #\newline))
+         (define skip-spaces (ignore spaces #\space))
+         
+         (define new-line (character #\newline))
          
          (define crlf
            (right (character #\return) new-line))
          
-         (define tab
-           (character #\tab))
+         (define tab (character #\tab))
          
          ;; Finds all punctuation as defined by Unicode.
          (define punctuation
@@ -93,15 +94,15 @@
 
          (define trim-left
            (lambda (px)
-             (right spaces px)))
+             (right skip-spaces px)))
 
          (define trim-right
            (lambda (px)
-             (left px spaces)))
+             (left px skip-spaces)))
 
          (define trim
            (lambda (px)
-             (between spaces px spaces)))
+             (between skip-spaces px skip-spaces)))
 
          (define text
            (lambda (txt)
@@ -109,7 +110,6 @@
                (fmap list->string (sequence (map character characters))))))
 
          (define lexeme
-           (lambda (px)
-             (trim-right px)))
+           (lambda (px) (trim-right px)))
          
          )
