@@ -212,7 +212,7 @@
          
          (define skip-many
            (lambda (px)
-             (ignore (many px))))
+             (ignore (many px) '())))
          
           ;; (define skip-many
           ;;   (lambda (px)
