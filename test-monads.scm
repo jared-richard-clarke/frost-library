@@ -11,30 +11,32 @@
 ;;
 ;; Side Note: Cannot compare functions directly. Must compare their outputs.
 ;; In a purely functional language, there are only inputs and outputs.
-;; Functions are black boxes.
 
 ;; test data
 (define abc (string->list "abc"))
 
 ;; === Monad Laws ===
 ;;
-;;            return a >>= f = f a <---------------------- Left identity
-;;              p >>= return = p <------------------------ Right identity
-;;           (p >>= f) >>= g = p >>= (\a -> f a >>= g) <-- Associativity
+;;            return a >>= f = f a <---------------------- Left Unit ---------> unit a * λb.n = n[a/b]
+;;              p >>= return = p <------------------------ Right Unit --------> m * λa.unit a = m
+;;           (p >>= f) >>= g = p >>= (\a -> f a >>= g) <-- Associativity -> m * (λa.n * λb.o) = (m * λa.n) * λb.o
 
-;; return a >>= f = f a <- Left identity
+;; return a >>= f = f a
+;;  unit a * λb.n = n[a/b]
 (define test-a-lhs (bind (return #\a) character))
 (define test-a-rhs (character #\a))
 
 (assert-test equal? (test-a-lhs abc) (test-a-rhs abc))
 
-;; p >>= return = p <- Right identity
+;;  p >>= return = p
+;; m * λa.unit a = m
 (define test-b-lhs (bind (character #\a) return))
 (define test-b-rhs (character #\a))
 
 (assert-test equal? (test-b-lhs abc) (test-b-rhs abc))
 
-;; (p >>= f) >>= g = p >>= (\a -> f a >>= g) <- Associativity
+;;   (p >>= f) >>= g = p >>= (\a -> f a >>= g)
+;; m * (λa.n * λb.o) = (m * λa.n) * λb.o
 (define test-c-lhs
   (bind (bind (character #\a) (lambda (x) (character #\b))) (lambda (y) (return y))))
 (define test-c-rhs
