@@ -1,6 +1,7 @@
 (library (utils)
          (export empty?
                  inc
+                 dec
                  char-in?
                  symbol-in?
                  compose
@@ -10,6 +11,7 @@
          (define empty? null?)
          
          (define inc add1)
+         (define dec sub1)
 
          (define inside-list
            (lambda (fn)
