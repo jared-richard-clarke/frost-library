@@ -17,7 +17,7 @@
                  left
                  right
                  between
-         ;; === sequences ===
+          ;; === sequences ===
                  and-then
                  sequence
                  many
@@ -40,13 +40,14 @@
          ;; The Haskell "do" syntax (simplified). Makes monads readable.
          ;; Rename "monad-do" because "do" is less descriptive.
          (define-syntax monad-do
-           (lambda (stx)
-             (syntax-case stx (<-)
-               [(_ expression)
-                (syntax expression)]
-               [(_ (x <- mx) expression ...)
-                (syntax (bind mx (lambda (x) 
-                                   (monad-do expression ...))))])))
+           (syntax-rules (<-)
+             [(_ expression) expression]
+             [(_ (x <- mx) expression ...)
+              (bind mx (lambda (x) 
+                         (monad-do expression ...)))]
+             [(_ mx expression ...)
+              (bind mx (lambda ()
+                         (monad-do expression ...)))]))
 
          ;; Also named "unit". Also called "pure" within the 
          ;; context of Applicative functors.
@@ -77,7 +78,7 @@
                                    [output   (context-output   ctx-y)]
                                    [input    (context-input    ctx-y)])
                                (if (eq? reply OK)
-                                   (make-context CONSUMED OK output input)       ;; <- lazy eval: how?
+                                   (make-context CONSUMED OK output input)       ;; <- lazy eval: how and why?
                                    (make-context CONSUMED ERROR output input)))) ;; <- 
                            ctx-x)))))))
 
@@ -141,30 +142,29 @@
          ;; Applies parser px. If px succeeds, ignores its result and returns y.
          (define ignore
            (lambda (px y)
-             (monad-do (x <- px)
-                       (return y))))
+             (monad-do px (return y))))
 
 
          ;; Also named ".>>", parses two values and discards the right.
          (define left
            (lambda (px py)
              (monad-do (x <- px)
-                       (y <- py)
+                       py
                        (return x))))
 
          ;; Also named ">>.", parses two values and discards the left.
          (define right
            (lambda (px py)
-             (monad-do (x <- px)
+             (monad-do px
                        (y <- py)
                        (return y))))
 
          ;; Parses three values, and, if successful, discards the left and the right values.
          (define between
            (lambda (px py pz)
-             (monad-do (x <- px)
+             (monad-do px
                        (y <- py)
-                       (z <- pz)
+                       pz
                        (return y))))
 
          ;; === try: LL(∞) ===
@@ -214,14 +214,13 @@
            (lambda (px)
              (ignore (many px) '())))
          
-          ;; (define skip-many
-          ;;   (lambda (px)
-          ;;     (define scan
-          ;;       (lambda ()
-          ;;         (or-else (monad-do (x <- px)
-          ;;                            (scan))
-          ;;                  (return '()))))
-          ;;     (scan)))
+         ;; (define skip-many
+         ;;   (lambda (px)
+         ;;     (define scan
+         ;;       (lambda ()
+         ;;         (or-else (monad-do px (scan))
+         ;;                  (return '()))))
+         ;;     (scan)))
 
          (define sep-by
            (lambda (px sep)
@@ -231,7 +230,7 @@
          (define sep-by-1
            (lambda (px sep)
              (monad-do (x  <- px)
-                       (xs <- (many (monad-do (s <- sep)
+                       (xs <- (many (monad-do sep
                                               (y <- px)
                                               (return y))))
                        (return (cons x xs)))))
