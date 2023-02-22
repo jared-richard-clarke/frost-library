@@ -44,9 +44,6 @@
              [(_ expression) expression]
              [(_ (x <- mx) expression ...)
               (bind mx (lambda (x) 
-                         (monad-do expression ...)))]
-             [(_ mx expression ...)
-              (bind mx (lambda ()
                          (monad-do expression ...)))]))
 
          ;; Also named "unit". Also called "pure" within the 
@@ -57,8 +54,8 @@
                (make-context EMPTY OK x text))))
 
          ;; Also named ">>=".
-         ;; In this context, integrates the sequencing of parsers 
-         ;; with the processing of their results.
+         ;; Integrates the sequencing of parsers with the processing of their results.
+         ;; Makes the context of previous parsers available to subsequent parsers.
          (define bind
            (lambda (px f)
              (lambda (text)
@@ -142,29 +139,30 @@
          ;; Applies parser px. If px succeeds, ignores its result and returns y.
          (define ignore
            (lambda (px y)
-             (monad-do px (return y))))
+             (monad-do (x <- px)
+                       (return y))))
 
 
          ;; Also named ".>>", parses two values and discards the right.
          (define left
            (lambda (px py)
              (monad-do (x <- px)
-                       py
+                       (y <- py)
                        (return x))))
 
          ;; Also named ">>.", parses two values and discards the left.
          (define right
            (lambda (px py)
-             (monad-do px
+             (monad-do (x <- px)
                        (y <- py)
                        (return y))))
 
          ;; Parses three values, and, if successful, discards the left and the right values.
          (define between
            (lambda (px py pz)
-             (monad-do px
+             (monad-do (x <- px)
                        (y <- py)
-                       pz
+                       (z <- pz)
                        (return y))))
 
          ;; === try: LL(∞) ===
@@ -210,17 +208,17 @@
          ;;                (bind (many px) (lambda (xs)
          ;;                                 (return (cons x xs))))))))
          
-         (define skip-many
-           (lambda (px)
-             (ignore (many px) '())))
-         
          ;; (define skip-many
          ;;   (lambda (px)
-         ;;     (define scan
-         ;;       (lambda ()
-         ;;         (or-else (monad-do px (scan))
-         ;;                  (return '()))))
-         ;;     (scan)))
+         ;;     (ignore (many px) '())))
+         
+         (define skip-many
+           (lambda (px)
+             (define scan
+               (lambda ()
+                 (or-else (monad-do (x <- px) (scan))
+                          (return '()))))
+             (scan)))
 
          (define sep-by
            (lambda (px sep)
@@ -230,7 +228,7 @@
          (define sep-by-1
            (lambda (px sep)
              (monad-do (x  <- px)
-                       (xs <- (many (monad-do sep
+                       (xs <- (many (monad-do (s <- sep)
                                               (y <- px)
                                               (return y))))
                        (return (cons x xs)))))
