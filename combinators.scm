@@ -17,7 +17,7 @@
                  left
                  right
                  between
-          ;; === sequences ===
+         ;; === sequences ===
                  and-then
                  sequence
                  many
@@ -51,7 +51,7 @@
          (define return
            (lambda (x)
              (lambda (text)
-               (make-context EMPTY OK x text))))
+               (make-context SAVED OK x text))))
 
          ;; Also named ">>=".
          ;; Integrates the sequencing of parsers with the processing of their results.
@@ -64,7 +64,7 @@
                        [reply    (context-reply    ctx-x)]
                        [output   (context-output   ctx-x)]
                        [input    (context-input    ctx-x)])
-                   (if (eq? consumed EMPTY)
+                   (if (eq? consumed SAVED)
                        (if (eq? reply OK)
                            ((f output) input)
                            ctx-x)
@@ -82,7 +82,7 @@
          ;; Also named "empty"
          (define zero
            (lambda (text)
-             (make-context EMPTY ERROR '() text)))
+             (make-context SAVED ERROR '() text)))
 
          ;; === functor ===
 
@@ -97,12 +97,12 @@
            (lambda (test)
              (lambda (text)
                (if (empty? text)
-                   (make-context EMPTY ERROR '() text)
+                   (make-context SAVED ERROR '() text)
                    (let ([x  (car text)]
                          [xs (cdr text)])
                      (if (test x)
                          (make-context CONSUMED OK x xs)
-                         (make-context EMPTY ERROR '() text)))))))
+                         (make-context SAVED ERROR '() text)))))))
 
          ;; === choice ===
          ;; side-note: beware of space leaks.
@@ -114,7 +114,7 @@
                        [reply    (context-reply    ctx-x)]
                        [output   (context-output   ctx-x)]
                        [input    (context-input    ctx-x)])
-                   (if (eq? consumed EMPTY)
+                   (if (eq? consumed SAVED)
                        (if (eq? reply ERROR)
                            (py text)
                            (let ([ctx-y (py text)])
@@ -122,8 +122,8 @@
                                    [reply    (context-reply    ctx-y)]
                                    [output   (context-output   ctx-y)]
                                    [input    (context-input    ctx-y)])
-                               (if (eq? consumed EMPTY)
-                                   (make-context EMPTY OK output input)
+                               (if (eq? consumed SAVED)
+                                   (make-context SAVED OK output input)
                                    ctx-y))))
                        ctx-x))))))
 
@@ -176,7 +176,7 @@
                        [output   (context-output   ctx-x)]
                        [input    (context-input    ctx-x)])
                    (if (and (eq? consumed CONSUMED) (eq? reply ERROR))
-                       (make-context EMPTY ERROR output input)
+                       (make-context SAVED ERROR output input)
                        ctx-x))))))
 
          ;; === sequence ===
