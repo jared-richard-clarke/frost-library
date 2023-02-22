@@ -38,12 +38,12 @@
 
          (define digit 
            (satisfy char-numeric?))
-         
+
          (define digits (many-1 digit))
 
          (define letter
            (satisfy char-alphabetic?))
-         
+
          (define letters (many-1 letter))
 
          (define upper-case
@@ -67,10 +67,10 @@
 
          (define space 
            (satisfy char-whitespace?))
-         
-         (define spaces (many-1 space))
-         
-         (define skip-spaces (ignore spaces #\space))
+
+         (define spaces (many space))
+
+         (define skip-spaces (skip-many space))
          
          (define new-line (character #\newline))
          
@@ -106,8 +106,7 @@
 
          (define text
            (lambda (txt)
-             (let ([characters (string->list txt)])
-               (fmap list->string (sequence (map character characters))))))
+             (fmap list->string (sequence (map character (string->list txt))))))
 
          (define lexeme
            (lambda (px) (trim-right px)))
