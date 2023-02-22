@@ -23,8 +23,7 @@
                  trim-left
                  trim-right
                  trim
-                 text
-                 lexeme)
+                 text)
          (import (rnrs)
                  (combinators)
                  (utils))
@@ -107,8 +106,5 @@
          (define text
            (lambda (txt)
              (fmap list->string (sequence (map character (string->list txt))))))
-
-         (define lexeme
-           (lambda (px) (trim-right px)))
          
          )
