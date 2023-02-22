@@ -3,13 +3,13 @@
 (library (data)
          (export context
                  CONSUMED
-                 EMPTY
+                 SAVED
                  OK
                  ERROR)
          (import (rnrs))
 
          (define CONSUMED 'Consumed)
-         (define EMPTY    'Empty)
+         (define SAVED    'Saved)
          (define OK       'Ok)
          (define ERROR    'Error)
 
@@ -18,7 +18,7 @@
          (define-record-type state    (fields input position))
 
          (define-record-type context
-           (fields consumed  ;; Consumed | Empty
+           (fields consumed  ;; Consumed | Saved
                    reply     ;; Ok | Error
                    output    ;; Any
                    input))   ;; (list char)
