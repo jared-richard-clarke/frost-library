@@ -13,7 +13,7 @@
          (define inc add1)
          (define dec sub1)
 
-         (define inside-list
+         (define element
            (lambda (fn)
              (lambda (x xs)
                (let loop ([x x] [xs xs])
@@ -23,9 +23,8 @@
                          #t
                          (loop x (cdr xs))))))))
 
-         (define char-in?   (inside-list char=?))
-         
-         (define symbol-in? (inside-list eq?))
+         (define char-in?   (element char=?))        
+         (define symbol-in? (element eq?))
 
          (define (compose . functions)
            (lambda (arg)
