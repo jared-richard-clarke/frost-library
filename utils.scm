@@ -14,14 +14,13 @@
          (define dec sub1)
 
          (define element
-           (lambda (fn)
+           (lambda (test)
              (lambda (x xs)
                (let loop ([x x] [xs xs])
-                 (if (empty? xs)
-                     #f
-                     (if (fn x (car xs))
-                         #t
-                         (loop x (cdr xs))))))))
+                 (cond
+                   [(empty? xs) #f]
+                   [(test x (car xs)) #t]
+                   [else (loop x (cdr xs))])))))
 
          (define char-in?   (element char=?))        
          (define symbol-in? (element eq?))
