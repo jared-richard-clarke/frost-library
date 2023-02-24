@@ -15,7 +15,7 @@
 
          (define-record-type position (fields line column))
          (define-record-type message  (fields text position))
-         (define-record-type state    (fields input position))
+         (define-record-type state    (fields text position))
 
          (define-record-type context
            (fields consumed  ;; Consumed | Saved
