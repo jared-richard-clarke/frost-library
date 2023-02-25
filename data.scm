@@ -9,18 +9,16 @@
          (import (rnrs))
 
          (define CONSUMED 'Consumed)
-         (define SAVED    'Saved)
+         (define EMPTY    'Empty)
          (define OK       'Ok)
          (define ERROR    'Error)
 
-         (define-record-type position (fields line column))
-         (define-record-type message  (fields text position))
-         (define-record-type state    (fields text position))
+         (define-record-type state (fields input line column))
 
          (define-record-type context
-           (fields consumed  ;; Consumed | Saved
-                   reply     ;; Ok | Error
-                   output    ;; Any
-                   input))   ;; (list char)
+           (fields consumed  ;;  Consumed | Empty
+                   reply     ;;  Ok | Error
+                   output    ;;  Any
+                   state))   ;; (list char) number number
 
          )
