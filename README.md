@@ -1,6 +1,6 @@
 # Parser Combinators
 
-I'm building this parser combinator library to better understand parsing, Scheme, Haskell,
+I'm building this parser combinator library to better understand parsing, 
 functional programming, and monads.
 
 ## About
