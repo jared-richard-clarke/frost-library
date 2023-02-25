@@ -2,8 +2,9 @@
 
 (library (data)
          (export context
+                 state
                  CONSUMED
-                 SAVED
+                 EMPTY
                  OK
                  ERROR)
          (import (rnrs))
