@@ -55,8 +55,9 @@
                (make-context EMPTY OK x text))))
 
          ;; Also named ">>=".
-         ;; Integrates the sequencing of parsers with the processing of their results.
-         ;; Makes the context of previous parsers available to subsequent parsers.
+         ;; The binding operation benefits combinator parsing twofold:
+         ;; 1. Integrates the sequencing of parsers with the processing of their results.
+         ;; 2. Makes the context of previous parsers available to subsequent parsers.
          (define bind
            (lambda (px f)
              (lambda (text)
