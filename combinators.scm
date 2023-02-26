@@ -1,5 +1,4 @@
 ;; === UNDER HEAVY CONSTRUCTION ===
-
 (library (combinators)
          ;; === building blocks ===
          (export parse
@@ -77,7 +76,7 @@
                                    [output-y   (context-output   ctx-y)]
                                    [state-y    (context-state    ctx-y)])
                                (if (eq? reply-y OK)
-                                   (make-context CONSUMED OK output-y state-y)       ;; <- lazy eval: how and why?
+                                   (make-context CONSUMED OK output-y state-y)       ;; <- lazy eval: how?
                                    (make-context CONSUMED ERROR output-y state-y)))) ;; <- 
                            ctx-x)))))))
 
@@ -200,7 +199,7 @@
                        (return (cons x y)))))
 
          (define sequence
-           (lambda (parsers)
+           (lambda parsers
              (fold-right and-then (return '()) parsers)))
 
          (define many
