@@ -58,6 +58,18 @@
          ;; The binding operation benefits combinator parsing twofold:
          ;; 1. Integrates the sequencing of parsers with the processing of their results.
          ;; 2. Makes the context of previous parsers available to subsequent parsers.
+         ;;
+         ;;
+         ;; Input Consumption of (>>=) for Parsers "p" and "q".
+         ;; Side-Note: essentially acts as Boolean "or".
+         ;;
+         ;; | p        | q        | (p >>= q) |
+         ;; | -------- | -------- | --------- |
+         ;; | Empty    | Empty    | Empty     |
+         ;; | Empty    | Consumed | Consumed  |
+         ;; | Consumed | Empty    | Consumed  |
+         ;; | Consumed | Consumed | Consumed  |
+         
          (define bind
            (lambda (px f)
              (lambda (text)
