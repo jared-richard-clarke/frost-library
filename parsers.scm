@@ -28,6 +28,8 @@
                  (combinators)
                  (utils))
 
+         ;; === parsers ===
+
          (define character
            (lambda (x)
              (satisfy (lambda (y) (char=? x y)))))
@@ -105,6 +107,7 @@
 
          (define text
            (lambda (txt)
-             (fmap list->string (sequence (map character (string->list txt))))))
+             (let ([parser (apply sequence (map character (string->list txt)))])
+               (fmap list->string parser))))
          
          )

@@ -11,6 +11,7 @@
                  satisfy
          ;; === choices ===
                  or-else
+                 try
                  choice
                  option
                  ignore
@@ -33,7 +34,7 @@
 
          (define parse
            (lambda (parser text)
-             (parser (string->list text))))
+             (parser (make-state (string->list text) 1 0))))
 
          ;; === MONAD ===
 
@@ -50,39 +51,52 @@
          ;; context of Applicative functors.
          (define return
            (lambda (x)
-             (lambda (text)
-               (make-context SAVED OK x text))))
+             (lambda (state)
+               (make-context EMPTY OK x state))))
 
          ;; Also named ">>=".
-         ;; Integrates the sequencing of parsers with the processing of their results.
-         ;; Makes the context of previous parsers available to subsequent parsers.
+         ;; The binding operation benefits combinator parsing twofold:
+         ;; 1. Integrates the sequencing of parsers with the processing of their results.
+         ;; 2. Makes the context of previous parsers available to subsequent parsers.
+         ;;
+         ;;
+         ;; Input Consumption of (>>=) for Parsers "p" and "q".
+         ;; Side-Note: essentially acts as Boolean "or".
+         ;;
+         ;; | p        | q        | (p >>= q) |
+         ;; | -------- | -------- | --------- |
+         ;; | Empty    | Empty    | Empty     |
+         ;; | Empty    | Consumed | Consumed  |
+         ;; | Consumed | Empty    | Consumed  |
+         ;; | Consumed | Consumed | Consumed  |
+         
          (define bind
            (lambda (px f)
-             (lambda (text)
-               (let ([ctx-x (px text)])
-                 (let ([consumed (context-consumed ctx-x)]
-                       [reply    (context-reply    ctx-x)]
-                       [output   (context-output   ctx-x)]
-                       [input    (context-input    ctx-x)])
-                   (if (eq? consumed SAVED)
-                       (if (eq? reply OK)
-                           ((f output) input)
+             (lambda (state)
+               (let ([ctx-x (px state)])
+                 (let ([consumed-x (context-consumed ctx-x)]
+                       [reply-x    (context-reply    ctx-x)]
+                       [output-x   (context-output   ctx-x)]
+                       [state-x    (context-state    ctx-x)])
+                   (if (eq? consumed-x EMPTY)
+                       (if (eq? reply-x OK)
+                           ((f output-x) state-x)
                            ctx-x)
-                       (if (eq? reply OK)
-                           (let ([ctx-y ((f output) input)])
-                             (let ([consumed (context-consumed ctx-y)]
-                                   [reply    (context-reply    ctx-y)]
-                                   [output   (context-output   ctx-y)]
-                                   [input    (context-input    ctx-y)])
-                               (if (eq? reply OK)
-                                   (make-context CONSUMED OK output input)       ;; <- lazy eval: how and why?
-                                   (make-context CONSUMED ERROR output input)))) ;; <- 
+                       (if (eq? reply-x OK)
+                           (let ([ctx-y ((f output-x) state-x)])
+                             (let ([consumed-y (context-consumed ctx-y)]
+                                   [reply-y    (context-reply    ctx-y)]
+                                   [output-y   (context-output   ctx-y)]
+                                   [state-y    (context-state    ctx-y)])
+                               (if (eq? reply-y OK)
+                                   (make-context CONSUMED OK output-y state-y)       ;; <- lazy eval: how?
+                                   (make-context CONSUMED ERROR output-y state-y)))) ;; <- 
                            ctx-x)))))))
 
          ;; Also named "empty"
          (define zero
-           (lambda (text)
-             (make-context SAVED ERROR '() text)))
+           (lambda (state)
+             (make-context EMPTY ERROR '() state)))
 
          ;; === functor ===
 
@@ -95,36 +109,60 @@
 
          (define satisfy
            (lambda (test)
-             (lambda (text)
-               (if (empty? text)
-                   (make-context SAVED ERROR '() text)
-                   (let ([x  (car text)]
-                         [xs (cdr text)])
-                     (if (test x)
-                         (make-context CONSUMED OK x xs)
-                         (make-context SAVED ERROR '() text)))))))
+             (lambda (state)
+               (let ([input  (state-input state)]
+                     [line   (state-line  state)]
+                     [column (state-column state)])
+                 (if (empty? input)
+                     (make-context EMPTY ERROR '() state)
+                     (let ([x  (car input)]
+                           [xs (cdr input)])
+                       (if (test x)
+                           (make-context CONSUMED OK x (make-state xs line (+ column 1)))
+                           (make-context EMPTY ERROR '() state))))))))
 
          ;; === choice ===
          ;; side-note: beware of space leaks.
+
          (define or-else
            (lambda (px py)
-             (lambda (text)
-               (let ([ctx-x (px text)])
-                 (let ([consumed (context-consumed ctx-x)]
-                       [reply    (context-reply    ctx-x)]
-                       [output   (context-output   ctx-x)]
-                       [input    (context-input    ctx-x)])
-                   (if (eq? consumed SAVED)
-                       (if (eq? reply ERROR)
-                           (py text)
-                           (let ([ctx-y (py text)])
-                             (let ([consumed (context-consumed ctx-y)]
-                                   [reply    (context-reply    ctx-y)]
-                                   [output   (context-output   ctx-y)]
-                                   [input    (context-input    ctx-y)])
-                               (if (eq? consumed SAVED)
-                                   (make-context SAVED OK output input)
-                                   ctx-y))))
+             (lambda (state)
+               (let ([ctx-x (px state)])
+                 (let ([consumed-x (context-consumed ctx-x)]
+                       [reply-x    (context-reply    ctx-x)]
+                       [output-x   (context-output   ctx-x)]
+                       [state-x    (context-state    ctx-x)])
+                   (if (eq? consumed-x EMPTY)
+                       (let ([ctx-y (py state)])
+                         (let ([consumed-y (context-consumed ctx-y)]
+                               [reply-y    (context-reply    ctx-y)]
+                               [output-y   (context-output   ctx-y)]
+                               [state-y    (context-state    ctx-y)])
+                           (if (eq? reply-x ERROR)
+                               (if (eq? consumed-y EMPTY)
+                                   (if (eq? reply-y ERROR)
+                                       (make-context EMPTY ERROR '() state-y)
+                                       (make-context EMPTY OK output-y state-y))
+                                   ctx-y)
+                               (if (eq? consumed-y EMPTY)
+                                   (if (eq? reply-y ERROR)
+                                       (make-context EMPTY ERROR output-x state-x)
+                                       (make-context EMPTY OK output-x state-x))
+                                   ctx-y)))) 
+                       ctx-x))))))
+
+         ;; === try: LL(∞) ===
+
+         (define try
+           (lambda (px)
+             (lambda (state)
+               (let ([ctx-x (px state)])
+                 (let ([consumed-x (context-consumed ctx-x)]
+                       [reply-x    (context-reply    ctx-x)]
+                       [output-x   (context-output   ctx-x)]
+                       [state-x    (context-state    ctx-x)])
+                   (if (and (eq? consumed-x CONSUMED) (eq? reply-x ERROR))
+                       (make-context EMPTY ERROR output-x state-x)
                        ctx-x))))))
 
          (define choice
@@ -165,20 +203,6 @@
                        (z <- pz)
                        (return y))))
 
-         ;; === try: LL(∞) ===
-
-         (define try
-           (lambda (px)
-             (lambda (text)
-               (let ([ctx-x (px text)])
-                 (let ([consumed (context-consumed ctx-x)]
-                       [reply    (context-reply    ctx-x)]
-                       [output   (context-output   ctx-x)]
-                       [input    (context-input    ctx-x)])
-                   (if (and (eq? consumed CONSUMED) (eq? reply ERROR))
-                       (make-context SAVED ERROR output input)
-                       ctx-x))))))
-
          ;; === sequence ===
 
          (define and-then
@@ -188,7 +212,7 @@
                        (return (cons x y)))))
 
          (define sequence
-           (lambda (parsers)
+           (lambda parsers
              (fold-right and-then (return '()) parsers)))
 
          (define many
@@ -232,5 +256,5 @@
                                               (y <- px)
                                               (return y))))
                        (return (cons x xs)))))
-
+         
          )
