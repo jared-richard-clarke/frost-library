@@ -51,8 +51,8 @@
          ;; context of Applicative functors.
          (define return
            (lambda (x)
-             (lambda (text)
-               (make-context EMPTY OK x text))))
+             (lambda (state)
+               (make-context EMPTY OK x state))))
 
          ;; Also named ">>=".
          ;; The binding operation benefits combinator parsing twofold:
@@ -72,8 +72,8 @@
          
          (define bind
            (lambda (px f)
-             (lambda (text)
-               (let ([ctx-x (px text)])
+             (lambda (state)
+               (let ([ctx-x (px state)])
                  (let ([consumed-x (context-consumed ctx-x)]
                        [reply-x    (context-reply    ctx-x)]
                        [output-x   (context-output   ctx-x)]
