@@ -1,7 +1,6 @@
 (library (utils)
          (export empty?
-                 inc
-                 dec
+                 identity
                  char-in?
                  symbol-in?
                  compose
@@ -10,8 +9,7 @@
          
          (define empty? null?)
          
-         (define inc add1)
-         (define dec sub1)
+         (define identity (lambda (x) x))
 
          (define element
            (lambda (test)
