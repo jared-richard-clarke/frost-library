@@ -165,6 +165,8 @@
                        (make-context EMPTY ERROR output-x state-x)
                        ctx-x))))))
 
+         ;; Also named "asum" within the context of Alternatives.
+         ;; Also named "msum" within the context of Monads.
          (define choice
            (lambda (parsers)
              (fold-right or-else zero parsers)))
