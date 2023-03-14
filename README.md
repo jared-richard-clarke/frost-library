@@ -49,6 +49,7 @@ at the end of a combinator rather than lift a function into a monadic context pi
 
 ```scheme
 ;; Applicative defined in a monadic context.
+
 (define apply-p
   (lambda (pf px)
     (monad-do (f <- pf)
