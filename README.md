@@ -48,6 +48,7 @@ it's simpler to chain a series of `bind`s together and then call the semantic fu
 at the end of a combinator rather than lift a function into a monadic context piecemeal.
 
 ```scheme
+;; Applicative defined in a monadic context.
 (define apply-p
   (lambda (pf px)
     (monad-do (f <- pf)
