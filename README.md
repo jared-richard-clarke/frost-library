@@ -41,9 +41,9 @@ functional programming, and monads.
 
 ## Side Note: `apply` or `<*>`
 
-Sequences of `apply` are used to lift multi-parameter functions into a monadic context.
-However, this process works best with curried functions because each argument
-is applied in its own monadic context. In a strictly-evaluated language like Scheme,
+Sequences of applicatives are used to lift multi-parameter functions into a monadic context.
+However, this process works best with curried functions because each argument is applied
+in its own monadic context. In a language like Scheme, where currying is possible but not automatic,
 it's simpler to chain a series of `bind`s together and then call the semantic function
 at the end of a combinator rather than lift a function into a monadic context piecemeal.
 
