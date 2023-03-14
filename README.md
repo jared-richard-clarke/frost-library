@@ -39,13 +39,13 @@ functional programming, and monads.
 
 3. Parameterize input. Allow for inputs other than strings.
 
-## Side Note: `apply` or `<*>`
+## Applicatives: `apply` or `<*>`
 
 Sequences of applicatives are used to lift multi-parameter functions into a monadic context.
 However, this process works best with curried functions because each argument is applied
 in its own monadic context. In a language like Scheme, where currying is possible but not automatic,
 it's simpler to chain a series of `bind`s together and then call the semantic function
-at the end of a combinator rather than lift a function into a monadic context piecemeal.
+at the end of the combinator rather than lift a function into a monadic context piecemeal.
 
 ```scheme
 ;; Applicative defined in a monadic context.
