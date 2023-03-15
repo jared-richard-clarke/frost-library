@@ -89,8 +89,8 @@
                                    [output-y   (context-output   ctx-y)]
                                    [state-y    (context-state    ctx-y)])
                                (if (eq? reply-y OK)
-                                   (make-context CONSUMED OK output-y state-y)       ;; <- lazy eval: how?
-                                   (make-context CONSUMED ERROR output-y state-y)))) ;; <- 
+                                   (make-context CONSUMED OK output-y state-y)
+                                   (make-context CONSUMED ERROR output-y state-y))))
                            ctx-x)))))))
 
          ;; Also named "empty"
