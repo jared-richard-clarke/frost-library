@@ -61,7 +61,7 @@
          ;;
          ;;
          ;; Input Consumption of (>>=) for Parsers "p" and "q".
-         ;; Side-Note: essentially acts as Boolean "or".
+         ;; Side-Note: essentially behaves like Boolean "or".
          ;;
          ;; | p        | q        | (p >>= q) |
          ;; | -------- | -------- | --------- |
