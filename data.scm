@@ -9,10 +9,6 @@
                  ERROR)
          (import (rnrs))
          
-         ;; Side-Note: In Haskell, Consumed and Reply are usually implemented as data constructors — functions
-         ;; that return data types. Non-strict semantics — a.k.a. lazy evaluation — prevents these
-         ;; constructors from immediately returning values the parser might later discard.
-
          (define CONSUMED 'Consumed)
          (define EMPTY    'Empty)
          (define OK       'Ok)
