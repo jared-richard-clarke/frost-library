@@ -31,15 +31,14 @@
                          functions)))
 
          (define-syntax assert-test
-           (lambda (stx)
-             (syntax-case stx ()
-               [(_ compare x y)
-                (syntax (let ([computed-x x]
-                              [computed-y y])
-                          (unless (compare computed-x computed-y)
-                            (printf "Test failed:\nlhs: ~a -> ~a, rhs: ~a -> ~a\n"
-                                    (quote x)
-                                    x
-                                    (quote y)
-                                    y))))])))
+           (syntax-rules ()
+             [(_ compare x y)
+              (let ([computed-x x]
+                    [computed-y y])
+                (unless (compare computed-x computed-y)
+                  (printf "Test failed:\nlhs: ~a -> ~a, rhs: ~a -> ~a\n"
+                          (quote x)
+                          computed-x
+                          (quote y)
+                          computed-y)))]))
          )
