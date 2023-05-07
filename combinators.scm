@@ -110,8 +110,8 @@
          (define satisfy
            (lambda (test)
              (lambda (state)
-               (let ([input  (state-input state)]
-                     [line   (state-line  state)]
+               (let ([input  (state-input  state)]
+                     [line   (state-line   state)]
                      [column (state-column state)])
                  (if (empty? input)
                      (make-context EMPTY ERROR '() state)
@@ -227,12 +227,6 @@
              (monad-do (x  <- px)
                        (xs <- (many px))
                        (return (cons x xs)))))
-
-         ;; (define many-1
-         ;;   (lambda (px)
-         ;;     (bind px (lambda (x)
-         ;;                (bind (many px) (lambda (xs)
-         ;;                                 (return (cons x xs))))))))
          
          ;; (define skip-many
          ;;   (lambda (px)
