@@ -4,6 +4,7 @@
                  char-in?
                  symbol-in?
                  compose
+                 repeat
                  assert-test)
          (import (rnrs))
          
@@ -30,6 +31,15 @@
                          arg
                          functions)))
 
+         (define repeat
+           (lambda (number value)
+             (let loop ([n number]
+                        [v value]
+                        [r '()])
+               (if (<= n 0)
+                   r
+                   (loop (- n 1) v (cons v r))))))
+         
          (define-syntax assert-test
            (syntax-rules ()
              [(_ compare x y)
