@@ -217,7 +217,7 @@
                        (return (cons x y)))))
 
          (define sequence
-           (lambda parsers
+           (lambda (parsers)
              (fold-right and-then (return '()) parsers)))
 
          (define many
@@ -272,5 +272,5 @@
            (lambda (n px)
              (if (<= n 0)
                  (return '())
-                 (apply sequence (repeat n px)))))
+                 (sequence (repeat n px)))))
          )
