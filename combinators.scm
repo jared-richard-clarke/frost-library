@@ -9,7 +9,7 @@
                  zero
                  fmap
                  satisfy
-         ;; === choices ===
+                 ;; === choices ===
                  or-else
                  try
                  choice
@@ -18,14 +18,16 @@
                  left
                  right
                  between
-         ;; === sequences ===
+                 ;; === sequences ===
                  and-then
                  sequence
                  many
                  many-1
                  skip-many
                  sep-by
-                 sep-by-1)
+                 sep-by-1
+                 end-by
+                 end-by-1)
          (import (rnrs)
                  (data)
                  (utils))
@@ -252,5 +254,16 @@
                                               (y <- px)
                                               (return y))))
                        (return (cons x xs)))))
-         
+
+         (define end-by
+           (lambda (px sep)
+             (many (monad-do (x <- px)
+                             (s <- sep)
+                             (return x)))))
+
+         (define end-by-1
+           (lambda (px sep)
+             (many-1 (monad-do (x <- px)
+                               (s <- sep)
+                               (return x)))))
          )
