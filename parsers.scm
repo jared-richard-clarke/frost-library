@@ -107,7 +107,7 @@
 
          (define text
            (lambda (txt)
-             (let ([parser (apply sequence (map character (string->list txt)))])
+             (let ([parser (sequence (map character (string->list txt)))])
                (fmap list->string parser))))
          
          )
