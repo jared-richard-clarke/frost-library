@@ -21,8 +21,8 @@ functional programming, and monads.
 
 ## Future Improvements
 
-1. Implement proper error messaging. Parsers currently produce an empty list, `'()`, when failing.
-2. Restrict lookahead, **LL(1)**, for `(or-else px py)`. If `px` fails after consuming input, `py` should fail
+- [ ] Implement proper error messaging. Parsers currently produce an empty list, `'()`, when failing.
+- [x] Restrict lookahead, **LL(1)**, for `(or-else px py)`. If `px` fails after consuming input, `py` should fail
    without consuming any input. Some grammars, however, require arbitrary lookahead. Lookahead should
    be allowed if required explicitly.
 
@@ -37,9 +37,9 @@ functional programming, and monads.
 > — *Parsec: Direct Style Monadic Parser Combinators For The Real World*
 >   by Daan Leijen and Erik Meijer
 
-3. Parameterize input. Allow for inputs other than strings.
+- [ ] Parameterize input. Allow for inputs other than strings.
 
-## Applicatives: `apply` or `<*>`
+## Side Note About Applicatives: `apply` or `<*>`
 
 Sequences of applicatives are used to lift multi-parameter functions into a monadic context.
 However, this process works best with curried functions because each argument is applied
