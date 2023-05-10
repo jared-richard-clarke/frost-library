@@ -27,7 +27,8 @@
                  sep-by
                  sep-by-1
                  end-by
-                 end-by-1)
+                 end-by-1
+                 count)
          (import (rnrs)
                  (data)
                  (utils))
@@ -266,4 +267,10 @@
              (many-1 (monad-do (x <- px)
                                (s <- sep)
                                (return x)))))
+
+         (define count
+           (lambda (n px)
+             (if (<= n 0)
+                 (return '())
+                 (apply sequence (repeat n px)))))
          )
