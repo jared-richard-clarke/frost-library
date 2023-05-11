@@ -3,6 +3,7 @@
 (library (data)
          (export context
                  state
+                 message
                  CONSUMED
                  EMPTY
                  OK
@@ -14,7 +15,14 @@
          (define OK       'Ok)
          (define ERROR    'Error)
 
-         (define-record-type state (fields input line column))
+         (define-record-type state
+           (fields input    ;; string
+                   line     ;; number
+                   column)) ;; number
+
+         (define-record-type message
+           (fields unexpected ;;  string
+                   expected)) ;; (list string)
 
          (define-record-type context
            (fields consumed  ;;  Consumed | Empty
