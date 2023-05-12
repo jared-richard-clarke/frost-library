@@ -121,7 +121,8 @@
                      (let ([x  (car input)]
                            [xs (cdr input)])
                        (if (test x)
-                           (make-context CONSUMED OK x (if (char=? x #\newline) ;; <---------- rename #\linefeed?
+                           ;; Although #\linefeed and #\newline are synonymous, older Schemes recognize only #\newline.
+                           (make-context CONSUMED OK x (if (or (char=? x #\linefeed) (char=? x #\newline))
                                                            (make-state xs (+ line 1) 0)
                                                            (make-state xs line (+ column 1))))
                            (make-context EMPTY ERROR '() state))))))))
