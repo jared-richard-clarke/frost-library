@@ -9,7 +9,7 @@
                  zero
                  fmap
                  satisfy
-                 ;; === choices ===
+         ;; === choices ===
                  or-else
                  try
                  choice
@@ -18,7 +18,7 @@
                  left
                  right
                  between
-                 ;; === sequences ===
+         ;; === sequences ===
                  and-then
                  sequence
                  many
@@ -121,8 +121,11 @@
                      (let ([x  (car input)]
                            [xs (cdr input)])
                        (if (test x)
-                           (make-context CONSUMED OK x (make-state xs line (+ column 1)))
+                           (make-context CONSUMED OK x (if (char=? x #\newline) ;; <---------- rename #\linefeed?
+                                                           (make-state xs (+ line 1) 0)
+                                                           (make-state xs line (+ column 1))))
                            (make-context EMPTY ERROR '() state))))))))
+
 
          ;; === choice ===
          ;; side-note: beware of space leaks.
