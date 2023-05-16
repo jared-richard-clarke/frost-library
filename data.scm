@@ -2,17 +2,8 @@
 
 (library (data)
          (export context
-                 state
-                 CONSUMED
-                 EMPTY
-                 OK
-                 ERROR)
+                 state)
          (import (rnrs))
-         
-         (define CONSUMED 'Consumed)
-         (define EMPTY    'Empty)
-         (define OK       'Ok)
-         (define ERROR    'Error)
 
          (define-record-type state
            (fields input    ;; string
@@ -20,8 +11,7 @@
                    column)) ;; number
 
          (define-record-type context
-           (fields consumed  ;;  Consumed | Empty
-                   reply     ;;  Ok | Error
+           (fields reply     ;;  Consumed Ok | Consumed Error | Empty Ok | Empty Error
                    output    ;;  Any
                    state))   ;; (list char) number number
 
