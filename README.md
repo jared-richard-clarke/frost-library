@@ -21,7 +21,7 @@ functional programming, and monads.
 
 ## Future Improvements
 
-- [ ] Implement proper error messaging. Parsers currently produce an empty list, `'()`, when failing.
+- [ ] Implement proper error messaging.
 - [x] Restrict lookahead, **LL(1)**, for `(or-else px py)`. If `px` fails after consuming input, `py` should fail
    without consuming any input. Some grammars, however, require arbitrary lookahead. Lookahead should
    be allowed if required explicitly.
