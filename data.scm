@@ -11,8 +11,8 @@
                    column)) ;; number
 
          (define-record-type context
-           (fields reply     ;;  Consumed Ok | Consumed Error | Empty Ok | Empty Error
-                   output    ;;  Any
-                   state))   ;; (list char) number number
+           (fields reply    ;;  Consumed Ok | Consumed Error | Empty Ok | Empty Error
+                   state    ;; (list char) number number
+                   output)) ;;  Any
 
          )
