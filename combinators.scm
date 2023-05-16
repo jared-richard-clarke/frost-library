@@ -9,7 +9,7 @@
                  zero
                  fmap
                  satisfy
-         ;; === choices ===
+          ;; === choices ===
                  or-else
                  try
                  choice
@@ -18,7 +18,7 @@
                  left
                  right
                  between
-         ;; === sequences ===
+          ;; === sequences ===
                  and-then
                  sequence
                  many
@@ -56,8 +56,8 @@
            (lambda (x)
              (lambda (state)
                (make-context '(EMPTY OK)
-                             x
-                             state))))
+                             state
+                             x))))
 
          ;; Also named ">>=".
          ;; The binding operation benefits combinator parsing twofold:
@@ -79,26 +79,26 @@
              (lambda (state)
                (let ([ctx-x (px state)])
                  (let ([reply-x  (context-reply  ctx-x)]
-                       [output-x (context-output ctx-x)]
-                       [state-x  (context-state  ctx-x)])
+                       [state-x  (context-state  ctx-x)]
+                       [output-x (context-output ctx-x)])
                    (cond
                      [(equal? reply-x '(EMPTY OK))    ((f output-x) state-x)]
                      [(equal? reply-x '(EMPTY ERROR)) ctx-x]
                      [(equal? reply-x '(CONSUMED OK)) (let ([ctx-y ((f output-x) state-x)])
                                                         (let ([reply-y  (context-reply  ctx-y)]
-                                                              [output-y (context-output ctx-y)]
-                                                              [state-y  (context-state  ctx-y)])
+                                                              [state-y  (context-state  ctx-y)]
+                                                              [output-y (context-output ctx-y)])
                                                           (make-context (cons 'CONSUMED (cdr reply-y))
-                                                                        output-y
-                                                                        state-y)))]
+                                                                        state-y
+                                                                        output-y)))]
                      [else ctx-x]))))))
 
          ;; Also named "empty"
          (define zero
            (lambda (state)
              (make-context '(EMPTY ERROR)
-                           '()
-                           state)))
+                           state
+                           '())))
 
          ;; === functor ===
 
@@ -123,15 +123,15 @@
                            [xs (cdr input)])
                        (if (test x)
                            (make-context '(CONSUMED OK)
-                                         x
                                          ;; Although #\linefeed and #\newline are synonymous,
                                          ;; older Schemes recognize only #\newline.
                                          (if (or (char=? x #\linefeed) (char=? x #\newline))
                                              (make-state xs (+ line 1) 0)
-                                             (make-state xs line (+ column 1))))
+                                             (make-state xs line (+ column 1)))
+                                         x)
                            (make-context '(EMPTY ERROR)
-                                         '()
-                                         state))))))))
+                                         state
+                                         '()))))))))
 
          ;; === choice ===
          ;; side-note: beware of space leaks.
@@ -141,18 +141,18 @@
              (lambda (state)
                (let ([ctx-x (px state)])
                  (let ([reply-x  (context-reply  ctx-x)]
-                       [output-x (context-output ctx-x)]
-                       [state-x  (context-state  ctx-x)])
+                       [state-x  (context-state  ctx-x)]
+                       [output-x (context-output ctx-x)])
                    (cond
                      [(equal? reply-x '(EMPTY ERROR)) (py state)]
                      [(equal? reply-x '(EMPTY OK))    (let ([ctx-y (py state)])
                                                         (let ([reply-y  (context-reply  ctx-y)]
-                                                              [output-y (context-output ctx-y)]
-                                                              [state-y  (context-state  ctx-y)])
+                                                              [state-y  (context-state  ctx-y)]
+                                                              [output-y (context-output ctx-y)])
                                                           (if (eq? (car reply-y) 'EMPTY)
                                                               (make-context '(EMPTY OK)
-                                                                            output-y
-                                                                            state-y)
+                                                                            state-y
+                                                                            output-y)
                                                               ctx-y)))]
                      [else ctx-x]))))))
 
@@ -163,12 +163,12 @@
              (lambda (state)
                (let ([ctx-x (px state)])
                  (let ([reply-x  (context-reply  ctx-x)]
-                       [output-x (context-output ctx-x)]
-                       [state-x  (context-state  ctx-x)])
+                       [state-x  (context-state  ctx-x)]
+                       [output-x (context-output ctx-x)])
                    (if (equal? reply-x '(CONSUMED ERROR))
                        (make-context '(EMPTY ERROR)
-                                     output-x
-                                     state-x)
+                                     state-x
+                                     output-x)
                        ctx-x))))))
 
          ;; Also named "asum" within the context of Alternatives.
