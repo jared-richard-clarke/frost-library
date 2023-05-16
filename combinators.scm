@@ -55,7 +55,10 @@
          (define return
            (lambda (x)
              (lambda (state)
-               (make-context EMPTY OK x state))))
+               (make-context EMPTY 
+                             OK 
+                             x 
+                             state))))
 
          ;; Also named ">>=".
          ;; The binding operation benefits combinator parsing twofold:
@@ -92,14 +95,23 @@
                                    [output-y   (context-output   ctx-y)]
                                    [state-y    (context-state    ctx-y)])
                                (if (eq? reply-y OK)
-                                   (make-context CONSUMED OK output-y state-y)
-                                   (make-context CONSUMED ERROR output-y state-y))))
+                                   (make-context CONSUMED 
+                                                 OK 
+                                                 output-y 
+                                                 state-y)
+                                   (make-context CONSUMED 
+                                                 ERROR 
+                                                 output-y 
+                                                 state-y))))
                            ctx-x)))))))
 
          ;; Also named "empty"
          (define zero
            (lambda (state)
-             (make-context EMPTY ERROR '() state)))
+             (make-context EMPTY 
+                           ERROR 
+                           '() 
+                           state)))
 
          ;; === functor ===
 
@@ -117,15 +129,25 @@
                      [line   (state-line   state)]
                      [column (state-column state)])
                  (if (empty? input)
-                     (make-context EMPTY ERROR '() state)
+                     (make-context EMPTY 
+                                   ERROR 
+                                   '() 
+                                   state)
                      (let ([x  (car input)]
                            [xs (cdr input)])
                        (if (test x)
-                           ;; Although #\linefeed and #\newline are synonymous, older Schemes recognize only #\newline.
-                           (make-context CONSUMED OK x (if (or (char=? x #\linefeed) (char=? x #\newline))
-                                                           (make-state xs (+ line 1) 0)
-                                                           (make-state xs line (+ column 1))))
-                           (make-context EMPTY ERROR '() state))))))))
+                           (make-context CONSUMED 
+                                         OK 
+                                         x 
+                                         ;; Although #\linefeed and #\newline are synonymous, 
+                                         ;; older Schemes recognize only #\newline.
+                                         (if (or (char=? x #\linefeed) (char=? x #\newline))
+                                             (make-state xs (+ line 1) 0)
+                                             (make-state xs line (+ column 1))))
+                           (make-context EMPTY 
+                                         ERROR 
+                                         '() 
+                                         state))))))))
 
 
          ;; === choice ===
@@ -148,13 +170,25 @@
                            (if (eq? reply-x ERROR)
                                (if (eq? consumed-y EMPTY)
                                    (if (eq? reply-y ERROR)
-                                       (make-context EMPTY ERROR '() state-y)
-                                       (make-context EMPTY OK output-y state-y))
+                                       (make-context EMPTY 
+                                                     ERROR 
+                                                     '() 
+                                                     state-y)
+                                       (make-context EMPTY 
+                                                     OK 
+                                                     output-y 
+                                                     state-y))
                                    ctx-y)
                                (if (eq? consumed-y EMPTY)
                                    (if (eq? reply-y ERROR)
-                                       (make-context EMPTY ERROR output-x state-x)
-                                       (make-context EMPTY OK output-x state-x))
+                                       (make-context EMPTY 
+                                                     ERROR 
+                                                     output-x 
+                                                     state-x)
+                                       (make-context EMPTY 
+                                                     OK 
+                                                     output-x 
+                                                     state-x))
                                    ctx-y)))) 
                        ctx-x))))))
 
@@ -169,7 +203,10 @@
                        [output-x   (context-output   ctx-x)]
                        [state-x    (context-state    ctx-x)])
                    (if (and (eq? consumed-x CONSUMED) (eq? reply-x ERROR))
-                       (make-context EMPTY ERROR output-x state-x)
+                       (make-context EMPTY 
+                                     ERROR 
+                                     output-x 
+                                     state-x)
                        ctx-x))))))
 
          ;; Also named "asum" within the context of Alternatives.
