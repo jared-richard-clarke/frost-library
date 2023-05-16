@@ -38,7 +38,6 @@ functional programming, and monads.
 >   by Daan Leijen and Erik Meijer
 
 - [ ] Parameterize input. Allow for inputs other than strings.
-- [ ] Implement an input stream. Copying a list of characters from one parser context to another is expensive.
 
 ## Side Note About Applicatives: `apply` or `<*>`
 
