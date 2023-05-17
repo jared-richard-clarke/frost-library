@@ -7,7 +7,7 @@
                  symbol-in?
                  compose
                  repeat
-                 assert-test)
+                 assert)
          (import (rnrs))
          
          (define empty? null?)
@@ -42,15 +42,16 @@
                    r
                    (loop (- n 1) v (cons v r))))))
          
-         (define-syntax assert-test
+         (define-syntax assert
            (syntax-rules ()
              [(_ compare x y)
               (let ([computed-x x]
                     [computed-y y])
                 (unless (compare computed-x computed-y)
-                  (printf "Test failed:\nlhs: ~a -> ~a, rhs: ~a -> ~a\n"
-                          (quote x)
-                          computed-x
-                          (quote y)
-                          computed-y)))]))
+                  (begin (display "Test failed:")
+                         (newline)
+                         (display "lhs: ") (display (quote x)) (display " -> ") (display computed-x) (display ", ")
+                         (display "rhs: ") (display (quote y)) (display " -> ") (display computed-y)
+                         (newline))))]))
+         
          )
