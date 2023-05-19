@@ -91,12 +91,12 @@
     (assert equal? ctx-x ctx-y)))
 
 ;; fmap (g . f) = fmap g . fmap f <- Composition
-(let ([curry-map (lambda (f)
-                   (lambda (px) (fmap f px)))])
-  (let ([ff (curry-map string-length)]
-        [fg (curry-map string)])
-    (let ([rhs (parse (fmap (compose string-length string) (character #\a)) test-data)]
-          [lhs (parse ((compose ff fg) (character #\a)) test-data)])
-      (let ([ctx-x (context->list rhs)]
-            [ctx-y (context->list lhs)])
-        (assert equal? ctx-x ctx-y)))))
+(let* ([curry-map (lambda (f)
+                    (lambda (px) (fmap f px)))]
+       [ff (curry-map string-length)]
+       [fg (curry-map string)])
+  (let ([rhs (parse (fmap (compose string-length string) (character #\a)) test-data)]
+        [lhs (parse ((compose ff fg) (character #\a)) test-data)])
+    (let ([ctx-x (context->list rhs)]
+          [ctx-y (context->list lhs)])
+      (assert equal? ctx-x ctx-y))))
