@@ -8,11 +8,11 @@
   (lambda (ctx)
     (if (not (and (record? ctx) (eq? (record-type-name (record-rtd ctx)) 'context)))
         (error ctx "argument must be a record of type 'context")
-        (let* ([reply  (context-reply ctx)]
-               [state  (context-state ctx)]
-               [input  (state-input state)]
-               [line   (state-line  state)]
-               [column (state-column state)]
+        (let* ([reply  (context-reply  ctx)]
+               [state  (context-state  ctx)]
+               [input  (state-input    state)]
+               [line   (state-line     state)]
+               [column (state-column   state)]
                [output (context-output ctx)])
           (list reply (list input line column) output)))))
 
