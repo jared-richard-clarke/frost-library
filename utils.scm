@@ -50,8 +50,8 @@
                 (unless (compare computed-x computed-y)
                   (begin (display "Test failed:")
                          (newline)
-                         (display "lhs: ") (display (quote x)) (display " -> ") (display computed-x) (display ", ")
-                         (display "rhs: ") (display (quote y)) (display " -> ") (display computed-y)
+                         (display "lhs: ") (write (quote x)) (display " -> ") (write computed-x) (display ", ")
+                         (display "rhs: ") (write (quote y)) (display " -> ") (write computed-y)
                          (newline))))]))
          
          )
