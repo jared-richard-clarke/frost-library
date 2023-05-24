@@ -9,7 +9,7 @@
                  zero
                  fmap
                  satisfy
-          ;; === choices ===
+         ;; === choices ===
                  or-else
                  try
                  choice
@@ -18,7 +18,7 @@
                  left
                  right
                  between
-          ;; === sequences ===
+         ;; === sequences ===
                  and-then
                  sequence
                  many
@@ -35,6 +35,19 @@
 
          ;; === BASE ===
 
+         ;; Applies a parser to a string and outputs a parsing context.
+         ;;
+         ;; A parsing context contains three elements:
+         ;;
+         ;; 1. reply: An enumeration of '(CONSUMED OK) | '(CONSUMED ERROR) | '(EMPTY OK) | '(EMPTY ERROR).
+         ;;    Essential to a consumer-based design as imagined by Dan Leijen and Erik Meijer in
+         ;;    "Parsec: Direct Style Monadic Combinators for the Real World".
+         ;;
+         ;; 2. state: Contains the remaining, unparsed input — a list of characters — as well as parser location
+         ;;     — the line and column number — within the input string.
+         ;;
+         ;; 3. output: An arbitrary value produced by a successful parsing. Produces an empty list on error.
+
          (define parse
            (lambda (parser text)
              (parser (make-state (string->list text) 1 0))))
@@ -42,7 +55,8 @@
          ;; === MONAD ===
 
          ;; The Haskell "do" syntax (simplified). Makes monads readable.
-         ;; Rename "monad-do" because "do" is less descriptive.
+         ;; Renamed "monad-do" because "do" is less descriptive.
+
          (define-syntax monad-do
            (syntax-rules (<-)
              [(_ expression) expression]
@@ -50,8 +64,10 @@
               (bind mx (lambda (x) 
                          (monad-do expression ...)))]))
 
-         ;; Also named "unit". Also called "pure" within the 
-         ;; context of Applicative functors.
+         ;; Wraps a value within a parser context.
+         ;; Also named "unit". Also named "pure" within the 
+         ;; context of applicative functors.
+
          (define return
            (lambda (x)
              (lambda (state)
@@ -93,7 +109,9 @@
                                                                         output-y)))]
                      [else ctx-x]))))))
 
-         ;; Also named "empty"
+         ;; Sets parser context to fail.
+         ;; Also named "empty".
+
          (define zero
            (lambda (state)
              (make-context '(EMPTY ERROR)
@@ -102,12 +120,17 @@
 
          ;; === functor ===
 
+         ;; Reaches inside a parser and transforms its output with an arbitrary function.
+
          (define fmap
            (lambda (f px)
              (monad-do (x <- px)
                        (return (f x)))))
 
          ;; === satisfy ===
+
+         ;; Moves a parser through a string, one character at a time.
+         ;; Consumes only values that satisfy an arbitrary predicate.
 
          (define satisfy
            (lambda (test)
