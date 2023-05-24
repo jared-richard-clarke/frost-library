@@ -17,7 +17,7 @@
          (define empty? null?)
 
          ;; (identity any) -> any
-         ;; Returns a value unchanged.
+         ;; Outputs a value unchanged.
          (define identity (lambda (x) x))
 
          ;; (element function) -> (function any (list any)) -> boolean
