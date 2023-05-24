@@ -18,6 +18,7 @@
 
          ;; (identity any) -> any
          ;; Outputs a value unchanged.
+         
          (define identity (lambda (x) x))
 
          ;; (element function) -> (function any (list any)) -> boolean
