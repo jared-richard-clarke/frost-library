@@ -6,13 +6,13 @@
          (import (rnrs))
 
          (define-record-type state
-           (fields input    ;; string
+           (fields input    ;; (list character)
                    line     ;; number
                    column)) ;; number
 
          (define-record-type context
            (fields reply    ;;  Consumed Ok | Consumed Error | Empty Ok | Empty Error
-                   state    ;; (list char) number number
+                   state    ;; (list character) number number
                    output)) ;;  Any
 
          )
