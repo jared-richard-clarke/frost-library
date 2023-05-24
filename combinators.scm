@@ -35,13 +35,14 @@
 
          ;; === BASE ===
 
+         ;; (parse parser string) -> context
          ;; Applies a parser to a string and outputs a parsing context.
          ;;
          ;; A parsing context contains three elements:
          ;;
          ;; 1. reply: An enumeration of '(CONSUMED OK) | '(CONSUMED ERROR) | '(EMPTY OK) | '(EMPTY ERROR).
-         ;;    Essential to a consumer-based design as imagined by Dan Leijen and Erik Meijer in
-         ;;    "Parsec: Direct Style Monadic Combinators for the Real World".
+         ;;    The enumeration tracks parser consumption. Prevents space leaks caused by unlimited
+         ;;    lookahead and backtracking within the "or-else" combinator.
          ;;
          ;; 2. state: Contains the remaining, unparsed input — a list of characters — as well as parser location
          ;;     — the line and column number — within the input string.
@@ -64,6 +65,7 @@
               (bind mx (lambda (x) 
                          (monad-do expression ...)))]))
 
+         ;; (return any) -> parser
          ;; Wraps a value within a parser context.
          ;; Also named "unit". Also named "pure" within the 
          ;; context of applicative functors.
@@ -75,6 +77,7 @@
                              state
                              x))))
 
+         ;; (bind parser function) -> parser
          ;; Also named ">>=".
          ;; The binding operation benefits combinator parsing twofold:
          ;; 1. Integrates the sequencing of parsers with the processing of their results.
@@ -109,7 +112,8 @@
                                                                         output-y)))]
                      [else ctx-x]))))))
 
-         ;; Sets parser context to fail.
+         ;; (zero state) -> empty
+         ;; Sets parser context to empty.
          ;; Also named "empty".
 
          (define zero
@@ -120,6 +124,7 @@
 
          ;; === functor ===
 
+         ;; (fmap function parser) -> parser
          ;; Reaches inside a parser and transforms its output with an arbitrary function.
 
          (define fmap
@@ -129,8 +134,9 @@
 
          ;; === satisfy ===
 
-         ;; Moves a parser through a string, one character at a time.
-         ;; Consumes only values that satisfy an arbitrary predicate.
+         ;; (satisfy function) -> parser
+         ;; Provides a parser that only consumes its input if that input satisfies the
+         ;; provided predicate.
 
          (define satisfy
            (lambda (test)
@@ -159,6 +165,14 @@
          ;; === choice ===
          ;; side-note: beware of space leaks.
 
+         ;; (or-else parser parser) -> parser
+         ;; Applies parser "px" to the input. If "px" succeeds, parser "py" is ignored.
+         ;; If "px" fails, "py" is applied to the same input and its result is provided
+         ;; whether it succeeds or fails.
+         ;; To prevent space leaks, "or-else" ignores parser "py" if parser "px" consumes
+         ;; any input prior to failing. This behavior can be inverted with the
+         ;; "try" combinator.
+
          (define or-else
            (lambda (px py)
              (lambda (state)
@@ -181,6 +195,11 @@
 
          ;; === try: LL(∞) ===
 
+         ;; (try parser) -> parser
+         ;; Parser "(try px)" behaves exactly like parser "px" except
+         ;; that it pretends it hasn't consumed any input if "px" fails.
+         ;; This allows combinator "or-else" unlimited lookahead.
+
          (define try
            (lambda (px)
              (lambda (state)
@@ -194,39 +213,52 @@
                                      output-x)
                        ctx-x))))))
 
+         ;; (choice (list parser)) -> parser
+         ;; Applies each parser in a list, providing the result
+         ;; of the first successful parser.
          ;; Also named "asum" within the context of Alternatives.
          ;; Also named "msum" within the context of Monads.
+
          (define choice
            (lambda (parsers)
              (fold-right or-else zero parsers)))
 
-         ;; Applies parser px. If px fails, returns the value y.
+         ;; (option parser any) -> parser
+         ;; Applies parser px. If px fails, provides the value y.
+
          (define option
            (lambda (px y)
              (or-else px (return y))))
 
-         ;; Applies parser px. If px succeeds, ignores its result and returns y.
+         ;; (ignore parser any) -> parser
+         ;; Applies parser px. If px succeeds, ignores its result and provides y.
+
          (define ignore
            (lambda (px y)
              (monad-do (x <- px)
                        (return y))))
 
-
+         ;; (left parser parser) -> parser
          ;; Also named ".>>", parses two values and discards the right.
+
          (define left
            (lambda (px py)
              (monad-do (x <- px)
                        (y <- py)
                        (return x))))
 
+         ;; (right parser parser) -> parser
          ;; Also named ">>.", parses two values and discards the left.
+
          (define right
            (lambda (px py)
              (monad-do (x <- px)
                        (y <- py)
                        (return y))))
 
+         ;; (between parser parser parser) -> parser
          ;; Parses three values, and, if successful, discards the left and the right values.
+
          (define between
            (lambda (px py pz)
              (monad-do (x <- px)
@@ -236,20 +268,32 @@
 
          ;; === sequence ===
 
+         ;; (and-then parser parser) -> parser
+         ;; Applies parsers "px" and "py", only providing a pair of values if both parsers succeed.
+
          (define and-then
            (lambda (px py)
              (monad-do (x <- px)
                        (y <- py)
                        (return (cons x y)))))
 
+         ;; (sequence (list parser)) -> parser
+         ;; Applies a list of parsers, only providing a list of values if all parsers succeed.
+
          (define sequence
            (lambda (parsers)
              (fold-right and-then (return '()) parsers)))
+
+         ;; (many parser) -> parser
+         ;; Applies a parser zero or more times, providing a list of zero or more values.
 
          (define many
            (lambda (px)
              (or-else (many-1 px)
                       (return '()))))
+
+         ;; (many-1 parser) -> parser
+         ;; Applies a parser one or more times. Only provides a list of one or more values.
 
          (define many-1
            (lambda (px)
@@ -260,7 +304,10 @@
          ;; (define skip-many
          ;;   (lambda (px)
          ;;     (ignore (many px) '())))
-         
+
+         ;; (skip-many parser) -> parser
+         ;; Applies a parser zero or more times, ignoring the result.
+
          (define skip-many
            (lambda (px)
              (define scan
@@ -269,10 +316,18 @@
                           (return '()))))
              (scan)))
 
+         ;; (sep-by parser parser) -> parser
+         ;; Parses zero or more occurrences of parser "px" separated by parser "sep".
+         ;; Provides a list of zero or more parsed values.
+
          (define sep-by
            (lambda (px sep)
              (or-else (sep-by-1 px sep)
                       (return '()))))
+
+         ;; (sep-by-1 parser parser) -> parser
+         ;; Parses one or more occurrences of parser "px" separated by parser "sep".
+         ;; Only provides a list of one or more parsed values.
 
          (define sep-by-1
            (lambda (px sep)
@@ -282,17 +337,29 @@
                                               (return y))))
                        (return (cons x xs)))))
 
+         ;; (end-by parser parser) -> parser
+         ;; Parses zero or more occurrences of parser "px" separated and ended by parser "sep".
+         ;; Provides a list of zero or more parsed values.
+
          (define end-by
            (lambda (px sep)
              (many (monad-do (x <- px)
                              (s <- sep)
                              (return x)))))
 
+         ;; (end-by-1 parser parser) -> parser
+         ;; Parses one or more occurrences of parser "px" separated and ended by parser "sep".
+         ;; Only provides a list of one or more parsed values.
+
          (define end-by-1
            (lambda (px sep)
              (many-1 (monad-do (x <- px)
                                (s <- sep)
                                (return x)))))
+
+         ;; (count number parser) -> parser
+         ;; Applies parser "n" number of times. Provides a list of parsed values.
+         ;; If "n" is less than or equal to zero, the parser provides an empty list for all inputs.
 
          (define count
            (lambda (n px)
