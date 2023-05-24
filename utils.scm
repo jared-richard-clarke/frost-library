@@ -10,9 +10,19 @@
                  assert)
          (import (rnrs))
          
+         ;; (empty? any) -> boolean
+         ;; Provides alias for "null?".
+         ;; In Scheme, "null" describes an empty list.
+
          (define empty? null?)
-         
+
+         ;; (identity any) -> any
+         ;; Returns a value unchanged.
          (define identity (lambda (x) x))
+
+         ;; (element function) -> (function any (list any)) -> boolean
+         ;; Inputs a predicate and outputs a function that
+         ;; queries whether a value is in a list of values.
 
          (define element
            (lambda (test)
@@ -23,15 +33,18 @@
                    [(test x (car xs)) #t]
                    [else (loop x (cdr xs))])))))
 
-         (define char-in?   (element char=?))        
+         ;; (char-in? character (list character)) -> boolean
+         ;; Queries whether a character is in a list of characters.
+
+         (define char-in?   (element char=?))
+
+         ;; (symbol-in? symbol (list symbol)) -> boolean
+         ;; Queries whether a symbol is in a list of symbols.
+
          (define symbol-in? (element eq?))
 
-         (define (compose . functions)
-           (lambda (arg)
-             (fold-right (lambda (function value)
-                           (function value))
-                         arg
-                         functions)))
+         ;; (repeat number any) -> (list any)
+         ;; Builds a list of a repeated value.
 
          (define repeat
            (lambda (number value)
@@ -41,6 +54,10 @@
                (if (<= n 0)
                    r
                    (loop (- n 1) v (cons v r))))))
+
+         ;; (assert predicate expression expression) -> current-output-port
+         ;; If the left-hand-expression does not satisfy the predicate comparing it to the right-hand-expression,
+         ;; "assert" prints the failed test to the current-output port.
          
          (define-syntax assert
            (syntax-rules ()
