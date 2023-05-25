@@ -35,7 +35,6 @@
 
          ;; === BASE ===
 
-         ;; (parse parser string) -> context
          ;; Applies a parser to a string and outputs a parsing context.
          ;;
          ;; A parsing context contains three elements:
@@ -48,7 +47,6 @@
          ;;     — the line and column number — within the input string.
          ;;
          ;; 3. output: An arbitrary value produced by a successful parsing. Produces an empty list on error.
-
          (define parse
            (lambda (parser text)
              (parser (make-state (string->list text) 1 0))))
@@ -57,7 +55,6 @@
 
          ;; The Haskell "do" syntax (simplified). Makes monads readable.
          ;; Renamed "monad-do" because "do" is less descriptive.
-
          (define-syntax monad-do
            (syntax-rules (<-)
              [(_ expression) expression]
@@ -65,11 +62,7 @@
               (bind mx (lambda (x) 
                          (monad-do expression ...)))]))
 
-         ;; (return any) -> parser
          ;; Wraps a value within a parser context.
-         ;; Also named "unit". Also named "pure" within the 
-         ;; context of applicative functors.
-
          (define return
            (lambda (x)
              (lambda (state)
@@ -77,7 +70,6 @@
                              state
                              x))))
 
-         ;; (bind parser function) -> parser
          ;; Also named ">>=".
          ;; The binding operation benefits combinator parsing twofold:
          ;; 1. Integrates the sequencing of parsers with the processing of their results.
@@ -92,7 +84,6 @@
          ;; | Empty    | Consumed | Consumed  |
          ;; | Consumed | Empty    | Consumed  |
          ;; | Consumed | Consumed | Consumed  |
-
          (define bind
            (lambda (px f)
              (lambda (state)
@@ -112,10 +103,8 @@
                                                                         output-y)))]
                      [else ctx-x]))))))
 
-         ;; (zero state) -> empty
          ;; Sets parser context to empty.
          ;; Also named "empty".
-
          (define zero
            (lambda (state)
              (make-context '(EMPTY ERROR)
@@ -124,9 +113,7 @@
 
          ;; === functor ===
 
-         ;; (fmap function parser) -> parser
          ;; Reaches inside a parser and transforms its output with an arbitrary function.
-
          (define fmap
            (lambda (f px)
              (monad-do (x <- px)
@@ -134,10 +121,8 @@
 
          ;; === satisfy ===
 
-         ;; (satisfy function) -> parser
          ;; Provides a parser that only consumes its input if that input satisfies the
          ;; provided predicate.
-
          (define satisfy
            (lambda (test)
              (lambda (state)
@@ -165,14 +150,12 @@
          ;; === choice ===
          ;; side-note: beware of space leaks.
 
-         ;; (or-else parser parser) -> parser
          ;; Applies parser "px" to the input. If "px" succeeds, parser "py" is ignored.
-         ;; If "px" fails, "py" is applied to the same input and its result is provided
-         ;; whether it succeeds or fails.
+         ;; If "px" fails, "py" is applied to the same input and its result is outputted
+         ;; regardless od whether it succeeds or fails.
          ;; To prevent space leaks, "or-else" ignores parser "py" if parser "px" consumes
          ;; any input prior to failing. This behavior can be inverted with the
          ;; "try" combinator.
-
          (define or-else
            (lambda (px py)
              (lambda (state)
@@ -195,11 +178,9 @@
 
          ;; === try: LL(∞) ===
 
-         ;; (try parser) -> parser
          ;; Parser "(try px)" behaves exactly like parser "px" except
          ;; that it pretends it hasn't consumed any input if "px" fails.
          ;; This allows combinator "or-else" unlimited lookahead.
-
          (define try
            (lambda (px)
              (lambda (state)
@@ -213,52 +194,39 @@
                                      output-x)
                        ctx-x))))))
 
-         ;; (choice (list parser)) -> parser
-         ;; Applies each parser in a list, providing the result
-         ;; of the first successful parser.
+         ;; Applies each parser in a list, outputting the result of the first successful parser.
          ;; Also named "asum" within the context of Alternatives.
          ;; Also named "msum" within the context of Monads.
-
          (define choice
            (lambda (parsers)
              (fold-right or-else zero parsers)))
 
-         ;; (option parser any) -> parser
-         ;; Applies parser px. If px fails, provides the value y.
-
+         ;; Applies parser px. If px fails, outputs the value y.
          (define option
            (lambda (px y)
              (or-else px (return y))))
 
-         ;; (ignore parser any) -> parser
-         ;; Applies parser px. If px succeeds, ignores its result and provides y.
-
+         ;; Applies parser px. If px succeeds, ignores its result and outputs y.
          (define ignore
            (lambda (px y)
              (monad-do (x <- px)
                        (return y))))
 
-         ;; (left parser parser) -> parser
-         ;; Also named ".>>", parses two values and discards the right.
-
+         ;; Also named ".>>", "left" parses two values and discards the right.
          (define left
            (lambda (px py)
              (monad-do (x <- px)
                        (y <- py)
                        (return x))))
 
-         ;; (right parser parser) -> parser
-         ;; Also named ">>.", parses two values and discards the left.
-
+         ;; Also named ">>.", "right" parses two values and discards the left.
          (define right
            (lambda (px py)
              (monad-do (x <- px)
                        (y <- py)
                        (return y))))
 
-         ;; (between parser parser parser) -> parser
          ;; Parses three values, and, if successful, discards the left and the right values.
-
          (define between
            (lambda (px py pz)
              (monad-do (x <- px)
@@ -268,33 +236,25 @@
 
          ;; === sequence ===
 
-         ;; (and-then parser parser) -> parser
-         ;; Applies parsers "px" and "py", only providing a pair of values if both parsers succeed.
-
+         ;; Applies parsers "px" and "py", only outputting a pair of values if both parsers succeed.
          (define and-then
            (lambda (px py)
              (monad-do (x <- px)
                        (y <- py)
                        (return (cons x y)))))
 
-         ;; (sequence (list parser)) -> parser
-         ;; Applies a list of parsers, only providing a list of values if all parsers succeed.
-
+         ;; Applies a list of parsers, only outputting a list of values if all parsers succeed.
          (define sequence
            (lambda (parsers)
              (fold-right and-then (return '()) parsers)))
 
-         ;; (many parser) -> parser
-         ;; Applies a parser zero or more times, providing a list of zero or more values.
-
+         ;; Applies a parser zero or more times. Outputs a list of zero or more parsed values.
          (define many
            (lambda (px)
              (or-else (many-1 px)
                       (return '()))))
 
-         ;; (many-1 parser) -> parser
-         ;; Applies a parser one or more times. Only provides a list of one or more values.
-
+         ;; Applies a parser one or more times. Only outputs a list of one or more parsed values.
          (define many-1
            (lambda (px)
              (monad-do (x  <- px)
@@ -305,9 +265,7 @@
          ;;   (lambda (px)
          ;;     (ignore (many px) '())))
 
-         ;; (skip-many parser) -> parser
          ;; Applies a parser zero or more times, ignoring the result.
-
          (define skip-many
            (lambda (px)
              (define scan
@@ -316,19 +274,15 @@
                           (return '()))))
              (scan)))
 
-         ;; (sep-by parser parser) -> parser
          ;; Parses zero or more occurrences of parser "px" separated by parser "sep".
-         ;; Provides a list of zero or more parsed values.
-
+         ;; Outputs a list of zero or more parsed values.
          (define sep-by
            (lambda (px sep)
              (or-else (sep-by-1 px sep)
                       (return '()))))
 
-         ;; (sep-by-1 parser parser) -> parser
          ;; Parses one or more occurrences of parser "px" separated by parser "sep".
-         ;; Only provides a list of one or more parsed values.
-
+         ;; Only outputs a list of one or more parsed values.
          (define sep-by-1
            (lambda (px sep)
              (monad-do (x  <- px)
@@ -337,30 +291,24 @@
                                               (return y))))
                        (return (cons x xs)))))
 
-         ;; (end-by parser parser) -> parser
          ;; Parses zero or more occurrences of parser "px" separated and ended by parser "sep".
-         ;; Provides a list of zero or more parsed values.
-
+         ;; Outputs a list of zero or more parsed values.
          (define end-by
            (lambda (px sep)
              (many (monad-do (x <- px)
                              (s <- sep)
                              (return x)))))
 
-         ;; (end-by-1 parser parser) -> parser
          ;; Parses one or more occurrences of parser "px" separated and ended by parser "sep".
-         ;; Only provides a list of one or more parsed values.
-
+         ;; Only outputs a list of one or more parsed values.
          (define end-by-1
            (lambda (px sep)
              (many-1 (monad-do (x <- px)
                                (s <- sep)
                                (return x)))))
 
-         ;; (count number parser) -> parser
-         ;; Applies parser "n" number of times. Provides a list of parsed values.
-         ;; If "n" is less than or equal to zero, the parser provides an empty list for all inputs.
-
+         ;; Applies parser "n" number of times. Outputs a list of parsed values.
+         ;; If "n" is less than or equal to zero, the parser outputs an empty list for all inputs.
          (define count
            (lambda (n px)
              (if (<= n 0)
