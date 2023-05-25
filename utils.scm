@@ -10,21 +10,15 @@
                  assert)
          (import (rnrs))
          
-         ;; (empty? any) -> boolean
          ;; Provides alias for "null?".
          ;; In Scheme, "null" describes an empty list.
-
          (define empty? null?)
 
-         ;; (identity any) -> any
          ;; Outputs a value unchanged.
-         
          (define identity (lambda (x) x))
 
-         ;; (element function) -> (function any (list any)) -> boolean
          ;; Inputs a predicate and outputs a function that
          ;; queries whether a value is in a list of values.
-
          (define element
            (lambda (test)
              (lambda (x xs)
@@ -34,19 +28,13 @@
                    [(test x (car xs)) #t]
                    [else (loop x (cdr xs))])))))
 
-         ;; (char-in? character (list character)) -> boolean
          ;; Queries whether a character is in a list of characters.
-
          (define char-in?   (element char=?))
 
-         ;; (symbol-in? symbol (list symbol)) -> boolean
          ;; Queries whether a symbol is in a list of symbols.
-
          (define symbol-in? (element eq?))
 
-         ;; (repeat number any) -> (list any)
          ;; Builds a list of a repeated value.
-
          (define repeat
            (lambda (number value)
              (let loop ([n number]
@@ -56,10 +44,8 @@
                    r
                    (loop (- n 1) v (cons v r))))))
 
-         ;; (assert predicate expression expression) -> current-output-port
          ;; If the left-hand-expression does not satisfy the predicate comparing it to the right-hand-expression,
          ;; "assert" prints the failed test to the current-output port.
-         
          (define-syntax assert
            (syntax-rules ()
              [(_ compare x y)
