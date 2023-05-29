@@ -34,6 +34,15 @@
          ;; Queries whether a symbol is in a list of symbols.
          (define symbol-in? (element eq?))
 
+         ;; Composes a series of functions into a single function expression.
+         ;; Functions are applied right to left.
+         (define (compose . functions)
+           (lambda (arg)
+             (fold-right (lambda (function value)
+                           (function value))
+                         arg
+                         functions)))
+
          ;; Builds a list of a repeated value.
          (define repeat
            (lambda (number value)
