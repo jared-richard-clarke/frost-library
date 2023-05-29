@@ -49,7 +49,11 @@
 
 ;;   (p >>= f) >>= g = p >>= (\a -> f a >>= g)
 ;; (m * λa.n) * λb.o = m * (λa.n * λb.o)
-;; ...
+(let ([rhs (parse (bind (bind (return #\a) character) return) test-data)]
+      [lhs (parse (bind (return #\a) (lambda (x) (bind (character x) return))) test-data)])
+  (let ([ctx-x (context->list rhs)]
+        [ctx-y (context->list lhs)])
+    (assert equal? ctx-x ctx-y)))
 
 ;; === Alternative and/or MonadPlus Laws ===
 ;;
