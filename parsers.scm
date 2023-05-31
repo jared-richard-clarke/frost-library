@@ -88,7 +88,8 @@
          (define skip-spaces (skip-many space))
 
          ;; Parses a linefeed control character.
-         (define linefeed (or (character #\linefeed) (character #\newline)))
+         (define linefeed 
+           (or (character #\linefeed) (character #\newline)))
          
          ;; Parses a carriage return and linefeed pair, outputting only the linefeed.
          (define crlf
