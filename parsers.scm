@@ -89,7 +89,7 @@
 
          ;; Parses a linefeed control character.
          (define linefeed 
-           (or (character #\linefeed) (character #\newline)))
+           (or-else (character #\linefeed) (character #\newline)))
          
          ;; Parses a carriage return and linefeed pair, outputting only the linefeed.
          (define crlf
