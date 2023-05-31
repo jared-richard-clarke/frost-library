@@ -29,7 +29,9 @@
                  end-by
                  end-by-1
                  count)
-         (import (rnrs)
+         (import (rnrs base)
+                 (rnrs lists)
+                 (rnrs unicode)
                  (data)
                  (utils))
 
@@ -43,8 +45,8 @@
          ;;    The enumeration tracks parser consumption. Prevents space leaks caused by unlimited
          ;;    lookahead and backtracking within the "or-else" combinator.
          ;;
-         ;; 2. state: Contains the remaining, unparsed input — a list of characters — as well as parser location
-         ;;     — the line and column number — within the input string.
+         ;; 2. state: Contains the remaining, unparsed input, a list of characters, as well as parser location,
+         ;;    the line and column number, within the input string.
          ;;
          ;; 3. output: An arbitrary value produced by a successful parsing. Produces an empty list on error.
          (define parse
