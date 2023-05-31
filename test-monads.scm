@@ -1,4 +1,6 @@
-(import (rnrs)
+(import (rnrs base)
+        (rnrs records syntactic)
+        (data)
         (combinators)
         (parsers)
         (utils))
