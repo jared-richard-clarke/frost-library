@@ -24,7 +24,9 @@
                  trim-right
                  trim
                  text)
-         (import (rnrs)
+         (import (rnrs base)
+                 (rnrs unicode)
+                 (rnrs records syntactic)
                  (combinators)
                  (utils))
 
