@@ -8,7 +8,8 @@
                  compose
                  repeat
                  assert)
-         (import (rnrs))
+         (import (rnrs base)
+                 (rnrs lists))
          
          ;; Provides alias for "null?".
          ;; In Scheme, "null" describes an empty list.
