@@ -3,7 +3,8 @@
 (library (data)
          (export context
                  state)
-         (import (rnrs))
+         (import (rnrs base)
+                 (rnrs records syntactic))
 
          ;; Tracks input as it is consumed by parser.
          (define-record-type state
