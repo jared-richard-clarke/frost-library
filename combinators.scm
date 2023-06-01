@@ -2,7 +2,7 @@
 
 (library (combinators)
          ;; === building blocks ===
-         (export parse
+         (export parse-string
                  monad-do
                  return
                  bind
@@ -49,7 +49,7 @@
          ;;    the line and column number, within the input string.
          ;;
          ;; 3. output: An arbitrary value produced by a successful parsing. Produces an empty list on error.
-         (define parse
+         (define parse-string
            (lambda (parser text)
              (parser (make-state (string->list text) 1 0))))
 
