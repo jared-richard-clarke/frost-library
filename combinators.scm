@@ -133,8 +133,8 @@
                      [column (state-column state)])
                  (if (empty? input)
                      (make-context '(EMPTY ERROR)
-                                   '()
-                                   state)
+                                   state
+                                   '())
                      (let ([x  (car input)]
                            [xs (cdr input)])
                        (if (test x)
