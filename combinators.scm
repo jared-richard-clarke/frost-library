@@ -9,7 +9,7 @@
                  zero
                  fmap
                  satisfy
-         ;; === choices ===
+                 ;; === choices ===
                  or-else
                  try
                  choice
@@ -18,7 +18,7 @@
                  left
                  right
                  between
-         ;; === sequences ===
+                 ;; === sequences ===
                  and-then
                  sequence
                  many
@@ -38,20 +38,10 @@
          ;; === BASE ===
 
          ;; Applies a parser to a string and outputs a parsing context.
-         ;;
-         ;; A parsing context contains three elements:
-         ;;
-         ;; 1. reply: An enumeration of '(CONSUMED OK) | '(CONSUMED ERROR) | '(EMPTY OK) | '(EMPTY ERROR).
-         ;;    The enumeration tracks parser consumption. Prevents space leaks caused by unlimited
-         ;;    lookahead and backtracking within the "or-else" combinator.
-         ;;
-         ;; 2. state: Contains the remaining, unparsed input (a list of characters) as well as parser location
-         ;;    (the line and column number) within the input string.
-         ;;
-         ;; 3. output: An arbitrary value produced by a successful parsing. Produces an empty list on error.
          (define parse-string
            (lambda (parser text)
-             (parser (make-state (string->list text) 1 0))))
+             (let-values ([(reply state output) (parser (make-state (string->list text) 1 0))])
+               (list reply state output))))
 
          ;; === MONAD ===
 
@@ -64,13 +54,11 @@
               (bind mx (lambda (x) 
                          (monad-do expression ...)))]))
 
-         ;; Wraps a value within a parser context.
+         ;; Wraps a value within a parser.
          (define return
            (lambda (x)
              (lambda (state)
-               (make-context '(EMPTY OK)
-                             state
-                             x))))
+               (values EMPTY-OK state x))))
 
          ;; Also named ">>=".
          ;; The binding operation benefits combinator parsing twofold:
@@ -89,29 +77,18 @@
          (define bind
            (lambda (px f)
              (lambda (state)
-               (let ([ctx-x (px state)])
-                 (let ([reply-x  (context-reply  ctx-x)]
-                       [state-x  (context-state  ctx-x)]
-                       [output-x (context-output ctx-x)])
-                   (cond
-                     [(equal? reply-x '(EMPTY OK))    ((f output-x) state-x)]
-                     [(equal? reply-x '(EMPTY ERROR)) ctx-x]
-                     [(equal? reply-x '(CONSUMED OK)) (let ([ctx-y ((f output-x) state-x)])
-                                                        (let ([reply-y  (context-reply  ctx-y)]
-                                                              [state-y  (context-state  ctx-y)]
-                                                              [output-y (context-output ctx-y)])
-                                                          (make-context (cons 'CONSUMED (cdr reply-y))
-                                                                        state-y
-                                                                        output-y)))]
-                     [else ctx-x]))))))
+               (let-values ([(reply-x state-x output-x) (px state)])
+                 (cond
+                   [(equal? reply-x EMPTY-OK)    ((f output-x) state-x)]
+                   [(equal? reply-x EMPTY-ERROR) (values reply-x state-x output-x)]
+                   [(equal? reply-x CONSUMED-OK) (let-values ([(reply-y state-y output-y) ((f output-x) state-x)])
+                                                   (values (cons CONSUMED (cdr reply-y)) state-y output-y))]
+                   [else (values reply-x state-x output-x)])))))
 
          ;; Sets parser context to empty.
-         ;; Also named "empty".
          (define zero
            (lambda (state)
-             (make-context '(EMPTY ERROR)
-                           state
-                           '())))
+             (values EMPTY-ERROR state '())))
 
          ;; === functor ===
 
@@ -132,22 +109,18 @@
                      [line   (state-line   state)]
                      [column (state-column state)])
                  (if (empty? input)
-                     (make-context '(EMPTY ERROR)
-                                   state
-                                   '())
+                     (values EMPTY-ERROR state '())
                      (let ([x  (car input)]
                            [xs (cdr input)])
                        (if (test x)
-                           (make-context '(CONSUMED OK)
-                                         ;; Although #\linefeed and #\newline are synonymous,
-                                         ;; older Schemes recognize only #\newline.
-                                         (if (or (char=? x #\linefeed) (char=? x #\newline))
-                                             (make-state xs (+ line 1) 0)
-                                             (make-state xs line (+ column 1)))
-                                         x)
-                           (make-context '(EMPTY ERROR)
-                                         state
-                                         '()))))))))
+                           (values CONSUMED-OK
+                                   ;; Although #\linefeed and #\newline are synonymous
+                                   ;; older Schemes recognize only #\newline
+                                   (if (or (char=? x #\linefeed) (char=? x #\newline))
+                                       (make-state xs (+ line 1) 0)
+                                       (make-state xs line (+ column 1)))
+                                   x)
+                           (values EMPTY-ERROR state '()))))))))
 
          ;; === choice ===
          ;; side-note: beware of space leaks.
@@ -161,22 +134,15 @@
          (define or-else
            (lambda (px py)
              (lambda (state)
-               (let ([ctx-x (px state)])
-                 (let ([reply-x  (context-reply  ctx-x)]
-                       [state-x  (context-state  ctx-x)]
-                       [output-x (context-output ctx-x)])
-                   (cond
-                     [(equal? reply-x '(EMPTY ERROR)) (py state)]
-                     [(equal? reply-x '(EMPTY OK))    (let ([ctx-y (py state)])
-                                                        (let ([reply-y  (context-reply  ctx-y)]
-                                                              [state-y  (context-state  ctx-y)]
-                                                              [output-y (context-output ctx-y)])
-                                                          (if (eq? (car reply-y) 'EMPTY)
-                                                              (make-context '(EMPTY OK)
-                                                                            state-y
-                                                                            output-y)
-                                                              ctx-y)))]
-                     [else ctx-x]))))))
+               (let-values ([(reply-x state-x output-x) (px state)])
+                 (cond
+                   [(equal? reply-x EMPTY-ERROR) (py state)]
+                   [(equal? reply-x EMPTY-OK)    (let-values ([(reply-y state-y output-y) (py state)])
+                                                   (if (eq? (car reply-y) EMPTY)
+                                                       (values EMPTY-OK state-y output-y)
+                                                       (values reply-y  state-y output-y)))]
+                   [else (values reply-x state-x output-x)])))))
+
 
          ;; === try: LL(∞) ===
 
@@ -186,15 +152,10 @@
          (define try
            (lambda (px)
              (lambda (state)
-               (let ([ctx-x (px state)])
-                 (let ([reply-x  (context-reply  ctx-x)]
-                       [state-x  (context-state  ctx-x)]
-                       [output-x (context-output ctx-x)])
-                   (if (equal? reply-x '(CONSUMED ERROR))
-                       (make-context '(EMPTY ERROR)
-                                     state-x
-                                     output-x)
-                       ctx-x))))))
+               (let-values ([(reply-x state-x output-x) (px state)])
+                 (if (equal? reply-x CONSUMED-ERROR)
+                     (values EMPTY-ERROR state-x output-x)
+                     (values reply-x     state-x output-x))))))
 
          ;; Applies each parser in a list, outputting the result of the first successful parser.
          ;; Also named "asum" within the context of Alternatives.
