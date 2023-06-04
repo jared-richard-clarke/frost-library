@@ -1,21 +1,34 @@
 ;; === UNDER HEAVY CONSTRUCTION ===
 
 (library (data)
-         (export context
+         (export CONSUMED
+                 EMPTY
+                 OK
+                 ERROR
+                 CONSUMED-OK
+                 CONSUMED-ERROR
+                 EMPTY-OK
+                 EMPTY-ERROR
                  state)
          (import (rnrs base)
                  (rnrs records syntactic))
+
+         ;; enumeration:  Consumed Ok | Consumed Error | Empty Ok | Empty Error
+         ;; === elements ===
+         (define CONSUMED 'CONSUMED)
+         (define EMPTY    'EMPTY)
+         (define OK       'OK)
+         (define ERROR    'ERROR)
+         ;; === combinations ===
+         (define CONSUMED-OK    (list CONSUMED OK))
+         (define CONSUMED-ERROR (list CONSUMED ERROR))
+         (define EMPTY-OK       (list EMPTY OK))
+         (define EMPTY-ERROR    (list EMPTY ERROR))
 
          ;; Tracks input as it is consumed by parser.
          (define-record-type state
            (fields input    ;; (list character)
                    line     ;; number
                    column)) ;; number
-
-         ;; Tracks parser consumption, state, and output.
-         (define-record-type context
-           (fields reply    ;;  Consumed Ok | Consumed Error | Empty Ok | Empty Error
-                   state    ;; (list character) number number
-                   output)) ;;  Any
 
          )
