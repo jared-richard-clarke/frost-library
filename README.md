@@ -36,10 +36,11 @@ functional programming, and monads.
 Sequences of `apply` are used to lift multi-parameter functions into an applicative context piecemeal.
 This technique requires functions to be curried and is most conveniently realized in languages that
 curry their functions automatically. It is simpler in Scheme to first unwrap each value from their
-respective contexts and then apply the semantic function.
+respective context and then apply the semantic function.
 
 ```scheme
 ;; Applicative defined in a monadic context.
+;; Applying multi-parameter function "f" to a single argument is impossible in Scheme.
 
 (define apply-p
   (lambda (pf px)
