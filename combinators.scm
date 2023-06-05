@@ -223,10 +223,6 @@
              (monad-do (x  <- px)
                        (xs <- (many px))
                        (return (cons x xs)))))
-         
-         ;; (define skip-many
-         ;;   (lambda (px)
-         ;;     (ignore (many px) '())))
 
          ;; Applies a parser zero or more times, ignoring the result.
          (define skip-many
