@@ -9,7 +9,8 @@
                  repeat
                  assert)
          (import (rnrs base)
-                 (rnrs lists))
+                 (rnrs lists)
+                 (rnrs control))
          
          ;; Provides alias for "null?".
          ;; In Scheme, "null" describes an empty list.
@@ -64,8 +65,9 @@
                 (unless (compare computed-x computed-y)
                   (begin (display "Test failed:")
                          (newline)
-                         (display "lhs: ") (write (quote x)) (display " -> ") (write computed-x) (display ", ")
+                         (display "lhs: ") (write (quote x)) (display " -> ") (write computed-x) (display ",")
+                         (newline)
                          (display "rhs: ") (write (quote y)) (display " -> ") (write computed-y)
                          (newline))))]))
-         
+
          )
