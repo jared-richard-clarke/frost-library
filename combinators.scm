@@ -270,11 +270,13 @@
                                (s <- sep)
                                (return x)))))
 
+         ;; Same behavior as "chain-left-1" except a given value "v" is returned for empty sequences.
          (define chain-left
            (lambda (px op v)
              (or-else (chain-left-1 px op)
                       (return v))))
 
+         ;; Parses and evaluates non-empty sequences of items separated by operators that associate left.
          (define chain-left-1
            (lambda (px op)
              (letrec ([rest (lambda (a)
@@ -285,11 +287,13 @@
                (monad-do (x <- px)
                          (rest x)))))
 
+         ;; Same behavior as "chain-right-1" except a given value "v" is returned for empty sequences.
          (define chain-right
            (lambda (px op v)
              (or-else (chain-right-1 px op)
                       (return v))))
 
+         ;; Parses and evaluates non-empty sequences of items separated by operators that associate right.
          (define chain-right-1
            (lambda (px op)
              (monad-do (x <- px)
