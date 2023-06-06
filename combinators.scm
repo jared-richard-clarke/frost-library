@@ -9,7 +9,7 @@
                  zero
                  fmap
                  satisfy
-                 ;; === choices ===
+         ;; === choices ===
                  or-else
                  try
                  choice
@@ -18,7 +18,7 @@
                  left
                  right
                  between
-                 ;; === sequences ===
+         ;; === sequences ===
                  and-then
                  sequence
                  many
@@ -28,6 +28,10 @@
                  sep-by-1
                  end-by
                  end-by-1
+                 chain-left
+                 chain-left-1
+                 chain-right
+                 chain-right-1
                  count)
          (import (rnrs base)
                  (rnrs lists)
@@ -266,6 +270,34 @@
                                (s <- sep)
                                (return x)))))
 
+         (define chain-left
+           (lambda (px op v)
+             (or-else (chain-left-1 px op)
+                      (return v))))
+
+         (define chain-left-1
+           (lambda (px op)
+             (letrec ([rest (lambda (a)
+                              (or-else (monad-do (f <- op)
+                                                 (b <- px)
+                                                 (rest (f a b)))
+                                       (return a)))])
+               (monad-do (x <- px)
+                         (rest x)))))
+
+         (define chain-right
+           (lambda (px op v)
+             (or-else (chain-right-1 px op)
+                      (return v))))
+
+         (define chain-right-1
+           (lambda (px op)
+             (monad-do (x <- px)
+                       (or-else (monad-do (f <- op)
+                                          (y <- (chain-right-1 px op))
+                                          (return (f x y)))
+                                (return x)))))
+         
          ;; Applies parser "n" number of times. Outputs a list of parsed values.
          ;; If "n" is less than or equal to zero, the parser outputs an empty list for all inputs.
          (define count
