@@ -16,9 +16,9 @@
 
 ;; === Monad Laws ===
 ;;
-;;  return a >>= f = f a <---------------------- Left Unit ---------> unit a * λb.n = n[a/b]
-;;    p >>= return = p <------------------------ Right Unit --------> m * λa.unit a = m
-;; (p >>= f) >>= g = p >>= (\a -> f a >>= g) <-- Associativity -> (m * λa.n) * λb.o = m * (λa.n * λb.o)
+;;  return a >>= f = f a <--------------------- Left Unit ---------> unit a * λb.n = n[a/b]
+;;    p >>= return = p <----------------------- Right Unit --------> m * λa.unit a = m
+;; (p >>= f) >>= g = p >>= (\a -> f a >>= g) <- Associativity -> (m * λa.n) * λb.o = m * (λa.n * λb.o)
 
 ;; return a >>= f = f a
 ;;  unit a * λb.n = n[a/b]
