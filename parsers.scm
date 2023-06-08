@@ -48,6 +48,21 @@
          ;; Parses a sequence of one or more digits.
          (define digits (many-1 digit))
 
+         (define digit->integer
+           (lambda (x)
+             (- (char->integer x) (char->integer #\0))))
+
+         (define base-number
+           (lambda (base)
+             (monad-do (xs <- digits)
+                       (let ([num (fold-left (lambda (sum x)
+                                               (+ (* base sum) (digit->integer x)))
+                                             0
+                                             xs)])
+                         (return num)))))
+
+         (define decimal (base-number 10))
+         
          ;; Parses any letter that satisfies the predicate "char-alphabetic?". 
          (define letter
            (satisfy char-alphabetic?))
