@@ -48,11 +48,11 @@
            (lambda (parser text)
              (let-values ([(reply state output)
                            (parser (make-state (string->list text) 1 0))])
-               (begin (display reply)
-                      (display #\space)
-                      (display state)
-                      (display #\space)
-                      (display output)
+               (begin (write reply)
+                      (newline)
+                      (write state)
+                      (newline)
+                      (write output)
                       output))))
 
          ;; === MONAD ===
