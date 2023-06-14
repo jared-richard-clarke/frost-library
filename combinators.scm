@@ -139,7 +139,7 @@
 
          ;; Applies parser "px" to the input. If "px" succeeds, parser "py" is ignored.
          ;; If "px" fails, "py" is applied to the same input and its result is outputted
-         ;; regardless od whether it succeeds or fails.
+         ;; regardless of whether it succeeds or fails.
          ;; To prevent space leaks, "or-else" ignores parser "py" if parser "px" consumes
          ;; any input prior to failing. This behavior can be inverted with the
          ;; "try" combinator.
