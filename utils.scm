@@ -1,6 +1,6 @@
 ;; === UNDER HEAVY CONSTRUCTION ===
 
-(library (utils)
+(library (frost utils)
          (export empty?
                  identity
                  char-in?
