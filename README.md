@@ -1,4 +1,4 @@
-# Frost: Parser Combinator Library
+# Frost: a parser combinator library
 
 I'm building this parser combinator library to better understand parsing, 
 functional programming, and monads.
