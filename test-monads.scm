@@ -1,8 +1,8 @@
 (import (rnrs base)
-        (data)
-        (combinators)
-        (parsers)
-        (utils))
+        (frost data)
+        (frost combinators)
+        (frost parsers)
+        (frost utils))
 
 ;; R6RS does not support structural equality for record types. "parse-compare" converts 
 ;; "state" record type to list for deep, structural comparison via "equal?".
