@@ -1,6 +1,6 @@
 ;; === UNDER HEAVY CONSTRUCTION ===
 
-(library (parsers)
+(library (frost parsers)
          (export character
                  any-character
                  digit
@@ -27,8 +27,8 @@
          (import (rnrs base)
                  (rnrs unicode)
                  (rnrs records syntactic)
-                 (combinators)
-                 (utils))
+                 (frost combinators)
+                 (frost utils))
 
          ;; === parsers ===
 
