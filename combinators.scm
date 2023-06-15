@@ -35,8 +35,8 @@
          (import (rnrs base)
                  (rnrs lists)
                  (rnrs unicode)
-                 (data)
-                 (utils))
+                 (frost data)
+                 (frost utils))
 
          ;; === MONAD ===
 
