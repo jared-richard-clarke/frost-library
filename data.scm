@@ -1,6 +1,6 @@
 ;; === UNDER HEAVY CONSTRUCTION ===
 
-(library (data)
+(library (frost data)
          (export CONSUMED
                  EMPTY
                  OK
