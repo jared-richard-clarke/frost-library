@@ -45,7 +45,7 @@
                          arg
                          functions)))
 
-         ;; Builds a list of a repeated value.
+         ;; Builds a repeated list of a given value.
          (define repeat
            (lambda (number value)
              (if (<= number 0)
