@@ -48,12 +48,9 @@
          ;; Builds a list of a repeated value.
          (define repeat
            (lambda (number value)
-             (let loop ([n number]
-                        [v value]
-                        [r '()])
-               (if (<= n 0)
-                   r
-                   (loop (- n 1) v (cons v r))))))
+             (if (<= number 0)
+                 '()
+                 (cons value (repeat (- number 1) value)))))
 
          ;; If the left-hand-expression does not satisfy the predicate comparing it to the right-hand-expression,
          ;; "assert" prints the failed test to the current-output port.
