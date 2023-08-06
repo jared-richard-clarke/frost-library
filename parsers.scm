@@ -52,16 +52,16 @@
            (lambda (x)
              (- (char->integer x) (char->integer #\0))))
 
-         (define base-number
-           (lambda (base)
+         (define base
+           (lambda (radix)
              (monad-do (xs <- digits)
-                       (let ([num (fold-left (lambda (sum x)
-                                               (+ (* base sum) (digit->integer x)))
-                                             0
-                                             xs)])
-                         (return num)))))
+                       (let ([number (fold-left (lambda (sum x)
+                                                  (+ (* radix sum) (digit->integer x)))
+                                                0
+                                                xs)])
+                         (return number)))))
 
-         (define decimal (base-number 10))
+         (define natural (base 10))
          
          ;; Parses any letter that satisfies the predicate "char-alphabetic?". 
          (define letter
