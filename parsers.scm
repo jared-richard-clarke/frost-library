@@ -7,6 +7,7 @@
                  digits
                  whole
                  integer
+                 real
                  letter
                  letters
                  upper-case
@@ -50,11 +51,6 @@
          ;; Parses a sequence of one or more digits.
          (define digits (many-1 digit))
 
-         ;; Converts numeric characters into their numeric equivalents.
-         (define digit->integer
-           (lambda (x)
-             (- (char->integer x) (char->integer #\0))))
-
          ;; Parses an optional sign and returns its functional equivalent.
          (define sign (option (or-else (ignore (character #\-) -)
                                        (ignore (character #\+) +))
@@ -64,11 +60,16 @@
          (define base
            (lambda (radix)
              (monad-do (xs <- digits)
-                       (let ([number (fold-left (lambda (sum x)
-                                                  (+ (* radix sum) (digit->integer x)))
-                                                0
-                                                xs)])
+                       (let ([number ((fold-digits-by radix) xs)])
                          (return number)))))
+
+         ;; Creates a parser that converts a sequence of digits into their fractional numerical equivalent using the given radix.
+         (define fractional
+           (lambda (radix)
+             (monad-do (xs <- digits)
+                       (let* ([power  (expt radix (length xs))]
+                              [number ((fold-digits-by radix) xs)])
+                         (return (/ number power))))))
 
          ;; Parses a sequence of digits and returns a whole number in base 10.
          ;; [0, 1, 2 ...]
@@ -80,6 +81,19 @@
            (monad-do (f <- sign)
                      (x <- whole)
                      (return (f x))))
+
+         ;; Parses a sequence of digits and returns a fraction in base 10.
+         ;; [0 ... 0.5 ... 1]
+         (define fraction (fractional 10.0)) ;; <- 10.0 ensures number is converted into floating point.
+
+         ;; Parses an optional sign a sequence of digits followed by an optional decimal point and a further sequence of digits
+         ;; and returns a real number in base 10.
+         ;; [... -4 ... 0 ... 0.25 ... 7.5 ... 11 ...]
+         (define real
+           (monad-do (f <- sign)
+                     (x <- whole)
+                     (y <- (option (monad-do (d <- (character #\.)) fraction) 0))
+                     (return (f (+ x y)))))
          
          ;; Parses any letter that satisfies the predicate "char-alphabetic?". 
          (define letter
