@@ -104,7 +104,7 @@
 
          ;; Parses a sequence of digits and returns a fraction in base 10.
          ;; [0 ... 0.5 ... 1]
-         (define fraction (fractional 10.0 digits)) ;; <- 10.0 ensures number is converted into floating point.
+         (define decimal (fractional 10.0 digits)) ;; <- 10.0 ensures number is converted into floating point.
 
          ;; Parses an optional sign a sequence of digits followed by an optional decimal point and a further sequence of digits
          ;; and returns a real number in base 10.
@@ -112,7 +112,7 @@
          (define real
            (monad-do (f <- sign)
                      (x <- whole)
-                     (y <- (option (monad-do (d <- (character #\.)) fraction) 0))
+                     (y <- (option (monad-do (d <- (character #\.)) decimal) 0))
                      (return (f (+ x y)))))
          
          ;; Parses any letter that satisfies the predicate "char-alphabetic?". 
