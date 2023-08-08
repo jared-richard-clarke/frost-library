@@ -4,6 +4,8 @@
          (export character
                  any-character
                  digit
+                 decimal-digit
+                 binary-digit
                  digits
                  whole
                  integer
@@ -34,6 +36,18 @@
                  (frost utils))
 
          ;; === parsers ===
+         
+         ;; Creates a parser for any character defined within its string argument.
+         (define one-of
+           (lambda (txt)
+             (let ([xs (string->list txt)])
+               (satisfy (lambda (x) (char-in? x xs))))))
+
+         ;; Creates a parser for any character not defined within its string argument.
+         (define none-of
+           (lambda (txt)
+             (let ([xs (string->list txt)])
+               (satisfy (lambda (x) (not (char-in? x xs)))))))
 
          ;; Creates a parser for a single character.
          (define character
@@ -48,6 +62,12 @@
          (define digit 
            (satisfy char-numeric?))
 
+         ;; Parses any decimal digit: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].
+         (define decimal-digit (one-of "0123456789"))
+
+         ;; Parses any binary digit: [0, 1].
+         (define binary-digit  (one-of "01"))
+
          ;; Parses a sequence of one or more digits.
          (define digits (many-1 digit))
 
@@ -56,24 +76,24 @@
                                        (ignore (character #\+) +))
                               identity))
 
-         ;; Creates a parser that converts a sequence of digits into their numerical equivalent using the given radix.
+         ;; Creates a parser that converts a sequence of digits into their numerical equivalent using the given radix and parser.
          (define base
-           (lambda (radix)
-             (monad-do (xs <- digits)
+           (lambda (radix parser)
+             (monad-do (xs <- parser)
                        (let ([number ((fold-digits-by radix) xs)])
                          (return number)))))
 
-         ;; Creates a parser that converts a sequence of digits into their fractional numerical equivalent using the given radix.
+         ;; Creates a parser that converts a sequence of digits into their fractional numerical equivalent using the given radix and parser.
          (define fractional
-           (lambda (radix)
-             (monad-do (xs <- digits)
+           (lambda (radix parser)
+             (monad-do (xs <- parser)
                        (let* ([power  (expt radix (length xs))]
                               [number ((fold-digits-by radix) xs)])
                          (return (/ number power))))))
 
          ;; Parses a sequence of digits and returns a whole number in base 10.
          ;; [0, 1, 2 ...]
-         (define whole (base 10))
+         (define whole (base 10 digits))
 
          ;; Parses an optional sign followed by a sequence of digits and returns an integer in base 10.
          ;; [... -2, -1, 0, 1, 2 ...]
@@ -84,7 +104,7 @@
 
          ;; Parses a sequence of digits and returns a fraction in base 10.
          ;; [0 ... 0.5 ... 1]
-         (define fraction (fractional 10.0)) ;; <- 10.0 ensures number is converted into floating point.
+         (define fraction (fractional 10.0 digits)) ;; <- 10.0 ensures number is converted into floating point.
 
          ;; Parses an optional sign a sequence of digits followed by an optional decimal point and a further sequence of digits
          ;; and returns a real number in base 10.
@@ -114,18 +134,6 @@
          (define alpha-num
            (or-else letter digit))
 
-         ;; Creates a parser for any character defined within its string argument.
-         (define one-of
-           (lambda (txt)
-             (let ([xs (string->list txt)])
-               (satisfy (lambda (x) (char-in? x xs))))))
-
-         ;; Creates a parser for any character not defined within its string argument.
-         (define none-of
-           (lambda (txt)
-             (let ([xs (string->list txt)])
-               (satisfy (lambda (x) (not (char-in? x xs)))))))
-
          ;; Parses any character that satisfies the predicate "char-whitespace?".
          (define space 
            (satisfy char-whitespace?))
@@ -154,10 +162,7 @@
                         (symbol-in? category categories)))))
 
          ;; Parses any punctuation as defined by ASCII. Subsumed by Unicode.
-         (define punctuation-ascii
-           (satisfy (let ([ascii (string->list "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")])
-                      (lambda (x) 
-                        (char-in? x ascii)))))
+         (define punctuation-ascii (one-of "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"))
 
          ;; Creates a parser that removes all whitespace to the left the input parsed by "px".
          (define trim-left
