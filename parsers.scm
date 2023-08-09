@@ -4,7 +4,7 @@
          (export character
                  any-character
                  digit
-                 decimal-digit
+                 denary-digit
                  binary-digit
                  digits
                  whole
@@ -62,8 +62,8 @@
          (define digit 
            (satisfy char-numeric?))
 
-         ;; Parses any decimal digit: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].
-         (define decimal-digit (one-of "0123456789"))
+         ;; Parses any denary digit: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].
+         (define denary-digit (one-of "0123456789"))
 
          ;; Parses any binary digit: [0, 1].
          (define binary-digit  (one-of "01"))
