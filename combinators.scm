@@ -1,5 +1,3 @@
-;; === UNDER HEAVY CONSTRUCTION ===
-
 (library (frost combinators)
          ;; === building blocks ===
          (export monad-do
