@@ -1,5 +1,7 @@
 (library (frost parsers)
-         (export character
+         (export one-of
+                 none-of
+                 character
                  any-character
                  digit
                  denary-digit
@@ -13,8 +15,6 @@
                  upper-case
                  lower-case
                  alpha-num
-                 one-of
-                 none-of
                  space
                  spaces
                  skip-spaces
