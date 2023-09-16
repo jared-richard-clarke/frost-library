@@ -1,5 +1,3 @@
-;; === UNDER HEAVY CONSTRUCTION ===
-
 (library (frost parsers)
          (export character
                  any-character
@@ -87,8 +85,8 @@
          (define fractional
            (lambda (radix parser)
              (monad-do (xs <- parser)
-                       (let* ([power  (expt radix (length xs))]
-                              [number ((fold-digits-by radix) xs)])
+                       (let ([power  (expt radix (length xs))]
+                             [number ((fold-digits-by radix) xs)])
                          (return (/ number power))))))
 
          ;; Parses a sequence of digits and returns a whole number in base 10.
