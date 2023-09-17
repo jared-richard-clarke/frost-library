@@ -7,7 +7,8 @@
                  CONSUMED-ERROR
                  EMPTY-OK
                  EMPTY-ERROR
-                 state)
+                 state
+                 result)
          (import (rnrs base)
                  (rnrs records syntactic))
 
@@ -28,5 +29,10 @@
            (fields input    ;; (list character)
                    line     ;; number
                    column)) ;; number
+
+         ;; Represents either success or failure.
+         (define-record-type result
+           (fields success
+                   failure))
 
          )
