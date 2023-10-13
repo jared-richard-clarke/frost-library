@@ -259,6 +259,8 @@
                                (s <- sep)
                                (return x)))))
 
+         ;; === chain: repetition with meaningful separators. ===
+         
          ;; Same behavior as "chain-left-1" except a given value "v" is returned for empty sequences.
          (define chain-left
            (lambda (px op v)
