@@ -6,9 +6,10 @@
                  zero
                  fmap
                  satisfy
+                 try
+                 label
          ;; === choices ===
                  or-else
-                 try
                  choice
                  option
                  ignore
@@ -51,7 +52,7 @@
          (define return
            (lambda (x)
              (lambda (state)
-               (values EMPTY-OK state x))))
+               (values EMPTY-OK state x NONE))))
 
          ;; Also named ">>=".
          ;; The binding operation benefits combinator parsing twofold:
@@ -70,18 +71,19 @@
          (define bind
            (lambda (px f)
              (lambda (state)
-               (let-values ([(reply-x state-x output-x) (px state)])
+               (let-values ([(reply-x state-x output-x want-x) (px state)])
                  (cond
                    [(equal? reply-x EMPTY-OK)    ((f output-x) state-x)]
-                   [(equal? reply-x EMPTY-ERROR) (values reply-x state-x output-x)]
-                   [(equal? reply-x CONSUMED-OK) (let-values ([(reply-y state-y output-y) ((f output-x) state-x)])
-                                                   (values (cons CONSUMED (cdr reply-y)) state-y output-y))]
-                   [else (values reply-x state-x output-x)])))))
+                   [(equal? reply-x EMPTY-ERROR) (values reply-x state-x output-x want-x)]
+                   [(equal? reply-x CONSUMED-OK) (let-values ([(reply-y state-y output-y want-y)
+                                                               ((f output-x) state-x)])
+                                                   (values (cons CONSUMED (cdr reply-y)) state-y output-y want-y))]
+                   [else (values reply-x state-x output-x want-x)])))))
 
          ;; Sets parser context to empty.
          (define zero
            (lambda (state)
-             (values EMPTY-ERROR state '())))
+             (values EMPTY-ERROR state NONE)))
 
          ;; === functor ===
 
@@ -93,8 +95,8 @@
 
          ;; === satisfy ===
 
-         ;; Provides a parser that only consumes its input if that input satisfies the
-         ;; provided predicate.
+         ;; Provides a parser that only consumes its input if that input satisfies
+         ;; the provided predicate.
          (define satisfy
            (lambda (test)
              (lambda (state)
@@ -102,7 +104,7 @@
                      [line   (state-line   state)]
                      [column (state-column state)])
                  (if (empty? input)
-                     (values EMPTY-ERROR state '())
+                     (values EMPTY-ERROR state NONE NONE)
                      (let ([x  (car input)]
                            [xs (cdr input)])
                        (if (test x)
@@ -112,9 +114,33 @@
                                    (if (or (char=? x #\linefeed) (char=? x #\newline))
                                        (make-state xs (+ line 1) 0)
                                        (make-state xs line (+ column 1)))
-                                   x)
-                           (values EMPTY-ERROR state '()))))))))
+                                   x
+                                   NONE)
+                           (values EMPTY-ERROR state NONE NONE))))))))
 
+         ;; === try: LL(∞) ===
+
+         ;; Parser "(try px)" behaves exactly like parser "px" except
+         ;; that it pretends it hasn't consumed any input if "px" fails.
+         ;; This allows combinator "or-else" unlimited lookahead.
+         (define try
+           (lambda (px)
+             (lambda (state)
+               (let-values ([(reply-x state-x output-x want-x) (px state)])
+                 (if (equal? reply-x CONSUMED-ERROR)
+                     (values EMPTY-ERROR state-x output-x want-x)
+                     (values reply-x     state-x output-x want-x))))))
+
+         ;; Parser "(label message px)" behaves exactly like parser "px", but
+         ;; when it fails without consuming input, it sets "want-x" to "message".
+         (define label
+           (lambda (message px)
+             (lambda (state)
+               (let-values ([(reply-x state-x output-x want-x) (px state)])
+                 (if (eq? (car reply-x) EMPTY)
+                     (values reply-x state-x output-x (list message))
+                     (values reply-x state-x output-x want-x))))))
+         
          ;; === choice ===
          ;; side-note: beware of space leaks.
 
@@ -127,28 +153,22 @@
          (define or-else
            (lambda (px py)
              (lambda (state)
-               (let-values ([(reply-x state-x output-x) (px state)])
+               (let-values ([(reply-x state-x output-x want-x) (px state)])
                  (cond
-                   [(equal? reply-x EMPTY-ERROR) (py state)]
-                   [(equal? reply-x EMPTY-OK)    (let-values ([(reply-y state-y output-y) (py state)])
-                                                   (if (eq? (car reply-y) EMPTY)
-                                                       (values EMPTY-OK state-y output-y)
-                                                       (values reply-y  state-y output-y)))]
-                   [else (values reply-x state-x output-x)])))))
+                   [(equal? reply-x EMPTY-ERROR)
+                    (let-values ([(reply-y state-y output-y want-y) (py state)])
+                      (cond
+                        [(equal? reply-y EMPTY-ERROR) (values reply-y state-y output-y (append want-x want-y))]
+                        [(equal? reply-y EMPTY-OK)    (values reply-y state-y output-y (append want-x want-y))]
+                        [else                         (values reply-y state-y output-y want-y)]))]
+                   [(equal? reply-x EMPTY-OK)
+                    (let-values ([(reply-y state-y output-y want-y) (py state)])
+                      (cond
+                        [(equal? reply-y EMPTY-ERROR) (values EMPTY-OK state-y output-y (append want-x want-y))]
+                        [(equal? reply-y EMPTY-OK)    (values EMPTY-OK state-y output-y (append want-x want-y))]
+                        [else                         (values reply-y  state-y output-y want-y)]))]
+                   [else (values reply-x state-x output-x want-x)])))))
 
-
-         ;; === try: LL(∞) ===
-
-         ;; Parser "(try px)" behaves exactly like parser "px" except
-         ;; that it pretends it hasn't consumed any input if "px" fails.
-         ;; This allows combinator "or-else" unlimited lookahead.
-         (define try
-           (lambda (px)
-             (lambda (state)
-               (let-values ([(reply-x state-x output-x) (px state)])
-                 (if (equal? reply-x CONSUMED-ERROR)
-                     (values EMPTY-ERROR state-x output-x)
-                     (values reply-x     state-x output-x))))))
 
          ;; Applies each parser in a list, outputting the result of the first successful parser.
          ;; Also named "asum" within the context of Alternatives.
@@ -259,13 +279,13 @@
                                (s <- sep)
                                (return x)))))
 
-         ;; === chain: repetition with meaningful separators. ===
-         
          ;; Same behavior as "chain-left-1" except a given value "v" is returned for empty sequences.
          (define chain-left
            (lambda (px op v)
              (or-else (chain-left-1 px op)
                       (return v))))
+
+         ;; === chain: repetition with meaningful separators. ===
 
          ;; Parses and evaluates non-empty sequences of items separated by operators that associate left.
          (define chain-left-1
@@ -292,7 +312,7 @@
                                           (y <- (chain-right-1 px op))
                                           (return (f x y)))
                                 (return x)))))
-         
+
          ;; Applies parser "n" number of times. Outputs a list of parsed values.
          ;; If "n" is less than or equal to zero, the parser outputs an empty list for all inputs.
          (define count
