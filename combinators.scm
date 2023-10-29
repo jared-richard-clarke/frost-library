@@ -83,7 +83,7 @@
          ;; Sets parser context to empty.
          (define zero
            (lambda (state)
-             (values EMPTY-ERROR state NONE)))
+             (values EMPTY-ERROR state NONE NONE)))
 
          ;; === functor ===
 
