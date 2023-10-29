@@ -7,6 +7,7 @@
                  CONSUMED-ERROR
                  EMPTY-OK
                  EMPTY-ERROR
+                 NONE
                  state
                  result)
          (import (rnrs base)
@@ -24,6 +25,10 @@
          (define EMPTY-OK       (list EMPTY OK))
          (define EMPTY-ERROR    (list EMPTY ERROR))
 
+         ;; === constants ===
+         (define NONE '())
+
+         ;; === data types ===
          ;; Tracks input as it is consumed by parser.
          (define-record-type state
            (fields input    ;; (list character)
