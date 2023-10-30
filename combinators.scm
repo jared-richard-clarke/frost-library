@@ -104,7 +104,7 @@
                      [line   (state-line   state)]
                      [column (state-column state)])
                  (if (empty? input)
-                     (values EMPTY-ERROR state NONE NONE)
+                     (zero state)
                      (let ([x  (car input)]
                            [xs (cdr input)])
                        (if (test x)
@@ -116,7 +116,7 @@
                                        (make-state xs line (+ column 1)))
                                    x
                                    NONE)
-                           (values EMPTY-ERROR state NONE NONE))))))))
+                           (zero state))))))))
 
          ;; === try: LL(∞) ===
 
