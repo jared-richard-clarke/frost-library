@@ -74,8 +74,8 @@
          (define digits (many-1 digit))
 
          ;; Parses an optional sign and returns its functional equivalent.
-         (define sign (option (or-else (ignore (character #\-) -)
-                                       (ignore (character #\+) +))
+         (define sign (option (or-else (ignore (character #\-) (return -))
+                                       (ignore (character #\+) (return +)))
                               identity))
 
          ;; Creates a parser that converts a sequence of digits into their numerical equivalent using the given radix and parser.
@@ -109,14 +109,14 @@
          ;; [0 ... 0.5 ... 1]
          (define decimal (fractional 10.0 digits)) ;; <- 10.0 ensures number is converted into floating point.
 
-         ;; Parses an optional sign a sequence of digits followed by an optional decimal point and a further sequence of digits
-         ;; and returns a real number in base 10.
+         ;; Parses an optional sign and a sequence of digits followed by an optional decimal point and a further sequence of digits.
+         ;; Returns a real number in base 10.
          ;; [... -4 ... 0 ... 0.25 ... 7.5 ... 11 ...]
          (define real
            (label "real number"
                   (monad-do (f <- sign)
                             (x <- whole)
-                            (y <- (option (monad-do (d <- (character #\.)) decimal) 0))
+                            (y <- (option (ignore (character #\.) decimal) 0))
                             (return (f (+ x y))))))
 
          ;; Parses any letter that satisfies the predicate "char-alphabetic?". 
