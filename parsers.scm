@@ -37,34 +37,38 @@
          
          ;; Creates a parser for any character defined within its string argument.
          (define one-of
-           (lambda (txt)
-             (let ([xs (string->list txt)])
-               (satisfy (lambda (x) (char-in? x xs))))))
+           (lambda (text)
+             (let ([xs (string->list text)])
+               (label (string-append "one of " text)
+                      (satisfy (lambda (x) (char-in? x xs)))))))
 
          ;; Creates a parser for any character not defined within its string argument.
          (define none-of
-           (lambda (txt)
-             (let ([xs (string->list txt)])
-               (satisfy (lambda (x) (not (char-in? x xs)))))))
+           (lambda (text)
+             (let ([xs (string->list text)])
+               (label (string-append "none of ")
+                      (satisfy (lambda (x) (not (char-in? x xs))))))))
 
          ;; Creates a parser for a single character.
          (define character
            (lambda (x)
-             (satisfy (lambda (y) (char=? x y)))))
+             (label x (satisfy (lambda (y) (char=? x y))))))
 
          ;; Parses any unicode character, including whitespace.
          (define any-character
-           (satisfy (lambda (x) (char? x))))
+           (label "any character" (satisfy (lambda (x) (char? x)))))
 
          ;; Parses any digit that satisfies the predicate "char-numeric?".
          (define digit 
-           (satisfy char-numeric?))
+           (label "digit" (satisfy char-numeric?)))
 
          ;; Parses any denary digit: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].
-         (define denary-digit (one-of "0123456789"))
+         (define denary-digit
+           (label "denary digit" (one-of "0123456789")))
 
          ;; Parses any binary digit: [0, 1].
-         (define binary-digit  (one-of "01"))
+         (define binary-digit
+           (label "binary digit" (one-of "01")))
 
          ;; Parses a sequence of one or more digits.
          (define digits (many-1 digit))
@@ -91,14 +95,15 @@
 
          ;; Parses a sequence of digits and returns a whole number in base 10.
          ;; [0, 1, 2 ...]
-         (define whole (base 10 digits))
+         (define whole (label "whole number" (base 10 digits)))
 
          ;; Parses an optional sign followed by a sequence of digits and returns an integer in base 10.
          ;; [... -2, -1, 0, 1, 2 ...]
          (define integer
-           (monad-do (f <- sign)
-                     (x <- whole)
-                     (return (f x))))
+           (label "integer"
+                  (monad-do (f <- sign)
+                            (x <- whole)
+                            (return (f x)))))
 
          ;; Parses a sequence of digits and returns a fraction in base 10.
          ;; [0 ... 0.5 ... 1]
@@ -108,25 +113,27 @@
          ;; and returns a real number in base 10.
          ;; [... -4 ... 0 ... 0.25 ... 7.5 ... 11 ...]
          (define real
-           (monad-do (f <- sign)
-                     (x <- whole)
-                     (y <- (option (monad-do (d <- (character #\.)) decimal) 0))
-                     (return (f (+ x y)))))
-         
+           (label "real number"
+                  (monad-do (f <- sign)
+                            (x <- whole)
+                            (y <- (option (monad-do (d <- (character #\.)) decimal) 0))
+                            (return (f (+ x y))))))
+
          ;; Parses any letter that satisfies the predicate "char-alphabetic?". 
          (define letter
-           (satisfy char-alphabetic?))
+           (label "letter" (satisfy char-alphabetic?)))
 
          ;; Parses a sequence of one or more letters.
-         (define letters (many-1 letter))
+         (define letters
+           (label "letters" (many-1 letter)))
 
          ;; Parses any character that satisfies the predicate "char-upper-case?".
          (define upper-case
-           (satisfy char-upper-case?))
+           (label "uppercase letter" (satisfy char-upper-case?)))
 
          ;; Parses any character that satisfies the predicate "char-lower-case?".
          (define lower-case
-           (satisfy char-lower-case?))
+           (label "lowercase letter" (satisfy char-lower-case?)))
 
          ;; Parses any letter or digit.
          (define alpha-num
@@ -134,7 +141,7 @@
 
          ;; Parses any character that satisfies the predicate "char-whitespace?".
          (define space 
-           (satisfy char-whitespace?))
+           (label "whitespace" (satisfy char-whitespace?)))
 
          ;; Parses zero or more white spaces.
          (define spaces (many space))
@@ -143,7 +150,7 @@
          (define skip-spaces (skip-many space))
 
          ;; Parses a linefeed control character.
-         (define linefeed 
+         (define linefeed
            (or-else (character #\linefeed) (character #\newline)))
          
          ;; Parses a carriage return and linefeed pair, outputting only the linefeed.
@@ -154,13 +161,16 @@
          
          ;; Parses any punctuation as defined by Unicode.
          (define punctuation
-           (satisfy (lambda (x)
-                      (let ([category    (char-general-category x)]
-                            [categories '(Po Ps Pe Pi Pf Pd Pc)])
-                        (symbol-in? category categories)))))
+           (label "punctuation"
+                  (satisfy (lambda (x)
+                             (let ([category    (char-general-category x)]
+                                   [categories '(Po Ps Pe Pi Pf Pd Pc)])
+                               (symbol-in? category categories))))))
 
          ;; Parses any punctuation as defined by ASCII. Subsumed by Unicode.
-         (define punctuation-ascii (one-of "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"))
+         (define punctuation-ascii
+           (label "ascii punctuation"
+                  (one-of "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")))
 
          ;; Creates a parser that removes all whitespace to the left the input parsed by "px".
          (define trim-left
@@ -181,6 +191,6 @@
          (define text
            (lambda (txt)
              (let ([parser (sequence (map character (string->list txt)))])
-               (fmap list->string parser))))
+               (label txt (fmap list->string parser)))))
 
          )
