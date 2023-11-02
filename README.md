@@ -13,7 +13,7 @@ functional programming, and monads.
 
 ## Future Improvements
 
-- [ ] Implement user-friendly error messaging. Currently provides state at location of failure.
+- [x] Implement user-friendly error messaging. Currently provides state at location of failure.
 - [x] Restrict lookahead, **LL(1)**, for `(or-else px py)`. If `px` fails after consuming input, `py` should fail
    without consuming any input. Some grammars, however, require arbitrary lookahead. Lookahead should
    be allowed if required explicitly.
