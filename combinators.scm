@@ -182,11 +182,11 @@
            (lambda (px y)
              (or-else px (return y))))
 
-         ;; Applies parser px. If px succeeds, ignores its result and outputs y.
+         ;; Applies parser px. If px succeeds, ignores its result and outputs parser py.
          (define ignore
-           (lambda (px y)
+           (lambda (px py)
              (monad-do (x <- px)
-                       (return y))))
+                       py)))
 
          ;; Also named ".>>", "left" parses two values and discards the right.
          (define left
