@@ -6,19 +6,19 @@
                  (frost parsers))
          
          ;; Applies a parser to a string and outputs an arbitrary value dictated by the parser.
-         ;; Side Note: prints "reply", "state", "output", and "want" to the standard output for debugging.
+         ;; Side Note: prints "reply", "state", "want", and "output" to the standard output for debugging.
          ;; This is temporary.
          (define parse-string
            (lambda (parser text)
-             (let-values ([(reply state output want)
+             (let-values ([(reply state want output)
                            (parser (make-state (string->list text) 1 0))])
                (begin (write reply)
                       (newline)
                       (write state)
                       (newline)
-                      (write output)
-                      (newline)
                       (write want)
+                      (newline)
+                      (write output)
                       output))))
          
          )
