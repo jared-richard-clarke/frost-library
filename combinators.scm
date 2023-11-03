@@ -52,7 +52,7 @@
          (define return
            (lambda (x)
              (lambda (state)
-               (values EMPTY-OK state x NONE))))
+               (values EMPTY-OK state NONE x))))
 
          ;; Also named ">>=".
          ;; The binding operation benefits combinator parsing twofold:
@@ -71,14 +71,14 @@
          (define bind
            (lambda (px f)
              (lambda (state)
-               (let-values ([(reply-x state-x output-x want-x) (px state)])
+               (let-values ([(reply-x state-x want-x output-x) (px state)])
                  (cond
                    [(equal? reply-x EMPTY-OK)    ((f output-x) state-x)]
-                   [(equal? reply-x EMPTY-ERROR) (values reply-x state-x output-x want-x)]
-                   [(equal? reply-x CONSUMED-OK) (let-values ([(reply-y state-y output-y want-y)
+                   [(equal? reply-x EMPTY-ERROR) (values reply-x state-x want-x output-x)]
+                   [(equal? reply-x CONSUMED-OK) (let-values ([(reply-y state-y want-y output-y)
                                                                ((f output-x) state-x)])
-                                                   (values (cons CONSUMED (cdr reply-y)) state-y output-y want-y))]
-                   [else (values reply-x state-x output-x want-x)])))))
+                                                   (values (cons CONSUMED (cdr reply-y)) state-y want-y output-y))]
+                   [else (values reply-x state-x want-x output-x)])))))
 
          ;; Sets parser context to empty.
          (define zero
@@ -114,8 +114,8 @@
                                    (if (or (char=? x #\linefeed) (char=? x #\newline))
                                        (make-state xs (+ line 1) 0)
                                        (make-state xs line (+ column 1)))
-                                   x
-                                   NONE)
+                                   NONE
+                                   x)
                            (zero state))))))))
 
          ;; === try: LL(∞) ===
@@ -126,20 +126,20 @@
          (define try
            (lambda (px)
              (lambda (state)
-               (let-values ([(reply-x state-x output-x want-x) (px state)])
+               (let-values ([(reply-x state-x want-x output-x) (px state)])
                  (if (equal? reply-x CONSUMED-ERROR)
-                     (values EMPTY-ERROR state-x output-x want-x)
-                     (values reply-x     state-x output-x want-x))))))
+                     (values EMPTY-ERROR state-x want-x output-x)
+                     (values reply-x     state-x want-x output-x))))))
 
          ;; Parser "(label message px)" behaves exactly like parser "px", but
          ;; when it fails without consuming input, it sets "want-x" to "message".
          (define label
            (lambda (message px)
              (lambda (state)
-               (let-values ([(reply-x state-x output-x want-x) (px state)])
+               (let-values ([(reply-x state-x want-x output-x) (px state)])
                  (if (eq? (car reply-x) EMPTY)
-                     (values reply-x state-x output-x (list message))
-                     (values reply-x state-x output-x want-x))))))
+                     (values reply-x state-x (list message) output-x)
+                     (values reply-x state-x want-x output-x))))))
          
          ;; === choice ===
          ;; side-note: beware of space leaks.
@@ -153,21 +153,19 @@
          (define or-else
            (lambda (px py)
              (lambda (state)
-               (let-values ([(reply-x state-x output-x want-x) (px state)])
+               (let-values ([(reply-x state-x want-x output-x) (px state)])
                  (cond
                    [(equal? reply-x EMPTY-ERROR)
-                    (let-values ([(reply-y state-y output-y want-y) (py state)])
-                      (cond
-                        [(equal? reply-y EMPTY-ERROR) (values reply-y state-y output-y (append want-x want-y))]
-                        [(equal? reply-y EMPTY-OK)    (values reply-y state-y output-y (append want-x want-y))]
-                        [else                         (values reply-y state-y output-y want-y)]))]
+                    (let-values ([(reply-y state-y want-y output-y) (py state)])
+                      (if (eq? (car reply-y) EMPTY)
+                          (values reply-y state-y (append want-x want-y) output-y)
+                          (values reply-y state-y want-y output-y)))]
                    [(equal? reply-x EMPTY-OK)
-                    (let-values ([(reply-y state-y output-y want-y) (py state)])
-                      (cond
-                        [(equal? reply-y EMPTY-ERROR) (values EMPTY-OK state-y output-y (append want-x want-y))]
-                        [(equal? reply-y EMPTY-OK)    (values EMPTY-OK state-y output-y (append want-x want-y))]
-                        [else                         (values reply-y  state-y output-y want-y)]))]
-                   [else (values reply-x state-x output-x want-x)])))))
+                    (let-values ([(reply-y state-y want-y output-y) (py state)])
+                      (if (eq? (car reply-y) EMPTY)
+                          (values EMPTY-OK state-y (append want-x want-y) output-y)
+                          (values reply-y state-y want-y output-y)))]
+                   [else (values reply-x state-x want-x output-x)])))))
 
 
          ;; Applies each parser in a list, outputting the result of the first successful parser.
