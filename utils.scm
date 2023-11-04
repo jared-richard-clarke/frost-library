@@ -21,7 +21,7 @@
 
          ;; Inputs a predicate and outputs a function that
          ;; queries whether a value is in a list of values.
-         (define element
+         (define member
            (lambda (test)
              (lambda (x xs)
                (let loop ([x x] [xs xs])
@@ -31,10 +31,10 @@
                    [else (loop x (cdr xs))])))))
 
          ;; Queries whether a character is in a list of characters.
-         (define char-in?   (element char=?))
+         (define char-in?   (member char=?))
 
          ;; Queries whether a symbol is in a list of symbols.
-         (define symbol-in? (element eq?))
+         (define symbol-in? (member eq?))
 
          ;; Composes a series of functions into a single function expression.
          ;; Functions are applied right to left.
