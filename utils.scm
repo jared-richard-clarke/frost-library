@@ -24,11 +24,11 @@
          (define member
            (lambda (test)
              (lambda (x xs)
-               (let loop ([x x] [xs xs])
+               (let loop ([y x] [ys xs])
                  (cond
-                   [(empty? xs) #f]
-                   [(test x (car xs)) #t]
-                   [else (loop x (cdr xs))])))))
+                   [(empty? ys) #f]
+                   [(test y (car ys)) #t]
+                   [else (loop y (cdr ys))])))))
 
          ;; Queries whether a character is in a list of characters.
          (define char-in?   (member char=?))
