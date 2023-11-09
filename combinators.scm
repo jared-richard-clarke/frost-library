@@ -37,7 +37,7 @@
                  (frost data)
                  (frost utils))
 
-         ;; === MONAD ===
+         ;; === MONAD DO SYNTAX ===
 
          ;; The Haskell "do" syntax (simplified). Makes monads readable.
          ;; Renamed "monad-do" because "do" is less descriptive.
@@ -48,6 +48,10 @@
               (bind mx (lambda (x) 
                          (monad-do expression ...)))]))
 
+         ;; === MONAD ===
+         ;;          |-----------------------------------|
+         ;; parser = state -> (reply, state, want, output)
+         
          ;; Wraps a value within a parser.
          (define return
            (lambda (x)
