@@ -49,8 +49,8 @@
                          (monad-do expression ...)))]))
 
          ;; === MONAD ===
-         ;;          |-----------------------------------|
-         ;; parser = state -> (reply, state, want, output)
+         ;;          |---------------------------------|
+         ;; parser = state -> reply, state, want, output
          
          ;; Wraps a value within a parser.
          (define return
