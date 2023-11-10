@@ -9,6 +9,7 @@
                  EMPTY-ERROR
                  NONE
                  state
+                 state-update-char
                  result)
          (import (rnrs base)
                  (rnrs records syntactic))
@@ -31,9 +32,20 @@
          ;; === data types ===
          ;; Tracks input as it is consumed by parser.
          (define-record-type state
-           (fields input    ;; (list character)
+           (fields input    ;; (list any)
                    line     ;; number
-                   column)) ;; number
+                   column   ;; number
+                   update)) ;; function <- Updates the state. Must be defined according to input.
+
+         ;; Updates the state for an input that is a list of characters.
+         (define state-update-char
+           (lambda (char chars line column)
+             ;; Although #\linefeed and #\newline are synonymous
+             ;; older Schemes recognize only #\newline
+             (if (or (char=? char #\linefeed) (char=? char #\newline))
+                 (make-state chars (+ line 1) 0 state-update-char)
+                 (make-state chars line (+ column 1) state-update-char))))
+
 
          ;; Represents either success or failure.
          (define-record-type result
