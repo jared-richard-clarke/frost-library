@@ -8,12 +8,12 @@
 ;; "state" record type to list for deep, structural comparison via "equal?".
 (define parse-compare
   (lambda (parser text)
-    (let-values ([(reply state output)
+    (let-values ([(reply state want output)
                   (parser (make-state (string->list text) 1 0))])
       (let ([input  (state-input  state)]
             [line   (state-line   state)]
             [column (state-column state)])
-        (list reply (list input line column) output)))))
+        (list reply (list input line column) want output)))))
 
 ;; === Unit Tests: Monads, Alternatives, Functors ===
 ;;
