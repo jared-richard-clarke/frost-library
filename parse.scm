@@ -3,6 +3,7 @@
          (import (rnrs base)
                  (rnrs io simple)
                  (frost combinators)
+                 (frost data)
                  (frost parsers))
          
          ;; Applies a parser to a string and outputs an arbitrary value dictated by the parser.
@@ -11,7 +12,7 @@
          (define parse-string
            (lambda (parser text)
              (let-values ([(reply state want output)
-                           (parser (make-state (string->list text) 1 0))])
+                           (parser (make-state (string->list text) 1 0 state-update-char))])
                (begin (write reply)
                       (newline)
                       (write state)
