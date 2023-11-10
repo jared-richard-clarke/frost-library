@@ -106,20 +106,14 @@
              (lambda (state)
                (let ([input  (state-input  state)]
                      [line   (state-line   state)]
-                     [column (state-column state)])
+                     [column (state-column state)]
+                     [update (state-update state)])
                  (if (empty? input)
                      (zero state)
                      (let ([x  (car input)]
                            [xs (cdr input)])
                        (if (test x)
-                           (values CONSUMED-OK
-                                   ;; Although #\linefeed and #\newline are synonymous
-                                   ;; older Schemes recognize only #\newline
-                                   (if (or (char=? x #\linefeed) (char=? x #\newline))
-                                       (make-state xs (+ line 1) 0)
-                                       (make-state xs line (+ column 1)))
-                                   NONE
-                                   x)
+                           (values CONSUMED-OK (update x xs line column) NONE x)
                            (zero state))))))))
 
          ;; === try: LL(∞) ===
