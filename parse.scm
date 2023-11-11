@@ -12,7 +12,7 @@
          (define parse-string
            (lambda (parser text)
              (let-values ([(reply state want output)
-                           (parser (make-state (string->list text) 1 0 state-update-char))])
+                           (parser (make-state (string->list text) 1 0))])
                (begin (write reply)
                       (newline)
                       (write state)
@@ -20,6 +20,9 @@
                       (write want)
                       (newline)
                       (write output)
-                      output))))
+                      (newline)
+                      (if (eq? (cdr reply) ERROR)
+                          (write (make-result ERROR (format-error state want)))
+                          (write (make-result OK    output)))))))
          
          )
