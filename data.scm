@@ -27,7 +27,6 @@
          (define EMPTY-OK       (cons EMPTY OK))
          (define EMPTY-ERROR    (cons EMPTY ERROR))
 
-
          ;; === constants ===
          (define NONE '())
 
@@ -44,7 +43,6 @@
                    unwrap)) ;; any
 
          ;; === error formatting ===
-
          (define EMPTY-STRING "")
          (define COMMA        ", ")
          (define PERIOD       ". ")
