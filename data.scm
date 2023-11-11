@@ -59,12 +59,12 @@
 
          (define format-error
            (lambda (state want)
-             (let ([got  (let ([input (state-input state)])   
-                           (if (< (length input) 1)
-                               GOT-EOL
-                               (string-append GOT (string (car input)))))]
-                   [line   (string-append LINE   (number->string (state-line state) 10))]
-                   [column (string-append COLUMN (number->string (state-column state) 10))]
+             (let ([got      (let ([input (state-input state)])   
+                               (if (< (length input) 1)
+                                   GOT-EOL
+                                   (string-append GOT (string (car input)))))]
+                   [line     (string-append LINE   (number->string (state-line state) 10))]
+                   [column   (string-append COLUMN (number->string (state-column state) 10))]
                    [expected (cond
                                [(empty? want) EMPTY-STRING]
                                [(= (length want) 1) (string-append EXPECTED (car want))]
