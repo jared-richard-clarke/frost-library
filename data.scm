@@ -50,11 +50,11 @@
          (define PERIOD       ". ")
          (define OR           " | ")
          (define NL           "\n")
-         (define LINE         "line: ")
-         (define COLUMN       "column: ")
+         (define LINE         "Line: ")
+         (define COLUMN       "Column: ")
          (define EOL          "<EOL>")
-         (define EXPECTED     "expected: ")
-         (define GOT          "got: ")
+         (define EXPECTED     "Expected: ")
+         (define GOT          "Got: ")
          (define GOT-EOL      (string-append GOT EOL))
 
          (define format-error
