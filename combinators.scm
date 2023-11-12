@@ -105,19 +105,27 @@
            (lambda (test)
              (lambda (state)
                (let ([input  (state-input  state)]
+                     [length (state-length state)]
+                     [offset (state-offset state)]
                      [line   (state-line   state)]
                      [column (state-column state)])
-                 (if (empty? input)
+                 (if (= offset length)
                      (zero state)
-                     (let ([x  (car input)]
-                           [xs (cdr input)])
+                     (let ([x (vector-ref input offset)])
                        (if (test x)
                            (values CONSUMED-OK
-                                   ;; Although #\linefeed and #\newline are synonymous
+                                   ;; Although #\linefeed and #\newline are synonymous,
                                    ;; older Schemes recognize only #\newline
                                    (if (or (char=? x #\linefeed) (char=? x #\newline))
-                                       (make-state xs (+ line 1) 0)
-                                       (make-state xs line (+ column 1)))
+                                       (begin
+                                         (state-offset-set! state (+ offset 1))
+                                         (state-line-set!   state (+ line 1))
+                                         (state-column-set! state 0)
+                                         state)
+                                       (begin
+                                         (state-offset-set! state (+ offset 1))
+                                         (state-column-set! state (+ column 1))
+                                         state))
                                    NONE
                                    x)
                            (zero state))))))))
