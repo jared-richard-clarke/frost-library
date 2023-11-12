@@ -1,6 +1,7 @@
 (library (frost utils)
          (export empty?
                  identity
+                 string->vector
                  char-in?
                  symbol-in?
                  compose
@@ -18,6 +19,11 @@
 
          ;; Outputs a value unchanged.
          (define identity (lambda (x) x))
+
+         ;; Transforms a string into a vector.
+         (define string->vector
+           (lambda (x)
+             (list->vector (string->list x))))
 
          ;; Inputs a predicate and outputs a function that
          ;; queries whether a value is in a list of values.
