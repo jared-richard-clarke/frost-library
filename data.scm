@@ -53,8 +53,8 @@
          (define LINE         "line: ")
          (define COLUMN       "column: ")
          (define EOL          "<EOL>")
-         (define EXPECTED     "Expected: ")
-         (define GOT          "Got: ")
+         (define EXPECTED     "expected: ")
+         (define GOT          "got: ")
          (define GOT-EOL      (string-append GOT EOL))
 
          (define format-error
