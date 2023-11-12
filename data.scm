@@ -33,9 +33,11 @@
          ;; === data types ===
          ;; Tracks input as it is consumed by parser.
          (define-record-type state
-           (fields input    ;; (list char)
-                   line     ;; number
-                   column)) ;; number
+           (fields input              ;; (vector char)
+                   length             ;; number
+                   (mutable offset)   ;; number
+                   (mutable line)     ;; number
+                   (mutable column))) ;; number
 
          ;; A tagged value representing either success or failure.
          (define-record-type result
@@ -57,12 +59,13 @@
 
          (define format-error
            (lambda (state want)
-             (let ([got      (let ([input (state-input state)])   
-                               (if (< (length input) 1)
-                                   GOT-EOL
-                                   (string-append GOT (string (car input)))))]
-                   [line     (string-append LINE   (number->string (state-line state) 10))]
-                   [column   (string-append COLUMN (number->string (state-column state) 10))]
+             (let ([line   (string-append LINE   (number->string (state-line state)   10))]
+                   [column (string-append COLUMN (number->string (state-column state) 10))]
+                   [got  (let ([input  (state-input state)]
+                               [offset (state-offset state)])   
+                           (if (< (vector-length input) 1)
+                               GOT-EOL
+                               (string-append GOT (string (vector-ref input offset)))))]
                    [expected (cond
                                [(empty? want) EMPTY-STRING]
                                [(= (length want) 1) (string-append EXPECTED (car want))]
