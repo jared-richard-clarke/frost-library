@@ -22,7 +22,7 @@
                       (write output)
                       (newline)
                       (if (eq? (cdr reply) ERROR)
-                          (write (make-result ERROR (format-error state want)))
-                          (write (make-result OK    output)))))))
+                          (make-result ERROR (format-error state want))
+                          (make-result OK    output))))))
          
          )
