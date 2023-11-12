@@ -10,8 +10,8 @@
 (define parse-compare
   (lambda (parse parser text)
     (let* ([result (parse parser text)]
-	   [flag   (result-flag result)]
-	   [value  (result-unwrap result)])
+           [flag   (result-flag result)]
+           [value  (result-unwrap result)])
       (list flag value))))
 
 ;; === Unit Tests: Monads, Alternatives, Functors ===
