@@ -6,15 +6,13 @@
         (frost utils))
 
 ;; R6RS does not support structural equality for record types. "parse-compare" converts 
-;; "state" record type to list for deep, structural comparison via "equal?".
+;; "result" record type to list for deep, structural comparison via "equal?".
 (define parse-compare
   (lambda (parse parser text)
-    (let-values ([(reply state want output)
-                  (parse parser text)])
-      (let ([input  (state-input  state)]
-            [line   (state-line   state)]
-            [column (state-column state)])
-        (list reply (list input line column) want output)))))
+    (let* ([result (parse parser text)]
+	   [flag   (result-flag result)]
+	   [value  (result-unwrap result)])
+      (list flag value))))
 
 ;; === Unit Tests: Monads, Alternatives, Functors ===
 ;;
