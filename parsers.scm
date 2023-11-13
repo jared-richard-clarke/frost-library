@@ -46,7 +46,7 @@
          (define none-of
            (lambda (text)
              (let ([xs (string->list text)])
-               (label (string-append "none of ")
+               (label (string-append "none of " text)
                       (satisfy (lambda (x) (not (char-in? x xs))))))))
 
          ;; Creates a parser for a single character.
@@ -190,7 +190,7 @@
          ;; Creates a parser of the provided string.
          (define text
            (lambda (txt)
-             (let ([parser (sequence (map character (string->list txt)))])
+             (let ([parser (apply sequence (map character (string->list txt)))])
                (label txt (fmap list->string parser)))))
 
          )
