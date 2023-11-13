@@ -184,7 +184,7 @@
          ;; Also named "asum" within the context of Alternatives.
          ;; Also named "msum" within the context of Monads.
          (define choice
-           (lambda (parsers)
+           (lambda parsers
              (fold-right or-else zero parsers)))
 
          ;; Applies parser px. If px fails, outputs the value y.
@@ -231,7 +231,7 @@
 
          ;; Applies a list of parsers, only outputting a list of values if all parsers succeed.
          (define sequence
-           (lambda (parsers)
+           (lambda parsers
              (fold-right and-then (return '()) parsers)))
 
          ;; Applies a parser zero or more times. Outputs a list of zero or more parsed values.
@@ -329,6 +329,6 @@
            (lambda (n px)
              (if (<= n 0)
                  (return '())
-                 (sequence (repeat n px)))))
+                 (apply sequence (repeat n px)))))
          
          )
