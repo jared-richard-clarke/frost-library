@@ -71,7 +71,8 @@
            (label "binary digit" (one-of "01")))
 
          ;; Parses a sequence of one or more digits.
-         (define digits (many-1 digit))
+         (define digits
+           (label "digits" (many-1 digit)))
 
          ;; Parses an optional sign and returns its functional equivalent.
          (define sign (option (or-else (ignore (character #\-) (return -))
