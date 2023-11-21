@@ -63,8 +63,8 @@
            (lambda (x)
              (- (char->integer x) (char->integer #\0))))
 
-         ;; Given a radix returns a function that folds sequences of digits into their accumulative
-         ;; numerical equivalents. Radix determines position.
+         ;; Given a radix, returns a function that folds a sequence of character digits into their numerical equivalent.
+         ;; Radix determines base.
          (define fold-digits-by
            (lambda (radix)
              (lambda (xs)
