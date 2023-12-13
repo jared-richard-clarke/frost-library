@@ -3,6 +3,16 @@
 I'm building an experimental parser combinator library to better understand parsing, 
 functional programming, and monads.
 
+## Sources
+
+| source                                                             | author                        |
+|------------------------------------------------------------------- | ----------------------------- |
+| Monadic Parser Combinators                                         | Graham Hutton and Eric Meijer |
+| Functional Pearls                                                  | Graham Hutton and Eric Meijer |
+| Parsec: Direct Style Monadic Parser Combinators For The Real World | Daan Leijen and Erik Meijer   |
+| Understanding Parser Combinators                                   | Scott Wlaschin                |
+| [Haskell Parsec](https://github.com/haskell/parsec)                | Daan Leijen                   |
+
 ## About
 
 > "In functional programming, a popular approach to building recursive descent parsers
@@ -13,10 +23,10 @@ functional programming, and monads.
 
 ## Future Improvements
 
-- [x] Implement user-friendly error messaging. Currently provides state at location of failure.
+- [x] Implement user-friendly error messaging.
 - [x] Restrict lookahead, **LL(1)**, for `(or-else px py)`. If `px` fails after consuming input, `py` should fail
    without consuming any input. Some grammars, however, require arbitrary lookahead. Lookahead should
-   be allowed if required explicitly.
+   be allowed if required explicitly. This technique was pioneered by Dan Leijen and Erik Meijer for Haskell Parsec.
 
 > Naive implementations of backtracking parser combinators suffer from a space leak.
 > The problem originates in the definition of the `choice` combinator. It either
