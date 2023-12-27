@@ -41,8 +41,8 @@
 
          ;; A tagged value representing either success or failure.
          (define-record-type result
-           (fields flag     ;; OK | ERROR
-                   unwrap)) ;; any
+           (fields flag    ;; OK | ERROR
+                   value)) ;; any
 
          ;; === error formatting ===
          (define EMPTY-STRING "")
