@@ -11,7 +11,7 @@
   (lambda (parse parser text)
     (let* ([result (parse parser text)]
            [flag   (result-flag result)]
-           [value  (result-unwrap result)])
+           [value  (result-value result)])
       (list flag value))))
 
 ;; === Unit Tests: Monads, Alternatives, Functors ===
