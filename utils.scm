@@ -1,6 +1,5 @@
 (library (frost utils)
-         (export empty?
-                 identity
+         (export identity
                  string->vector
                  char-in?
                  symbol-in?
@@ -12,10 +11,6 @@
          (import (rnrs base)
                  (rnrs lists)
                  (rnrs control))
-         
-         ;; Provides alias for "null?".
-         ;; In Scheme, "null" describes an empty list.
-         (define empty? null?)
 
          ;; Outputs a value unchanged.
          (define identity (lambda (x) x))
@@ -32,7 +27,7 @@
              (lambda (x xs)
                (let loop ([y x] [ys xs])
                  (cond
-                   [(empty? ys) #f]
+                   [(null? ys) #f]
                    [(test y (car ys)) #t]
                    [else (loop y (cdr ys))])))))
 
