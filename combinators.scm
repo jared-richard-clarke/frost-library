@@ -13,7 +13,7 @@
                  or-else
                  choice
                  option
-                 ignore
+                 replace
                  left
                  right
                  between
@@ -197,7 +197,7 @@
              (or-else px (return y))))
 
          ;; Applies parser px. If px succeeds, ignores its result and outputs value y.
-         (define ignore
+         (define replace
            (lambda (px y)
              (monad-do (x <- px)
                        y)))
