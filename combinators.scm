@@ -4,6 +4,7 @@
                  return
                  bind
                  zero
+                 fail
                  fmap
                  satisfy
                  try
@@ -84,11 +85,14 @@
                                                    (values (cons CONSUMED (cdr reply-y)) state-y want-y output-y))]
                    [else (values reply-x state-x want-x output-x)])))))
 
-         ;; Sets parser context to empty.
-         (define zero
+         ;; Sets parser context to an empty but successful state. Similar to an epsilon in formal grammars.
+         (define zero (return NONE))
+
+         ;; Sets parser context to a failing state.
+         (define fail
            (lambda (state)
              (values EMPTY-ERROR state NONE NONE)))
-
+         
          ;; === functor ===
 
          ;; Reaches inside a parser and transforms its output with an arbitrary function.
@@ -110,7 +114,7 @@
                      [line   (state-line   state)]
                      [column (state-column state)])
                  (if (= offset length)
-                     (zero state)
+                     (fail state)
                      (let ([x (vector-ref input offset)])
                        (if (test x)
                            (values CONSUMED-OK
@@ -128,7 +132,7 @@
                                          state))
                                    NONE
                                    x)
-                           (zero state))))))))
+                           (fail state))))))))
 
          ;; === try: LL(∞) ===
 
@@ -185,7 +189,7 @@
          ;; Also named "msum" within the context of Monads.
          (define choice
            (lambda parsers
-             (fold-right or-else zero parsers)))
+             (fold-right or-else fail parsers)))
 
          ;; Applies parser px. If px fails, outputs the value y.
          (define option
@@ -232,13 +236,13 @@
          ;; Applies a list of parsers, only outputting a list of values if all parsers succeed.
          (define sequence
            (lambda parsers
-             (fold-right and-then (return '()) parsers)))
+             (fold-right and-then zero parsers)))
 
          ;; Applies a parser zero or more times. Outputs a list of zero or more parsed values.
          (define many
            (lambda (px)
              (or-else (many-1 px)
-                      (return '()))))
+                      zero)))
 
          ;; Applies a parser one or more times. Only outputs a list of one or more parsed values.
          (define many-1
@@ -253,7 +257,7 @@
              (define scan
                (lambda ()
                  (or-else (monad-do (x <- px) (scan))
-                          (return '()))))
+                          zero)))
              (scan)))
 
          ;; Parses zero or more occurrences of parser "px" separated by parser "sep".
@@ -261,7 +265,7 @@
          (define sep-by
            (lambda (px sep)
              (or-else (sep-by-1 px sep)
-                      (return '()))))
+                      zero)))
 
          ;; Parses one or more occurrences of parser "px" separated by parser "sep".
          ;; Only outputs a list of one or more parsed values.
@@ -328,7 +332,7 @@
          (define count
            (lambda (n px)
              (if (<= n 0)
-                 (return '())
+                 zero
                  (apply sequence (repeat n px)))))
          
          )
