@@ -75,8 +75,8 @@
            (label "digits" (many-1 digit)))
 
          ;; Parses an optional sign and returns its functional equivalent.
-         (define sign (option (or-else (swap (character #\-) (return -))
-                                       (swap (character #\+) (return +)))
+         (define sign (option (or-else (replace (character #\-) (return -))
+                                       (replace (character #\+) (return +)))
                               identity))
 
          ;; Creates a parser that converts a sequence of digits into their numerical equivalent using the given radix and parser.
@@ -117,7 +117,7 @@
            (label "real number"
                   (monad-do (f <- sign)
                             (x <- whole)
-                            (y <- (option (swap (character #\.) decimal) 0))
+                            (y <- (option (replace (character #\.) decimal) 0))
                             (return (f (+ x y))))))
 
          ;; Parses any letter that satisfies the predicate "char-alphabetic?". 
