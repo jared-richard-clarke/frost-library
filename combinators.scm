@@ -12,7 +12,7 @@
          ;; === choices ===
                  or-else
                  choice
-                 option
+                 optional
                  replace
                  left
                  right
@@ -193,7 +193,7 @@
          
          ;; Applies parser px. Returns the result of px if px succeeds.
          ;; Returns an empty result if px fails.
-         (define option
+         (define optional
            (lambda (px)
              (or-else px zero)))
 
