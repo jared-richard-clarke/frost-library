@@ -12,6 +12,7 @@
          ;; === choices ===
                  or-else
                  choice
+                 option
                  optional
                  replace
                  left
@@ -191,6 +192,12 @@
            (lambda parsers
              (fold-right or-else fail parsers)))
 
+         ;; Applies parser px. Returns the result of px if px succeeds.
+         ;; Returns value y if px fails.
+         (define option
+           (lambda (px y)
+             (or-else px (return y))))
+         
          ;; Applies parser px. Succeeds regardless of whether px succeeds or fails.
          ;; Returns the result of px if px succeeds. Returns an empty result if px fails.
          (define optional
