@@ -13,6 +13,7 @@
                  or-else
                  choice
                  optional
+                 either
                  replace
                  left
                  right
@@ -196,6 +197,12 @@
          (define optional
            (lambda (px)
              (or-else px zero)))
+
+         ;; Applies parser px. Returns the result of px if px succeeds.
+         ;; Returns arbitrary value y if px fails.
+         (define either
+           (lambda (px y)
+             (or-else px (return y))))
 
          ;; Applies parser px. If px succeeds, replaces its result with value y.
          (define replace
