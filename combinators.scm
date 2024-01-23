@@ -122,15 +122,8 @@
                                    ;; Although #\linefeed and #\newline are synonymous,
                                    ;; older Schemes recognize only #\newline
                                    (if (or (char=? x #\linefeed) (char=? x #\newline))
-                                       (begin
-                                         (state-offset-set! state (+ offset 1))
-                                         (state-line-set!   state (+ line 1))
-                                         (state-column-set! state 0)
-                                         state)
-                                       (begin
-                                         (state-offset-set! state (+ offset 1))
-                                         (state-column-set! state (+ column 1))
-                                         state))
+                                       (make-state input length (+ offset 1) (+ line 1) 0)
+                                       (make-state input length (+ offset 1) line (+ column 1)))
                                    NONE
                                    x)
                            (fail state))))))))
