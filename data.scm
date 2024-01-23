@@ -33,11 +33,11 @@
          ;; === data types ===
          ;; Tracks input as it is consumed by parser.
          (define-record-type state
-           (fields input              ;; (vector char)
-                   length             ;; number
-                   (mutable offset)   ;; number
-                   (mutable line)     ;; number
-                   (mutable column))) ;; number
+           (fields input    ;; (vector char)
+                   length   ;; number
+                   offset   ;; number
+                   line     ;; number
+                   column)) ;; number
 
          ;; A tagged value representing either success or failure.
          (define-record-type result
