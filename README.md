@@ -12,7 +12,7 @@ functional programming, and monads.
 | Functional Pearls                                                  | Graham Hutton and Eric Meijer |
 | Parsec: Direct Style Monadic Parser Combinators For The Real World | Daan Leijen and Erik Meijer   |
 | Understanding Parser Combinators                                   | Scott Wlaschin                |
-| [Haskell Parsec](https://github.com/haskell/parsec)                | Daan Leijen                   |
+| Haskell Parsec                                                     | Daan Leijen                   |
 
 ## About
 
