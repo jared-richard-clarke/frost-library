@@ -7,6 +7,7 @@ functional programming, and monads.
 
 | source                                                             | author                        |
 |------------------------------------------------------------------- | ----------------------------- |
+| Monads for Functional Programming                                  | Philip Wadler                 |
 | Monadic Parser Combinators                                         | Graham Hutton and Eric Meijer |
 | Functional Pearls                                                  | Graham Hutton and Eric Meijer |
 | Parsec: Direct Style Monadic Parser Combinators For The Real World | Daan Leijen and Erik Meijer   |
