@@ -90,7 +90,7 @@
          ;; "empty" is an alias for "return", the identity for sequencing operations.
          (define empty return)
 
-         ;; Sets parser context to a failing state.
+         ;; Sets parser context to a failing state. The identity for choice operations.
          (define fail
            (lambda (state)
              (values EMPTY-ERROR state NONE NONE)))
