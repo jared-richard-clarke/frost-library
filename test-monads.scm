@@ -55,12 +55,12 @@
 
 ;; zero <|> px = px <- Identity
 (assert equal?
-        (compare parse (or-else zero (character #\a)) test-data)
+        (compare parse (or-else fail (character #\a)) test-data)
         (compare parse (character #\a)                test-data))
 
 ;; px <|> zero = px <- Identity
 (assert equal?
-        (compare parse (or-else (character #\a) zero) test-data)
+        (compare parse (or-else (character #\a) fail) test-data)
         (compare parse (character #\a)                test-data))
 
 ;; px <|> (py <|> pz) = (px <|> py) <|> pz <- Associativity
