@@ -87,7 +87,8 @@
                    [else (values reply-x state-x want-x output-x)])))))
 
          ;; Sets parser context to an empty but successful state. Similar to an epsilon in formal grammars.
-         (define empty (return NONE))
+         ;; "empty" is an alias for "return", the identity for sequencing operations.
+         (define empty return)
 
          ;; Sets parser context to a failing state.
          (define fail
@@ -189,7 +190,7 @@
          ;; Returns an empty result if px fails.
          (define optional
            (lambda (px)
-             (or-else px empty)))
+             (or-else px (empty '()))))
 
          ;; Applies parser px. Returns the result of px if px succeeds.
          ;; Returns arbitrary value y if px fails.
@@ -237,13 +238,13 @@
          ;; Applies a list of parsers, only outputting a list of values if all parsers succeed.
          (define sequence
            (lambda parsers
-             (fold-right and-then empty parsers)))
+             (fold-right and-then (empty '()) parsers)))
 
          ;; Applies a parser zero or more times. Outputs a list of zero or more parsed values.
          (define many
            (lambda (px)
              (or-else (many-1 px)
-                      empty)))
+                      (empty '()))))
 
          ;; Applies a parser one or more times. Only outputs a list of one or more parsed values.
          (define many-1
@@ -258,7 +259,7 @@
              (define scan
                (lambda ()
                  (or-else (monad-do (x <- px) (scan))
-                          empty)))
+                          (empty '()))))
              (scan)))
 
          ;; Parses zero or more occurrences of parser "px" separated by parser "sep".
@@ -266,7 +267,7 @@
          (define sep-by
            (lambda (px sep)
              (or-else (sep-by-1 px sep)
-                      empty)))
+                      (empty '()))))
 
          ;; Parses one or more occurrences of parser "px" separated by parser "sep".
          ;; Only outputs a list of one or more parsed values.
@@ -333,7 +334,7 @@
          (define count
            (lambda (n px)
              (if (<= n 0)
-                 empty
+                 (empty '())
                  (apply sequence (repeat n px)))))
          
          )
