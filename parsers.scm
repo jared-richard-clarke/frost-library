@@ -26,6 +26,7 @@
                  trim-left
                  trim-right
                  trim
+                 chunk
                  text)
          (import (rnrs base)
                  (rnrs unicode)
@@ -188,6 +189,12 @@
            (lambda (px)
              (between skip-spaces px skip-spaces)))
 
+         ;; Parses chunk of consecutive non-whitespace characters.
+         (define chunk
+           (label "text chunk"
+                  (fmap list->string
+                        (many-1 (satisfy (lambda (x) (not (char-whitespace? x))))))))
+         
          ;; Creates a parser of the provided string.
          (define text
            (lambda (txt)
