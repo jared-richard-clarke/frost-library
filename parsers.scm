@@ -2,7 +2,7 @@
          (export one-of
                  none-of
                  character
-                 any-character
+                 any
                  digit
                  denary-digit
                  binary-digit
@@ -56,7 +56,7 @@
              (label x (satisfy (lambda (y) (char=? x y))))))
 
          ;; Parses any unicode character, including whitespace.
-         (define any-character
+         (define any
            (label "any character" (satisfy (lambda (x) (char? x)))))
 
          ;; Parses any digit that satisfies the predicate "char-numeric?".
