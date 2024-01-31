@@ -48,7 +48,7 @@ functional programming, and monads.
    without consuming any input. Some grammars, however, require arbitrary lookahead. Lookahead should
    be allowed if required explicitly. This technique was pioneered by Dan Leijen and Erik Meijer for Parsec.
 
-- [ ] Parameterize input. Currently inputs only strings.
+- [ ] Parameterize input. Currently supports only strings.
 
 ## Side Note About Applicatives: `apply` or `<*>`
 
