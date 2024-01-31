@@ -1,6 +1,6 @@
 # Frost: a parser combinator library
 
-I'm building an experimental parser combinator library to better understand parsing, 
+I built an experimental parser combinator library to better understand parsing, 
 functional programming, and monads.
 
 > "In functional programming, a popular approach to building recursive descent parsers
@@ -39,6 +39,16 @@ functional programming, and monads.
 
 - D. Leijen, P. Martini, and A. Latter, "Parsec: Monadic Parser Combinators" (3.1.17.0).
   Available: https://hackage.haskell.org/package/parsec (accessed Jan. 30, 2024).
+
+## Future Improvements
+
+- [x] Implement user-friendly error messaging.
+
+- [x] Restrict lookahead, **LL(1)**, for `(or-else px py)`. If `px` fails after consuming input, `py` should fail
+   without consuming any input. Some grammars, however, require arbitrary lookahead. Lookahead should
+   be allowed if required explicitly. This technique was pioneered by Dan Leijen and Erik Meijer for Parsec.
+
+- [ ] Parameterize input. Currently inputs only strings.
 
 ## Side Note About Applicatives: `apply` or `<*>`
 
