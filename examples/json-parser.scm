@@ -10,7 +10,6 @@
 (define comma      (character #\,))
 (define colon      (character #\:))
 (define quote-mark (character #\"))
-(define one-nine   (one-of "123456789"))
 (define exponent   (one-of "eE"))
 
 ;; json ::= element
