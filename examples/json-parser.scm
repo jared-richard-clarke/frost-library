@@ -86,8 +86,8 @@
 ;; number ::= integer fraction exponent
 (define json-number
   (monad-do (r <- real)
-            (e <- (either (replace exponent real) 1))
-            (return (* r e))))
+            (e <- (either (replace exponent integer) 0))
+            (return (* r (expt 10 e)))))
 
 (define json-true  (text "true"))
 (define json-false (text "false"))
