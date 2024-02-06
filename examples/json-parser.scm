@@ -7,25 +7,22 @@
 
 ;; === json parser ===
 
-(define json-true  (text "true"))
-(define json-false (text "false"))
-(define json-null  (text "null"))
-(define comma (character #\,))
-(define colon (character #\:))
+(define comma      (character #\,))
+(define colon      (character #\:))
 (define quote-mark (character #\"))
+(define one-nine   (one-of "123456789"))
+(define exponent   (one-of "eE"))
 
-(define escape-character
-  (choice quote-mark
-          (character #\\)
-          (character #\/)
-          (character #\backspace)
-          (character #\page)
-          linefeed
-          (character #\return)
-          tab))
+;; json ::= element
+(define json json-element)
 
-(define json (lambda (xs) (json-element xs)))
-
+;; value ::= object
+;;         | array
+;;         | string
+;;         | number
+;;         | "true"
+;;         | "false"
+;;         | "null"
 (define json-value
   (choice json-object
           json-array
@@ -35,33 +32,64 @@
           json-false
           json-null))
 
+;; object ::= "{" spaces "}"
+;;          | "{" members "}"
 (define json-object
   (between (character #\{)
            (choice json-members skip-spaces)
            (character #\})))
 
-(define json-members (sep-by-1 json-member comma))
+;; members ::= member
+;;           | member "," members
+(define json-members
+  (sep-by-1 json-member comma))
 
+;; member ::= spaces string spaces ":" element
 (define json-member
   (monad-do (key   <- (trim json-string))
             (col   <- colon)
             (value <- json-element)
             (return (list key ': value))))
 
+;; array ::= "[" spaces "]"
+;;         | "[" elements "]"
 (define json-array
   (between (character #\[)
            (choice json-elements skip-spaces)
            (character #\])))
 
-(define json-elements (sep-by-1 json-element comma))
+;; elements ::= element
+;;            | element "," elements
+(define json-elements
+  (sep-by-1 json-element comma))
 
-(define json-element (trim json-value))
+;; element ::= spaces value spaces
+(define json-element
+  (trim json-value))
 
+;; string ::= '"' characters '"'
 (define json-string
   (between quote-mark
            json-characters
            quote-mark))
 
-(define json-characters (many json-character))
+;; characters ::= "" | character characters
+(define json-characters
+  (many json-character))
 
-(define json-character (none-of "\""))
+;; character ::= '0020' . '10FFFF' - '"' - '\'
+;;             | '\' escape
+;;
+;; escape ::= '"' | '\' | '/' | 'b' | 'f' | 'n' | 'r' | 't'
+(define json-character
+  (none-of "\""))
+
+;; number ::= integer fraction exponent
+(define json-number
+  (monad-do (r <- real)
+            (e <- (either (replace exponent real) 1))
+            (return (* r e))))
+
+(define json-true  (text "true"))
+(define json-false (text "false"))
+(define json-null  (text "null"))
