@@ -56,18 +56,21 @@
          (define EXPECTED     "Expected: ")
          (define GOT          "Got: ")
          (define GOT-EOL      (string-append GOT EOL))
+         (define GOT-EMPTY    (string-append GOT "empty string"))
 
          (define format-error
            (lambda (state want)
              (let ([line   (string-append LINE   (number->string (state-line state)   10))]
                    [column (string-append COLUMN (number->string (state-column state) 10))]
-                   [got  (let ([input  (state-input state)]
-                               [offset (state-offset state)])   
-                           (if (< (vector-length input) 1)
-                               GOT-EOL
-                               (string-append GOT (string (vector-ref input offset)))))]
+                   [got  (let* ([input  (state-input state)]
+                                [offset (state-offset state)]
+                                [length (vector-length input)])   
+                           (cond
+                             [(< length 1) GOT-EMPTY]
+                             [(<= length offset) GOT-EOL]
+                             [else (string-append GOT (string (vector-ref input offset)))]))]
                    [expected (cond
-                               [(empty? want) EMPTY-STRING]
+                               [(null? want) EMPTY-STRING]
                                [(= (length want) 1) (string-append EXPECTED (car want))]
                                [else (apply string-append (cons EXPECTED
                                                                 (cons (car want)
