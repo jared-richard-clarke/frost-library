@@ -1,7 +1,6 @@
 (library (frost parse)
          (export parse)
          (import (rnrs base)
-                 (rnrs io simple)
                  (frost combinators)
                  (frost data)
                  (frost parsers))
