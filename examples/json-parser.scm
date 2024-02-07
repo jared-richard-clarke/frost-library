@@ -56,7 +56,7 @@
     ((monad-do (key   <- (trim json-string))
                (col   <- colon)
                (value <- json-element)
-               (return (list key ': value)))
+               (return (cons key value)))
      state)))
 
 ;; array ::= "[" spaces "]"
