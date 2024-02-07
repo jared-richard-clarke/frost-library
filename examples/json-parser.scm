@@ -17,7 +17,7 @@
 (define keyword
   (lambda (txt value)
     (let ([parser (apply sequence (map character (string->list txt)))])
-      (label txt (replace parser (return value))))))
+      (label (string-append "keyword: " txt) (replace parser (return value))))))
 
 ;; json ::= element
 (define json
