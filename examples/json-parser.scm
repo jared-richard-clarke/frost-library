@@ -14,6 +14,10 @@
 (define colon      (character #\:))
 (define quote-mark (character #\"))
 (define exponent   (one-of "eE"))
+(define keyword
+  (lambda (txt value)
+    (let ([parser (apply sequence (map character (string->list txt)))])
+      (label txt (replace parser (return value))))))
 
 ;; json ::= element
 (define json
@@ -117,6 +121,6 @@
                       (return (* r (expt 10.0 e)))))
      state)))
 
-(define json-true  (text "true"))
-(define json-false (text "false"))
-(define json-null  (text "null"))
+(define json-true  (keyword "true" 'true))
+(define json-false (keyword "false" 'false))
+(define json-null  (keyword "null" 'null))
