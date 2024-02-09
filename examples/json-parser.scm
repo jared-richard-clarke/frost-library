@@ -7,8 +7,8 @@
 
 ;; === json parser ===
 
-(define object-label 'object)
-(define array-label  'array)
+(define OBJECT 'object)
+(define ARRAY 'array)
 
 (define comma      (character #\,))
 (define colon      (character #\:))
@@ -17,12 +17,12 @@
 (define keyword
   (lambda (txt value)
     (let ([parser (apply sequence (map character (string->list txt)))])
-      (label (string-append "keyword: " txt) (replace parser (return value))))))
+      (label txt (replace parser (return value))))))
 
 ;; json ::= element
 (define json
-  (lambda (state)
-    (json-element state)))
+  (lambda (input)
+    (json-element input)))
 
 ;; value ::= object
 ;;         | array
@@ -32,7 +32,7 @@
 ;;         | "false"
 ;;         | "null"
 (define json-value
-  (lambda (state)
+  (lambda (input)
     ((choice json-object
              json-array
              json-string
@@ -40,86 +40,86 @@
              json-true
              json-false
              json-null)
-     state)))
+     input)))
 
 ;; object ::= "{" spaces "}"
 ;;          | "{" members "}"
 (define json-object
-  (lambda (state)
+  (lambda (input)
     ((label "object: {...}"
             (monad-do (ms <- (between (character #\{)
                                       (choice json-members skip-spaces)
                                       (character #\})))
-                      (return (cons object-label ms))))
-     state)))
+                      (return (cons OBJECT ms))))
+     input)))
 
 ;; members ::= member
 ;;           | member "," members
 (define json-members
-  (lambda (state)
-    ((sep-by-1 json-member comma) state)))
+  (lambda (input)
+    ((sep-by-1 json-member comma) input)))
 
 ;; member ::= spaces string spaces ":" element
 (define json-member
-  (lambda (state)
+  (lambda (input)
     ((monad-do (key   <- (trim json-string))
                (col   <- colon)
                (value <- json-element)
                (return (list key value)))
-     state)))
+     input)))
 
 ;; array ::= "[" spaces "]"
 ;;         | "[" elements "]"
 (define json-array
-  (lambda (state)
+  (lambda (input)
     ((label "array: [...]"
             (monad-do (es <- (between (character #\[)
                                       (choice json-elements skip-spaces)
                                       (character #\])))
-                      (return (cons array-label es))))
-     state)))
+                      (return (cons ARRAY es))))
+     input)))
 
 ;; elements ::= element
 ;;            | element "," elements
 (define json-elements
-  (lambda (state)
-    ((sep-by-1 json-element comma) state)))
+  (lambda (input)
+    ((sep-by-1 json-element comma) input)))
 
 ;; element ::= spaces value spaces
 (define json-element
-  (lambda (state)
-    ((trim json-value) state)))
+  (lambda (input)
+    ((trim json-value) input)))
 
 ;; string ::= '"' characters '"'
 (define json-string
-  (lambda (state)
+  (lambda (input)
     ((label "string: \"...\""
             (between quote-mark
                      (fmap list->string json-characters)
                      quote-mark))
-     state)))
+     input)))
 
 ;; characters ::= "" | character characters
 (define json-characters
-  (lambda (state)
-    ((many json-character) state)))
+  (lambda (input)
+    ((many json-character) input)))
 
 ;; character ::= '0020' . '10FFFF' - '"' - '\'
 ;;             | '\' escape
 ;;
 ;; escape ::= '"' | '\' | '/' | 'b' | 'f' | 'n' | 'r' | 't'
 (define json-character
-  (lambda (state)
-    ((none-of "\"") state)))
+  (lambda (input)
+    ((none-of "\"") input)))
 
 ;; number ::= integer fraction exponent
 (define json-number
-  (lambda (state)
+  (lambda (input)
     ((label "number"
             (monad-do (r <- real)
                       (e <- (either (replace exponent integer) 0))
                       (return (* r (expt 10.0 e)))))
-     state)))
+     input)))
 
 (define json-true  (keyword "true" 'true))
 (define json-false (keyword "false" 'false))
