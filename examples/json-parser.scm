@@ -7,8 +7,8 @@
 
 ;; === json parser ===
 
-(define OBJECT 'object)
-(define ARRAY 'array)
+(define OBJECT 'Object)
+(define ARRAY 'Array)
 
 (define comma      (character #\,))
 (define colon      (character #\:))
