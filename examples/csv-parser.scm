@@ -9,8 +9,8 @@
 
 (define comma      (character #\,))
 (define quote-mark (character #\"))
-(define header-label 'Header)
-(define row-label    'Row)
+(define HEADER 'Header)
+(define ROW 'Row)
 
 ;; csv ::= header row+ EOF
 (define csv
@@ -21,7 +21,7 @@
 (define csv-header
   (lambda (input)
     ((monad-do (hr <- csv-row)
-               (return (cons header-label hr)))
+               (return (cons HEADER hr)))
      input)))
 
 ;; row ::= field ("," field)* "\n"
@@ -29,7 +29,7 @@
   (lambda (input)
     ((monad-do (fs <- (sep-by-1 csv-field comma))
                (lf <- linefeed)
-               (return (cons row-label fs)))
+               (return (cons ROW fs)))
      input)))
 
 ;; field ::= text | string
