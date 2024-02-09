@@ -9,44 +9,43 @@
 
 (define comma      (character #\,))
 (define quote-mark (character #\"))
-(define header-label 'header)
-(define body-label  'body)
-(define row-label    'row)
+(define header-label 'Header)
+(define row-label    'Row)
 
 ;; csv ::= header row+ EOF
 (define csv
-  (lambda (state)
-    ((sequence csv-header (many-1 csv-row)) state)))
+  (lambda (input)
+    ((sequence csv-header (many-1 csv-row)) input)))
 
 ;; header ::= row
 (define csv-header
-  (lambda (state)
+  (lambda (input)
     ((monad-do (hr <- csv-row)
                (return (cons header-label hr)))
-     state)))
+     input)))
 
 ;; row ::= field ("," field)* "\n"
 (define csv-row
-  (lambda (state)
+  (lambda (input)
     ((monad-do (fs <- (sep-by-1 csv-field comma))
                (lf <- linefeed)
                (return (cons row-label fs)))
-     state)))
+     input)))
 
 ;; field ::= text | string
 (define csv-field
-  (lambda (state)
-    ((choice csv-text csv-string) state)))
+  (lambda (input)
+    ((choice csv-text csv-string) input)))
 
 ;; text ::= ![,\n"]+
 (define csv-text
-  (lambda (state)
-    ((fmap list->string (many-1 (none-of ",\n\""))) state)))
+  (lambda (input)
+    ((fmap list->string (many-1 (none-of ",\n\""))) input)))
 
 ;; string ::= '"' !('"')* '"'
 (define csv-string
-  (lambda (state)
+  (lambda (input)
     ((between quote-mark
               (fmap list->string (many (none-of "\"")))
               quote-mark)
-     state)))
+     input)))
