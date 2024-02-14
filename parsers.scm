@@ -10,6 +10,7 @@
                  whole
                  integer
                  real
+                 rational
                  letter
                  letters
                  upper-case
@@ -75,51 +76,55 @@
          (define digits
            (label "digits" (many-1 digit)))
 
-         ;; Parses an optional sign and returns its functional equivalent.
-         (define sign (either (or-else (replace (character #\-) (return -))
-                                       (replace (character #\+) (return +)))
-                              identity))
+         ;; Helper function parses an optional sign: +|-
+         (define sign
+           (optional (or-else (character #\-)
+                              (character #\+))))
 
-         ;; Creates a parser that converts a sequence of digits into their numerical equivalent using the given radix and parser.
+         ;; Helper function parses an optional fraction component: .[0-9]
+         (define fraction
+           (optional (sequence (character #\.) digits)))
+
+         ;; Creates a parser that converts a sequence of digits into their numerical equivalent
+         ;; using the given radix and parser.
          (define base
            (lambda (radix parser)
              (monad-do (xs <- parser)
-                       (let ([number ((fold-digits-by radix) xs)])
-                         (return number)))))
+                       (let ([number (string->number (list->string xs) radix)])
+                         (if (not (number? number))
+                             fail
+                             (return number))))))
 
-         ;; Creates a parser that converts a sequence of digits into their fractional numerical equivalent using the given radix and parser.
-         (define fractional
-           (lambda (radix parser)
-             (monad-do (xs <- parser)
-                       (let ([power  (expt radix (length xs))]
-                             [number ((fold-digits-by radix) xs)])
-                         (return (/ number power))))))
-
-         ;; Parses a sequence of digits and returns a whole number in base 10.
+         ;; Parses and returns a whole number in base 10. 
          ;; [0, 1, 2 ...]
          (define whole (label "whole number" (base 10 digits)))
 
-         ;; Parses an optional sign followed by a sequence of digits and returns an integer in base 10.
+         ;; Parses and returns an integer in base 10.
          ;; [... -2, -1, 0, 1, 2 ...]
          (define integer
            (label "integer"
-                  (monad-do (f <- sign)
-                            (x <- whole)
-                            (return (f x)))))
+                  (base 10 (monad-do (s <- sign)
+                                     (x <- digits)
+                                     (return (append s x))))))
 
-         ;; Parses a sequence of digits and returns a fraction in base 10.
-         ;; [0 ... 0.5 ... 1]
-         (define decimal (fractional 10.0 digits)) ;; <- 10.0 ensures number is converted into floating point.
-
-         ;; Parses an optional sign and a sequence of digits followed by an optional decimal point and a further sequence of digits.
-         ;; Returns a real number in base 10.
+         ;; Parses and returns a real number in base 10.
          ;; [... -4 ... 0 ... 0.25 ... 7.5 ... 11 ...]
          (define real
            (label "real number"
-                  (monad-do (f <- sign)
-                            (x <- whole)
-                            (y <- (either (replace (character #\.) decimal) 0))
-                            (return (f (+ x y))))))
+                  (base 10 (monad-do (s <- sign)
+                                     (x <- digits)
+                                     (y <- fraction)
+                                     (return (append s x y))))))
+
+         ;; Parses and returns a rational number in base 10.
+         ;; [...-1/2 ... 3/4 ... 7/11 ...]
+         (define rational
+           (label "rational number"
+                  (base 10 (monad-do (s <- sign)
+                                     (x <- digits)
+                                     (y <- (character #\/))
+                                     (z <- digits)
+                                     (return (append s x (cons y z)))))))
 
          ;; Parses any letter that satisfies the predicate "char-alphabetic?". 
          (define letter
