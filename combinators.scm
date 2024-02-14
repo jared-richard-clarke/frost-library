@@ -152,14 +152,14 @@
                      (values reply-x state-x want-x output-x))))))
          
          ;; === choice ===
-         ;; side-note: beware of space leaks.
+         ;; side-note: Beware of space leaks via catastrophic backtracking.
 
          ;; Applies parser "px" to the input. If "px" succeeds, parser "py" is ignored.
          ;; If "px" fails, "py" is applied to the same input and its result is outputted
          ;; regardless of whether it succeeds or fails.
-         ;; To prevent space leaks, "or-else" ignores parser "py" if parser "px" consumes
-         ;; any input prior to failing. This behavior can be inverted with the
-         ;; "try" combinator.
+         ;; To prevent catastrophic backtracking, "or-else" ignores parser "py" if
+         ;; parser "px" consumes any input prior to failing. This behavior can be
+         ;; inverted with the "try" combinator.
          (define or-else
            (lambda (px py)
              (lambda (state)
