@@ -5,7 +5,8 @@
         (frost parsers)
         (frost parse))
 
-;; === json parser ===
+;; === JSON parser ===
+;; grammar: https://www.json.org/json-en.html
 
 (define OBJECT 'Object)
 (define ARRAY 'Array)
@@ -104,15 +105,12 @@
   (lambda (input)
     ((many json-character) input)))
 
-;; character ::= '0020' . '10FFFF' - '"' - '\'
-;;             | '\' escape
-;;
-;; escape ::= '"' | '\' | '/' | 'b' | 'f' | 'n' | 'r' | 't'
+;; character ::= !'"'
 (define json-character
   (lambda (input)
     ((none-of "\"") input)))
 
-;; number ::= integer fraction exponent
+;; number ::= real exponent?
 (define json-number
   (lambda (input)
     ((label "number"
