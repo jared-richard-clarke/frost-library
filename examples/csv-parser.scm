@@ -7,6 +7,11 @@
 
 ;; === csv parser ===
 
+;; In Scheme, forward references are allowed only within the bodies of function
+;; definitions - a.k.a lambda abstractions. Wrapping each parser within an extra
+;; lambda abstraction both allows the construction of mutually-defined grammars
+;; and simplifies incremental parser construction.
+
 (define comma      (character #\,))
 (define quote-mark (character #\"))
 (define HEADER 'Header)
