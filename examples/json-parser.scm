@@ -8,6 +8,11 @@
 ;; === JSON parser ===
 ;; grammar: https://www.json.org/json-en.html
 
+;; In Scheme, forward references are allowed only within the bodies of function
+;; definitions - a.k.a lambda abstractions. Wrapping each parser within an extra
+;; lambda abstraction both allows the construction of mutually-defined grammars
+;; and simplifies incremental parser construction.
+
 (define OBJECT 'Object)
 (define ARRAY 'Array)
 
