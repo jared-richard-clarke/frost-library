@@ -5,8 +5,6 @@
                  symbol-in?
                  compose
                  repeat
-                 digit->integer
-                 fold-digits-by
                  assert)
          (import (rnrs base)
                  (rnrs lists)
@@ -52,21 +50,6 @@
              (if (<= number 0)
                  '()
                  (cons value (repeat (- number 1) value)))))
-
-         ;; Converts numeric characters into their numeric equivalents.
-         (define digit->integer
-           (lambda (x)
-             (- (char->integer x) (char->integer #\0))))
-
-         ;; Given a radix, returns a function that folds a sequence of character digits into their numerical equivalent.
-         ;; Radix determines base.
-         (define fold-digits-by
-           (lambda (radix)
-             (lambda (xs)
-               (fold-left (lambda (sum x)
-                            (+ (* radix sum) (digit->integer x)))
-                          0
-                          xs))))
 
          ;; If the left-hand-expression does not satisfy the predicate comparing it to the right-hand-expression,
          ;; "assert" prints the failed test to the current-output port.
