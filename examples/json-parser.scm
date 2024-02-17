@@ -19,24 +19,26 @@
 (define comma      (character #\,))
 (define colon      (character #\:))
 (define quote-mark (character #\"))
+(define zero       (character #\0))
 (define exponent   (one-of "eE"))
+
 (define keyword
   (lambda (txt value)
     (let ([parser (apply sequence (map character (string->list txt)))])
       (label txt (replace parser (return value))))))
 
-;; json ::= element
+;; JSON <- Element
 (define json
   (lambda (input)
     (json-element input)))
 
-;; value ::= object
-;;         | array
-;;         | string
-;;         | number
-;;         | "true"
-;;         | "false"
-;;         | "null"
+;; Value <- Object
+;;        / Array
+;;        / String
+;;        / Number
+;;        / True
+;;        / False
+;;        / Null
 (define json-value
   (lambda (input)
     ((choice json-object
@@ -48,8 +50,7 @@
              json-null)
      input)))
 
-;; object ::= "{" spaces "}"
-;;          | "{" members "}"
+;; Object <- "{" ( Members / Spaces? ) "}"
 (define json-object
   (lambda (input)
     ((label "object: {...}"
@@ -59,23 +60,21 @@
                       (return (cons OBJECT ms))))
      input)))
 
-;; members ::= member
-;;           | member "," members
+;; Members <- Member ( "," Member )*
 (define json-members
   (lambda (input)
     ((sep-by-1 json-member comma) input)))
 
-;; member ::= spaces string spaces ":" element
+;; Member ::= Spaces? String Spaces? ":" Element
 (define json-member
   (lambda (input)
-    ((monad-do (key   <- (trim json-string))
-               (col   <- colon)
-               (value <- json-element)
-               (return (list key value)))
+    ((monad-do (key <- (trim json-string))
+               (col <- colon)
+               (val <- json-element)
+               (return (list key val)))
      input)))
 
-;; array ::= "[" spaces "]"
-;;         | "[" elements "]"
+;; Array <- "[" Elements / Spaces? "]"
 (define json-array
   (lambda (input)
     ((label "array: [...]"
@@ -85,18 +84,17 @@
                       (return (cons ARRAY es))))
      input)))
 
-;; elements ::= element
-;;            | element "," elements
+;; Elements <- Element ( "," Element )*
 (define json-elements
   (lambda (input)
     ((sep-by-1 json-element comma) input)))
 
-;; element ::= spaces value spaces
+;; Element <- Spaces? Value Spaces?
 (define json-element
   (lambda (input)
     ((trim json-value) input)))
 
-;; string ::= '"' characters '"'
+;; String <- '"' Characters '"'
 (define json-string
   (lambda (input)
     ((label "string: \"...\""
@@ -105,17 +103,19 @@
                      quote-mark))
      input)))
 
-;; characters ::= "" | character characters
+;; Characters <- Character*
 (define json-characters
   (lambda (input)
     ((many json-character) input)))
 
-;; character ::= !'"'
+;; Character <- !'"'.
 (define json-character
   (lambda (input)
     ((none-of "\"") input)))
 
-;; number ::= real exponent?
+;; Number   <- Real Exponent?
+;; Real     <- ( "+" / "-" )? ( "0" / [1-9] [0-9]* ( "." [0-9]+ ) )
+;; Exponent <- ( "e" / "E" ) ( "+" / "-" )? [0-9]+
 (define json-number
   (lambda (input)
     ((label "number"
@@ -124,6 +124,9 @@
                       (return (* r (expt 10.0 e)))))
      input)))
 
+;; True  <- "true"
 (define json-true  (keyword "true" 'true))
+;; False <- "false"
 (define json-false (keyword "false" 'false))
+;; Null  <- "null"
 (define json-null  (keyword "null" 'null))
