@@ -114,7 +114,7 @@
     ((none-of "\"") input)))
 
 ;; Number   <- Real Exponent?
-;; Real     <- ( "+" / "-" )? ( "0" / [1-9] [0-9]* ( "." [0-9]+ ) )
+;; Real     <- ( "+" / "-" )? ( "0" / [1-9] [0-9]* ( "." [0-9]+ )? )
 ;; Exponent <- ( "e" / "E" ) ( "+" / "-" )? [0-9]+
 (define json-number
   (lambda (input)
