@@ -51,10 +51,18 @@
                (label (string-append "none of " text)
                       (satisfy (lambda (x) (not (char-in? x xs))))))))
 
-         ;; Creates a parser for a single character.
+         ;; Creates a parser for a single character. If successful,
+         ;; returns character.
          (define character
            (lambda (x)
              (label (string x) (satisfy (lambda (y) (char=? x y))))))
+
+         ;; Creates a parser for a single character. If successful,
+         ;; returns character wrapped in a list.
+         (define singleton
+           (lambda (x)
+             (monad-do (ch <- (satisfy (lambda (y) (char=? x y))))
+                       (return (list x)))))
 
          ;; Parses any unicode character, including whitespace.
          (define any
@@ -78,19 +86,18 @@
 
          ;; Helper function parses an optional sign: +|-
          (define sign
-           (optional (fmap list
-                           (or-else (character #\-)
-                                    (character #\+)))))
+           (optional (or-else (singleton #\-)
+                              (singleton #\+))))
 
          ;; Helper function ensures denary whole numbers don't start with zero: !0 digits
          (define integral
-           (choice (fmap list (character #\0)) digits))
+           (choice (singleton #\0) digits))
 
          ;; Helper function parses an optional fraction component: .[0-9]
          (define fractional
-           (optional (monad-do (p <- (character #\.))
+           (optional (monad-do (p  <- (singleton #\.))
                                (ds <- digits)
-                               (return (cons p ds)))))
+                               (return (append p ds)))))
 
          ;; Creates a parser that converts a sequence of digits into their numerical equivalent
          ;; using the given radix and parser.
@@ -129,7 +136,7 @@
            (label "rational number"
                   (base 10 (monad-do (s <- sign)
                                      (x <- integral)
-                                     (y <- (fmap list (character #\/)))
+                                     (y <- (singleton #\/))
                                      (z <- integral)
                                      (return (append s x y z))))))
 
