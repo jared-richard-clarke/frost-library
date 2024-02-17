@@ -111,7 +111,7 @@
          (define integer
            (label "integer"
                   (base 10 (monad-do (s <- sign)
-                                     (x <- digits)
+                                     (x <- integral)
                                      (return (cons s x))))))
 
          ;; Parses and returns a real number in base 10.
@@ -128,10 +128,10 @@
          (define rational
            (label "rational number"
                   (base 10 (monad-do (s <- sign)
-                                     (x <- digits)
-                                     (y <- (character #\/))
-                                     (z <- digits)
-                                     (return (append s x (cons y z)))))))
+                                     (x <- integral)
+                                     (y <- (fmap list (character #\/)))
+                                     (z <- integral)
+                                     (return (append s x y z))))))
 
          ;; Parses any letter that satisfies the predicate "char-alphabetic?". 
          (define letter
