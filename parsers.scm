@@ -78,12 +78,19 @@
 
          ;; Helper function parses an optional sign: +|-
          (define sign
-           (optional (or-else (character #\-)
-                              (character #\+))))
+           (optional (fmap list
+                           (or-else (character #\-)
+                                    (character #\+)))))
+
+         ;; Helper function ensures denary whole numbers don't start with zero: !0 digits.
+         (define integral
+           (choice (fmap list (character #\0)) digits))
 
          ;; Helper function parses an optional fraction component: .[0-9]
-         (define fraction
-           (optional (sequence (character #\.) digits)))
+         (define fractional
+           (optional (monad-do (p  <- (character #\.))
+                               (ds <- digits)
+                               (return (cons p ds)))))
 
          ;; Creates a parser that converts a sequence of digits into their numerical equivalent
          ;; using the given radix and parser.
@@ -97,7 +104,7 @@
 
          ;; Parses and returns a whole number in base 10. 
          ;; [0, 1, 2 ...]
-         (define whole (label "whole number" (base 10 digits)))
+         (define whole (label "whole number" (base 10 integral)))
 
          ;; Parses and returns an integer in base 10.
          ;; [... -2, -1, 0, 1, 2 ...]
@@ -105,14 +112,14 @@
            (label "integer"
                   (base 10 (monad-do (s <- sign)
                                      (x <- digits)
-                                     (return (append s x))))))
+                                     (return (cons s x))))))
 
          ;; Parses and returns a real number in base 10.
          ;; [... -4 ... 0 ... 0.25 ... 7.5 ... 11 ...]
          (define real
            (label "real number"
                   (base 10 (monad-do (s <- sign)
-                                     (x <- digits)
+                                     (x <- integral)
                                      (y <- fraction)
                                      (return (append s x y))))))
 
