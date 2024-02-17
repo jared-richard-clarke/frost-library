@@ -36,7 +36,7 @@
                  (frost utils))
 
          ;; === parsers ===
-         
+
          ;; Creates a parser for any character defined within its string argument.
          (define one-of
            (lambda (text)
@@ -54,7 +54,7 @@
          ;; Creates a parser for a single character.
          (define character
            (lambda (x)
-             (label x (satisfy (lambda (y) (char=? x y))))))
+             (label (string x) (satisfy (lambda (y) (char=? x y))))))
 
          ;; Parses any unicode character, including whitespace.
          (define any
@@ -82,13 +82,13 @@
                            (or-else (character #\-)
                                     (character #\+)))))
 
-         ;; Helper function ensures denary whole numbers don't start with zero: !0 digits.
+         ;; Helper function ensures denary whole numbers don't start with zero: !0 digits
          (define integral
            (choice (fmap list (character #\0)) digits))
 
          ;; Helper function parses an optional fraction component: .[0-9]
          (define fractional
-           (optional (monad-do (p  <- (character #\.))
+           (optional (monad-do (p <- (character #\.))
                                (ds <- digits)
                                (return (cons p ds)))))
 
@@ -112,7 +112,7 @@
            (label "integer"
                   (base 10 (monad-do (s <- sign)
                                      (x <- integral)
-                                     (return (cons s x))))))
+                                     (return (append s x))))))
 
          ;; Parses and returns a real number in base 10.
          ;; [... -4 ... 0 ... 0.25 ... 7.5 ... 11 ...]
@@ -120,7 +120,7 @@
            (label "real number"
                   (base 10 (monad-do (s <- sign)
                                      (x <- integral)
-                                     (y <- fraction)
+                                     (y <- fractional)
                                      (return (append s x y))))))
 
          ;; Parses and returns a rational number in base 10.
@@ -200,12 +200,12 @@
          (define trim
            (lambda (px)
              (between skip-spaces px skip-spaces)))
-         
+
          ;; Parses chunk of consecutive non-whitespace characters.
          (define chunk
            (label "text chunk"
                   (many-1 (satisfy (lambda (x) (not (char-whitespace? x)))))))
-         
+
          ;; Creates a parser of the provided string.
          (define text
            (lambda (txt)
