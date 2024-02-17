@@ -2,6 +2,7 @@
          (export one-of
                  none-of
                  character
+                 singleton
                  any
                  digit
                  denary-digit
