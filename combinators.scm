@@ -31,8 +31,7 @@
                  chain-left
                  chain-left-1
                  chain-right
-                 chain-right-1
-                 count)
+                 chain-right-1)
          (import (rnrs base)
                  (rnrs lists)
                  (rnrs unicode)
@@ -328,12 +327,4 @@
                                           (return (f x y)))
                                 (return x)))))
 
-         ;; Applies parser "n" number of times. Outputs a list of parsed values.
-         ;; If "n" is less than or equal to zero, the parser outputs an empty list for all inputs.
-         (define count
-           (lambda (n px)
-             (if (<= n 0)
-                 empty
-                 (apply sequence (repeat n px)))))
-         
          )
