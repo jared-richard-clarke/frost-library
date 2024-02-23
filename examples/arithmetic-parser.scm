@@ -36,14 +36,14 @@
   (lambda (input)
     ((chain-left-1 factor mul-div) input)))
 
-;; Factor <- Base ( "^" Base )*
+;; Factor <- Operand ( "^" Operand )*
 (define factor
   (lambda (input)
-    ((chain-right-1 base-expr pow) input)))
+    ((chain-right-1 operand pow) input)))
 
-;; Base   <- "(" Expression ")" / Number
+;; Operand   <- "(" Expression ")" / Number
 ;; Number <- Spaces ( "+" / "-" )? ( "0" / [1-9] [0-9]* ( "." [0-9]+ )? ) Spaces
-(define base-expr
+(define operand
   (lambda (input)
     ((choice (between (character #\()
                       expression
