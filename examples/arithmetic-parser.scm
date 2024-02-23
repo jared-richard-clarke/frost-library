@@ -41,8 +41,8 @@
   (lambda (input)
     ((chain-right-1 operand pow) input)))
 
-;; Operand   <- "(" Expression ")" / Number
-;; Number <- Spaces ( "+" / "-" )? ( "0" / [1-9] [0-9]* ( "." [0-9]+ )? ) Spaces
+;; Operand <- "(" Expression ")" / Number
+;; Number  <- Spaces ( "+" / "-" )? ( "0" / [1-9] [0-9]* ( "." [0-9]+ )? ) Spaces
 (define operand
   (lambda (input)
     ((choice (between (character #\()
