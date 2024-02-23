@@ -21,6 +21,11 @@
 (define add-sub (choice add sub))
 (define mul-div (choice mul div))
 
+;; Arithmetic <- Spaces Expression
+(define arithmetic
+  (lambda (input)
+    ((trim-left expression) input)))
+
 ;; Expression <- Term ( [+-] Term )*
 (define expression
   (lambda (input)
@@ -37,11 +42,11 @@
     ((chain-right-1 base-expr pow) input)))
 
 ;; Base   <- "(" Expression ")" / Number
-;; Number <- ( "+" / "-" )? ( "0" / [1-9] [0-9]* ( "." [0-9]+ )? )
+;; Number <- Spaces ( "+" / "-" )? ( "0" / [1-9] [0-9]* ( "." [0-9]+ )? ) Spaces
 (define base-expr
   (lambda (input)
     ((choice (between (character #\()
                       expression
                       (character #\)))
-             real)
+             (trim real))
      input)))
