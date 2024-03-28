@@ -1,5 +1,3 @@
-;; === UNDER CONSTRUCTION ===
-
 (import (rnrs)
         (frost combinators)
         (frost parsers)
