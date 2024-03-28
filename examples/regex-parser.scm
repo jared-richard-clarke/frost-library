@@ -18,10 +18,10 @@
       (make-binary op x y))))
 
 (define alternate   (replace (character #\|) (return (build-binary "|"))))
+(define concat      (replace empty (return (build-binary "•"))))
 (define kleene-star (character #\*))
 (define plus        (character #\+))
 (define option      (character #\?))
-(define concat      (replace empty (return (build-binary "•"))))
 
 (define-record-type binary
   (fields operator left right))
