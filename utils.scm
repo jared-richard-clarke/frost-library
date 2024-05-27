@@ -37,12 +37,13 @@
 
          ;; Composes a series of functions into a single function expression.
          ;; Functions are applied right to left.
-         (define (compose . functions)
-           (lambda (arg)
-             (fold-right (lambda (function value)
-                           (function value))
-                         arg
-                         functions)))
+         (define compose
+           (lambda functions
+             (lambda (x)
+               (fold-right (lambda (function value)
+                             (function value))
+                           x
+                           functions))))
 
          ;; Builds a repeated list of a given value.
          (define repeat
