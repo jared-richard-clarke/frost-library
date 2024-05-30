@@ -87,8 +87,8 @@
 
          ;; Helper function parses an optional sign: +|-
          (define sign
-           (optional (or-else (singleton #\-)
-                              (singleton #\+))))
+           (optional (choice (singleton #\-)
+                             (singleton #\+))))
 
          ;; Helper function ensures denary whole numbers don't start with zero: !0 digits
          (define integral
@@ -159,7 +159,7 @@
 
          ;; Parses any letter or digit.
          (define alpha-num
-           (or-else letter digit))
+           (choice letter digit))
 
          ;; Parses any character that satisfies the predicate "char-whitespace?".
          (define space 
@@ -173,7 +173,7 @@
 
          ;; Parses a linefeed control character.
          (define linefeed
-           (or-else (character #\linefeed) (character #\newline)))
+           (choice (character #\linefeed) (character #\newline)))
          
          ;; Parses a carriage return and linefeed pair, outputting only the linefeed.
          (define crlf
