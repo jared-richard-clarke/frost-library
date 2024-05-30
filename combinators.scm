@@ -1,6 +1,7 @@
 (library (frost combinators)
          ;; === building blocks ===
          (export monad-do
+                 <-
                  return
                  bind
                  empty
@@ -46,6 +47,12 @@
              [(_ (x <- mx) expression ...)
               (bind mx (lambda (x) 
                          (monad-do expression ...)))]))
+
+         ;; It is a syntax violation to use "<-" for any purpose
+         ;; than as an auxiliary keyword for "monado-do".
+         (define-syntax <-
+           (lambda (x)
+             (syntax-violation '<- "misplaced auxiliary keyword" x)))
 
          ;; === MONAD ===
          ;;          |---------------------------------|
