@@ -49,7 +49,7 @@
                          (monad-do expression ...)))]))
 
          ;; It is a syntax violation to use "<-" for any purpose
-         ;; than as an auxiliary keyword for "monado-do".
+         ;; other than as an auxiliary keyword for "monado-do".
          (define-syntax <-
            (lambda (x)
              (syntax-violation '<- "misplaced auxiliary keyword" x)))
