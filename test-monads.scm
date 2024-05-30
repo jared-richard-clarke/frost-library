@@ -55,18 +55,18 @@
 
 ;; zero <|> px = px <- Identity
 (assert equal?
-        (compare parse (or-else fail (character #\a)) test-data)
-        (compare parse (character #\a)                test-data))
+        (compare parse (choice fail (character #\a)) test-data)
+        (compare parse (character #\a)               test-data))
 
 ;; px <|> zero = px <- Identity
 (assert equal?
-        (compare parse (or-else (character #\a) fail) test-data)
-        (compare parse (character #\a)                test-data))
+        (compare parse (choice (character #\a) fail) test-data)
+        (compare parse (character #\a)               test-data))
 
 ;; px <|> (py <|> pz) = (px <|> py) <|> pz <- Associativity
 (assert equal?
-        (compare parse (or-else (character #\b) (or-else (character #\a) (character #\c))) test-data)
-        (compare parse (or-else (or-else (character #\b) (character #\a)) (character #\c)) test-data))
+        (compare parse (choice (character #\b) (choice (character #\a) (character #\c))) test-data)
+        (compare parse (choice (choice (character #\b) (character #\a)) (character #\c)) test-data))
 
 ;; === Functor Laws ===
 ;;
