@@ -4,7 +4,6 @@
                  char-in?
                  symbol-in?
                  compose
-                 repeat
                  assert)
          (import (rnrs base)
                  (rnrs lists)
@@ -44,13 +43,6 @@
                              (function value))
                            x
                            functions))))
-
-         ;; Builds a repeated list of a given value.
-         (define repeat
-           (lambda (number value)
-             (if (<= number 0)
-                 '()
-                 (cons value (repeat (- number 1) value)))))
 
          ;; If the left-hand-expression does not satisfy the predicate comparing it to the right-hand-expression,
          ;; "assert" prints the failed test to the current-output port.
