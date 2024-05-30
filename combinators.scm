@@ -10,7 +10,6 @@
                  try
                  label
          ;; === choices ===
-                 or-else
                  choice
                  optional
                  either
@@ -19,7 +18,6 @@
                  right
                  between
          ;; === sequences ===
-                 and-then
                  sequence
                  many
                  many-1
