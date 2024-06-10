@@ -1,7 +1,5 @@
 (import (rnrs)
-        (frost combinators)
-        (frost parsers)
-        (frost parse))
+        (frost))
 
 ;; === JSON parser ===
 ;; grammar: https://www.json.org/json-en.html
