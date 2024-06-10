@@ -1,7 +1,5 @@
 (import (rnrs)
-        (frost combinators)
-        (frost parsers)
-        (frost parse))
+        (frost))
 
 ;; === Arithmetic Parser and Evaluator ===
 
