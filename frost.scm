@@ -62,8 +62,8 @@
           text
   ;; === parse: applies parser to input string ===
           parse)
-  (import (frost combinators)
-          (frost parsers)
-          (frost parse)
+  (import (frost utils)
           (frost data)
-          (frost utils)))
+          (frost combinators)
+          (frost parsers)
+          (frost parse)))
