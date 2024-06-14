@@ -37,12 +37,16 @@
                    length   ;; number
                    offset   ;; number
                    line     ;; number
-                   column)) ;; number
+                   column)  ;; number
+           (nongenerative)
+           (sealed #t))
 
          ;; A tagged value representing either success or failure.
          (define-record-type result
            (fields flag    ;; OK | ERROR
-                   value)) ;; any
+                   value)  ;; any
+           (nongenerative)
+           (sealed #t))
 
          ;; === error formatting ===
          (define EMPTY-STRING "")
