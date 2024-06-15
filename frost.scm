@@ -11,7 +11,7 @@
           try
           label
           choice
-          optional
+          maybe
           either
           replace
           left
