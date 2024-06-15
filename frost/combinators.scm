@@ -91,7 +91,7 @@
                    [else (values reply-x state-x want-x output-x)])))))
 
          ;; Sets parser context to an empty but successful state.
-         ;; Identity for sequencing operations.
+         ;; The identity for sequencing operations.
          (define empty (return '()))
 
          ;; Sets parser context to a failing state. The identity for choice operations.
