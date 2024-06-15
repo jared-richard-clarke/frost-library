@@ -12,7 +12,7 @@
                  label
          ;; === choices ===
                  choice
-                 optional
+                 maybe
                  either
                  replace
                  left
@@ -192,7 +192,7 @@
          
          ;; Applies parser px. Returns the result of px if px succeeds.
          ;; Returns an empty result if px fails.
-         (define optional
+         (define maybe
            (lambda (px)
              (or-else px empty)))
 
