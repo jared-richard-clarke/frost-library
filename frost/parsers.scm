@@ -87,8 +87,8 @@
 
          ;; Helper function parses an optional sign: +|-
          (define sign
-           (optional (choice (singleton #\-)
-                             (singleton #\+))))
+           (maybe (choice (singleton #\-)
+                          (singleton #\+))))
 
          ;; Helper function ensures denary whole numbers don't start with zero: !0 digits
          (define integral
@@ -96,9 +96,9 @@
 
          ;; Helper function parses an optional fraction component: .[0-9]
          (define fractional
-           (optional (monad-do (p  <- (singleton #\.))
-                               (ds <- digits)
-                               (return (append p ds)))))
+           (maybe (monad-do (p  <- (singleton #\.))
+                            (ds <- digits)
+                            (return (append p ds)))))
 
          ;; Creates a parser that converts a sequence of digits into their numerical equivalent
          ;; using the given radix and parser.
