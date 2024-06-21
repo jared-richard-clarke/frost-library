@@ -58,7 +58,7 @@
          ;;          |---------------------------------|
          ;; parser = state -> reply, state, want, output
          
-         ;; Wraps a value within a parser.
+         ;; Wraps a value within a parser operation.
          (define return
            (lambda (x)
              (lambda (state)
