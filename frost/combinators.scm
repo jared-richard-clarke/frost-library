@@ -58,7 +58,7 @@
          ;;          |---------------------------------|
          ;; parser = state -> reply, state, want, output
          
-         ;; Wraps a value within a parser. The identity for sequencing operations.
+         ;; Wraps a value within a parser.
          (define return
            (lambda (x)
              (lambda (state)
