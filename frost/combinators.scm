@@ -34,6 +34,7 @@
          (import (rnrs base)
                  (rnrs lists)
                  (rnrs unicode)
+                 (rnrs syntax-case)
                  (frost data)
                  (frost utils))
 
