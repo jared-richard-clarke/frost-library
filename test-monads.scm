@@ -2,14 +2,14 @@
         (frost data)
         (frost combinators)
         (frost parsers)
-        (frost parse)
+        (frost matcher)
         (frost utils))
 
 ;; R6RS does not support structural equality for record types. "compare" converts 
 ;; "result" record type to list for deep, structural comparison via "equal?".
 (define compare
-  (lambda (parse parser text)
-    (let* ([result (parse parser text)]
+  (lambda (matcher parser text)
+    (let* ([result (matcher parser text)]
            [flag   (result-flag result)]
            [value  (result-value result)])
       (list flag value))))
@@ -32,20 +32,20 @@
 ;; return a >>= f = f a
 ;;  unit a * λb.n = n[a/b]
 (assert equal?
-        (compare parse (bind (return #\a) character) test-data)
-        (compare parse (character #\a)               test-data))
+        (compare match (bind (return #\a) character) test-data)
+        (compare match (character #\a)               test-data))
 
 ;;  p >>= return = p
 ;; m * λa.unit a = m
 (assert equal?
-        (compare parse (bind (character #\a) return) test-data)
-        (compare parse (character #\a)               test-data))
+        (compare match (bind (character #\a) return) test-data)
+        (compare match (character #\a)               test-data))
 
 ;;   (p >>= f) >>= g = p >>= (\a -> f a >>= g)
 ;; (m * λa.n) * λb.o = m * (λa.n * λb.o)
 (assert equal?
-        (compare parse (bind (bind (return #\a) character) return)                  test-data)
-        (compare parse (bind (return #\a) (lambda (x) (bind (character x) return))) test-data))
+        (compare match (bind (bind (return #\a) character) return)                  test-data)
+        (compare match (bind (return #\a) (lambda (x) (bind (character x) return))) test-data))
 
 ;; === Alternative and/or MonadPlus Laws ===
 ;;
@@ -55,18 +55,18 @@
 
 ;; zero <|> px = px <- Identity
 (assert equal?
-        (compare parse (choice fail (character #\a)) test-data)
-        (compare parse (character #\a)               test-data))
+        (compare match (choice fail (character #\a)) test-data)
+        (compare match (character #\a)               test-data))
 
 ;; px <|> zero = px <- Identity
 (assert equal?
-        (compare parse (choice (character #\a) fail) test-data)
-        (compare parse (character #\a)               test-data))
+        (compare match (choice (character #\a) fail) test-data)
+        (compare match (character #\a)               test-data))
 
 ;; px <|> (py <|> pz) = (px <|> py) <|> pz <- Associativity
 (assert equal?
-        (compare parse (choice (character #\b) (choice (character #\a) (character #\c))) test-data)
-        (compare parse (choice (choice (character #\b) (character #\a)) (character #\c)) test-data))
+        (compare match (choice (character #\b) (choice (character #\a) (character #\c))) test-data)
+        (compare match (choice (choice (character #\b) (character #\a)) (character #\c)) test-data))
 
 ;; === Functor Laws ===
 ;;
@@ -75,8 +75,8 @@
 
 ;; fmap id = id <- Identity
 (assert equal?
-        (compare parse (fmap identity (character #\a)) test-data)
-        (compare parse (character #\a)                 test-data))
+        (compare match (fmap identity (character #\a)) test-data)
+        (compare match (character #\a)                 test-data))
 
 ;; fmap (g ∘ f) = fmap g ∘ fmap f <- Composition
 (let* ([curry-map (lambda (f)
@@ -84,5 +84,5 @@
        [ff (curry-map string-length)]
        [fg (curry-map string)])
   (assert equal?
-          (compare parse (fmap (compose string-length string) (character #\a)) test-data)
-          (compare parse ((compose ff fg) (character #\a))                     test-data)))
+          (compare match (fmap (compose string-length string) (character #\a)) test-data)
+          (compare match ((compose ff fg) (character #\a))                     test-data)))
