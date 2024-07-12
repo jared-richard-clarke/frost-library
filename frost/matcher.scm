@@ -1,4 +1,4 @@
-(library (frost parse)
+(library (frost matcher)
          (export parse)
          (import (rnrs base)
                  (frost combinators)
@@ -7,9 +7,9 @@
          
          ;; Applies a parser to a string and outputs a tagged result.
          ;; Lifts string into monadic context before applying parser.
-         ;; (parse (text "abc") "abc") -> struct:result{OK, "abc"}
-         ;; (parse (text "abc") "xyz") -> struct:result{ERROR, "line: 1, column: 1. Expected: abc, Got: x"}
-         (define parse
+         ;; (match (text "abc") "abc") -> struct:result{OK, "abc"}
+         ;; (match (text "abc") "xyz") -> struct:result{ERROR, "line: 1, column: 1. Expected: abc, Got: x"}
+         (define match
            (lambda (parser text)
              (let-values ([(reply state want output)
                            (parser (let* ([input  (string->vector text)]
