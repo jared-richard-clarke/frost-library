@@ -60,10 +60,10 @@
           trim
           chunk
           text
-  ;; === parse: applies parser to input string ===
-          parse)
+  ;; === match: applies parser to input string ===
+          match)
   (import (frost utils)
           (frost data)
           (frost combinators)
           (frost parsers)
-          (frost parse)))
+          (frost matcher)))
