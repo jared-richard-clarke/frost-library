@@ -5,7 +5,7 @@
                  (frost data)
                  (frost parsers))
 
-         (define INPUT-ERROR "Input must be of type string.")
+         (define INPUT-ERROR "match: input must be of type string")
          
          ;; Applies a parser to a string and outputs a tagged result.
          ;; Lifts string into monadic context before applying parser.
