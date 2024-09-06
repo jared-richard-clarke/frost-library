@@ -61,7 +61,9 @@
           chunk
           text
   ;; === match: applies parser to input string ===
-          match)
+          match
+  ;; === record type: result ===
+          make-result result? result-flag result-value)
   (import (frost utils)
           (frost data)
           (frost combinators)
