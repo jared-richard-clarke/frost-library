@@ -8,8 +8,13 @@
                  EMPTY-OK
                  EMPTY-ERROR
                  NONE
-                 state
-                 result
+                 
+                 ;; === record type state ===
+                 make-state state? state-input state-length state-offset state-line state column
+                 
+                 ;; === record type result ===
+                 make-result result? result-flag result-value
+                 
                  format-error)
          (import (rnrs base)
                  (rnrs records syntactic)
