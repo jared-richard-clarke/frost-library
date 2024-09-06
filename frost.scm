@@ -63,8 +63,8 @@
   ;; === match: applies parser to input string ===
           match
   ;; === record type: result ===
-          make-result result? result-flag result-value
-  ;; === flags: exported for result type ===
+          result? result-flag result-value
+  ;; === flags ===
           OK
           ERROR)
   (import (frost utils)
